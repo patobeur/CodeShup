@@ -1,0 +1,64 @@
+:root {
+    /* var --bg =  rgba(0,0,0,.8); */
+}
+body{
+    margin:0;
+    padding:0;
+}
+.conect{
+    width:300px;
+    height:max-content;
+    margin-left:auto;
+    margin-right:auto;
+    background-color: rgba(0,0,0,.1);
+    border-radius: 9px;
+    margin-top: 10%;
+    /* margin-top: calc( ( 100vh / 2 ) - 30px); */
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    -ms-border-radius: 9px;
+    -o-border-radius: 9px;
+}
+.conect h3{
+    padding:0;
+    margin:0;
+}
+@media(max-height:300px){
+    .conect{
+        margin-top: 0;
+    }
+}
+.conect #login,
+.conect #password{
+    border-color: rgba(0, 0, 0, .3);
+    border-radius: 5px;
+    padding-left:3px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+.conect #consub{
+    margin-top:5px;
+    border-color: rgba(0, 0, 0, .3);
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+.nav{
+    width:100vw;
+    height:40px;
+    background-color: rgba(0,0,0,.9);
+    color: silver;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+    display: flex;
+    flex-direction: row;
+
+}

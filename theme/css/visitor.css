@@ -1,0 +1,33 @@
+.visitor {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    height: 20px;
+    width: max-content;
+    background-color: rgba(72, 255, 0, 0.658);
+    border-radius: 8px;
+    z-index : 100001;
+}
+#visitorNum {
+    height:20px;
+    padding: 0 1rem;
+    width: max-content;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

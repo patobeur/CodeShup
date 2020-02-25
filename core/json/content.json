@@ -1,0 +1,229 @@
+{
+"auteur": "Patobeur",
+"date": "30/12/2019",
+"time_stamp": "2019-12-01 03:28:12",
+"CHARTE": {
+	"NAV": {
+		"IMGROOT": "theme/img/",
+		"LOGOSRC": "logo_patobeur_transp.png"
+	}
+},
+"blocs": {
+	"blocs": {
+		"0": "checksum",
+		"1": "structure",
+		"2": "head",
+		"3": "body-start",
+		"4": "blocs",
+		"5": "rs",
+		"6": "footer",
+		"7": "end_js",
+		"8": "body-end"
+	}
+},
+"structure": {
+	"meta": {
+		"doctype": "<!DOCTYPE html>",
+		"lang": "<html lang=\"fr\">"
+	}
+},
+"head": {
+	"meta": [{
+			"typeof": "charset",
+			"nameof": "charset",
+			"tag": "meta",
+			"contentype": "UTF-8"
+		},
+		{
+			"typeof": "title",
+			"nameof": "title",
+			"tag": "title",
+			"contentype": "Aptéo"
+		},
+		{
+			"typeof": "name",
+			"nameof": "name",
+			"tag": "meta",
+			"contentype": "description",
+			"item": "content",
+			"contentitem": "Fournisseur de solution web et web mobile"
+		},
+		{
+			"typeof": "name",
+			"nameof": "name",
+			"tag": "meta",
+			"contentype": "keywords",
+			"item": "content",
+			"contentitem": "aptéo, site internet, site web, landing page, artisant, artiste,"
+		},
+		{
+			"typeof": "name",
+			"tag": "meta",
+			"contentype": "viewport",
+			"item": "content",
+			"contentitem": "width=device-width, initial-scale=1.0"
+		},
+		{
+			"typeof": "http-equiv",
+			"tag": "meta",
+			"contentype": "X-UA-Compatible",
+			"item": "content",
+			"contentitem": "ie=edge"
+		},
+		{
+			"typeof": "favicon",
+			"tag": "link",
+			"contentype": "icon",
+			"item": "href",
+			"contentitem": "cms_poo.png",
+			"type": "type",
+			"typeitem": "image/png"
+		}
+	]
+},
+"defaultpage": [
+	"index"
+],
+"pagesext":  {
+	"nommenu": "Services",
+	"nomlabel": "service_one",
+	"actif": "true",
+	"files": [
+		{
+			"href": "#",
+			"target": "_out",
+			"title": "test page ext"
+		}
+	]
+},
+"pagesgestion":  {
+	"nommenu": "Gestion",
+	"nomlabel": "gestionapp",
+	"files": [
+		{
+			"href": "#",
+			"target": "_out",
+			"title": "Connectez vous!"
+		},
+		{
+			"href": "#",
+			"target": "_out",
+			"title": "test page ext"
+		},
+		{
+			"href": "#",
+			"target": "_out",
+			"title": "test page ext"
+		}
+	]
+},
+"pages": [
+	"index",
+	"404",
+	"403",
+	"login"
+],
+"index": {
+	"title": "Accueil",
+	"actif": "false",
+	"files": [{
+		"visible": "true",
+		"require": "true",
+		"page": "visitor",
+		"aremplacer": "_VISITOR_",
+		"session": "TICKET"}
+	],
+	"js": [],
+	"css": [
+		"index.css",
+		"feuilles.css"
+	],
+	"blocs": [
+		"index"
+	]
+},
+"login": {
+	"title": "Login",
+	"actif": false,
+	"files": [{
+		"visible": "true",
+		"require": "true",
+		"page": "login",
+		"aremplacer": "_LOGIN_",
+		"session": "USER"}
+	],
+	"js": [],
+	"css": [
+		"login.css"
+	],
+	"blocs": [
+		"login"
+	]
+},
+"404": {
+	"title": "404",
+	"actif": false,
+	"js": [],
+	"css": [""],
+	"blocs": [
+		"404"
+	]
+},
+"403": {
+	"title": "403",
+	"actif": false,
+	"js": [],
+	"css": [""],
+	"blocs": [
+		"403"
+	]
+},
+"connection": {
+	"title": "Accueil",
+	"actif": "false",
+	"files": [{
+		"visible": "true",
+		"require": "true",
+		"page": "visitor",
+		"aremplacer": "_VISITOR_",
+		"session": "TICKET"}
+	],
+	"js": [],
+	"css": [
+		"index.css",
+		"feuilles.css"
+	],
+	"blocs": [
+		"landing"
+	]
+},
+"clean1": "'--------------------------------------------------------------------",
+"aouvriratouslescoups": {
+	"actif": "false",
+	"files": [
+		{
+		"visible": "false",
+		"require": "false",
+		"page": "visitor",
+		"aremplacer": "_VISITOR_",
+		"session": "TICKET"
+		}
+	]
+},
+"atouslescoups": {
+	"actif": "true",
+	"css": [
+		"bootstrap.min.css",
+		"base.css",
+		"style.css",
+		"footer.css",
+		"surcharge.css",
+		"visitor.css"],
+	"js": [
+		"jquery-3.4.1.min.js",
+		"bootstrap.bundle.min.js",
+		"devtools.js"]
+},
+"clean2": "'--------------------------------------------------------------------",
+"checksum": "checkmefive"
+}

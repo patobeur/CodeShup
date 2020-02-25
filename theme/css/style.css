@@ -1,0 +1,61 @@
+
+
+:root {
+  --bgc-cms: rgb(255, 255, 255);
+  --bgc-rouge: rgba(219, 67, 54, 1);
+  --brd-rouge: rgba(219, 67, 54, .5);
+  --bgc-black: rgba(29, 31, 30, .9);
+  --bgc-linknav: rgba(167, 167, 167, 1);
+  --bgc-toggler: rgba(167, 167, 167, .4);
+}
+body {
+  /* background-image: var(--bgimagecover_drk);
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed; */
+  font-size: 1.4rem;
+  background-color: var(--bgc-cms);
+}
+.full-page {
+  width: 100%;
+  height: 100vh;
+  /* margin: 0;
+  background-image: var(--bgimagecover);
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed; */
+  padding-bottom:2rem;
+}
+/* NAVBAR */
+.full-page header {
+  z-index: 2000;
+}
+.full-page header nav .container {
+  width: 100%;
+  margin: 0;
+}
+.bg-black {
+  background-color: black;
+}
+/* FIN-NAVBAR */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

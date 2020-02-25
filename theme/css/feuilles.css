@@ -1,0 +1,449 @@
+/* Définition des effets */
+.shadows {
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+}
+
+.classeur {
+    background-color: rgb(255, 255, 255);
+}
+
+.classeur .feuilles .navigation {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}
+
+@media (max-width:576px) {
+    .classeur .feuilles .navigation {
+        background-color: rgb(0, 0, 0);
+    }
+}
+
+@media (min-width:576px) {
+    .classeur .feuilles .navigation {
+        top: 75px;
+        background-color: rgb(0, 0, 0);
+    }
+}
+
+.classeur .feuilles .navigation .menu {
+    border: 1px solid red;
+    border-radius: 7px;
+    background-color: white;
+    padding: 0 1rem;
+    margin: 0 2rem;
+}
+
+.classeur .feuilles #lesfiches {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+}
+
+.classeur .feuilles #lesfiches .fiche {
+    width: 100%;
+    padding: .1rem;
+    /* height: 7rem; */
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.473);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+    padding: 4px;
+    margin: 3px;
+    z-index:5;
+    /* border:1px solid rgba(0, 0, 0, 0.205); */
+}
+
+@media (min-width:320px) {
+    .classeur .feuilles #lesfiches .fiche {
+        max-width: 100%;
+    }
+
+    /* .classeur {padding: 2%;} */
+}
+
+@media (min-width:576px) {
+    .classeur .feuilles #lesfiches .fiche {
+        max-width: calc((100% - (2 * 6px)) / 2);
+    }
+
+    /* .classeur {padding: 2%;} */
+}
+
+@media (min-width:768px) {
+    .classeur .feuilles #lesfiches .fiche {
+        max-width: calc((100% - (3 * 6px)) / 3);
+    }
+}
+
+@media (min-width:992px) {
+    .classeur .feuilles #lesfiches .fiche {
+        max-width: calc((100% - (4 * 6px)) / 4);
+    }
+}
+
+@media (min-width:1000px) {
+    .classeur .feuilles #lesfiches .fiche {
+        max-width: calc((100% - (5 * 6px)) / 5);
+    }
+}
+
+@media (min-width:1300px) {
+    .classeur .feuilles #lesfiches .fiche {
+        width: calc((100% - (6 * 6px)) / 6);
+    }
+}
+
+.classeur .feuilles #lesfiches .fiche .page {
+    padding: .5rem;
+    margin: .1rem;
+}
+
+.classeur .feuilles #lesfiches .fiche:hover {
+    height: auto;
+    border-radius: 15px;
+    background-color: rgb(255, 255, 255);
+}
+
+.classeur .feuilles #lesfiches .fiche .page h3 {
+    border-radius: 7px;
+    padding: .5rem;
+    /* margin: .1rem; */
+    outline: 1px solid rgba(0, 0, 0, 0.222);
+    color: rgb(0, 0, 0);
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 2rem;
+    margin: 0 0 .5rem 0;
+    ;
+    padding: 0;
+}
+
+.classeur .feuilles #lesfiches .fiche .page h3 span {
+    font-weight: 600;
+    font-size: 1.7rem;
+    margin: 0;
+    padding: 0;
+}
+
+.classeur .feuilles #lesfiches .fiche .page p {
+    font-size: 1.4rem;
+    padding: 0;
+    margin: 0;
+    outline: 0;
+}
+
+#consoleajax {
+    display: none;
+    position: fixed;
+    top: 100px;
+    width: max-content;
+    background-color: #EAEAEA;
+    margin: 0;
+    margin: 1rem;
+    border-radius: 7px;
+}
+
+.joker2 {
+    background-color: #EAEAEA;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.classeur .feuilles .formulaire {
+    width: 100%;
+}
+
+
+.formulaire {
+    display: flex;
+    /* flex-direction: row; */
+    /* flex-wrap: nowrap; */
+    align-items: stretch;
+    justify-content: space-around;
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+}
+
+.formulaire .posti {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    outline: 1px solid rgba(0, 0, 0, 0.473);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+    background-color: rgba(123, 255, 0, 0.315);
+    margin-right: 5px;
+}
+
+.formulaire .posti .menu {
+    padding: 0 1rem;
+    background-color: rgba(0, 89, 255, 0.692);
+    outline: 1px solid #EAEAEA;
+    width: max-content;
+    border-radius: 8px;
+    margin: .2rem;
+    color: white;
+}
+
+.formulaire .consoli {
+    flex-direction: row;
+    display: flex;
+    padding: 5px;
+    outline: 1px solid rgba(0, 0, 0, 0.473);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+    background-color: rgba(255, 0, 0, 0.288);
+    margin-right: 5px;
+}
+
+.formulaire .bouttoni {
+    padding: 5px;
+    outline: 1px solid rgba(0, 0, 0, 0.473);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+    background-color: rgba(0, 47, 255, 0.349);
+}
+
+.formulaire .bouttoni .menu {
+    padding: 0 1rem;
+    background-color: rgba(64, 92, 145, 0.692);
+    outline: 1px solid #EAEAEA;
+    width: max-content;
+    border-radius: 8px;
+    margin: .2rem;
+    color: white;
+}
+
+.formulaire .messagi {
+    padding: 5px;
+    outline: 1px solid rgba(0, 0, 0, 0.473);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+    background-color: rgba(255, 102, 0, 0.315);
+}
+
+#modalite {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    margin: auto;
+}
+
+.classeur .feuilles #lesfiches .fiche .badass {
+    background-color: rgba(255, 0, 0, 0.452);
+
+}
+
+/* formularum */
+.formularum {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    height: 3.5rem;
+    width: 100%;
+}
+
+.formularum #name {
+    width: 15rem;
+    height: 3rem;
+    line-height: 3rem;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 9px 0 0 9px;
+    margin: 0;
+    padding: 0 1rem 0 1rem;
+    background-color: rgb(0, 110, 255);
+    color: rgb(251, 255, 0);
+}
+
+.formularum #message {
+    width: 25rem;
+    height: 3rem;
+    resize: none;
+    line-height: 3rem;
+    font-size: 1.5rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    padding: 0 1rem 0 1rem;
+    background-color: rgb(204, 0, 255);
+    color: rgb(255, 255, 255);
+}
+
+.formularum #message:focus {
+    width: 35rem;
+}
+
+.formularum #sandmessage {
+    height: 3rem;
+    line-height: 3rem;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 0 9px 9px 0;
+    margin: 0;
+    padding: 0;
+    padding: 0 1rem 0 1rem;
+}
+
+.formularum #sandmessage .ico {
+    width: 10rem;
+    height: 3rem;
+}
+
+.formularum #sandmessage .ico .icon {
+    transition: .3s ease;
+    font-size: 2rem;
+    width: 10rem;
+    height: 3rem;
+    line-height: 2rem;
+}
+
+.formularum #sandmessage .ico:hover .icon {
+    transform: scale(1.3);
+    transition: .3s cubic-bezier(0, 0, 0, 3);
+}
+
+.topbut {
+    position: absolute;
+    position: sticky;
+    top: calc(100% - 100px);
+    left: calc(100% - 100px);
+    width: 5rem;
+    height: 5rem;
+    background-color: rgba(0, 255, 13, 0.76);
+    padding: 0;
+    margin: 0;
+}
+
+.topbut .icon {
+    background-color: rgba(0, 255, 13, 0.76);
+    font-size: 5rem;
+    line-height: 5rem;
+    padding: 0;
+    margin: 0;
+}
+
+@media (max-width:576px) {
+    .formularum {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        height: max-content;
+    }
+
+    .formularum #name {
+        text-align: center;
+        width: 100%;
+        border-radius: 9px 9px 0 0;
+    }
+
+    .formularum #sandmessage {
+        width: 60%;
+        border-radius: 0;
+        border-radius: 0 0 9px 9px;
+        text-align: center;
+    }
+
+    .formularum #message:focus {
+        width: 100%;
+        height: max-content;
+    }
+
+    .formularum #message {
+        padding: .4rem;
+        line-height: 1.5rem;
+        text-align: center;
+        width: 100%;
+        border-radius: 0 0 9px 9px;
+    }
+}
+
+/* end formularum */
+
+/* actions on messages */
+.classeur .feuilles #lesfiches .fiche .page .addcomment {
+    width: max-content;
+    height: max-content;
+    padding: 0 .5rem;
+    margin: 2px;
+    background-color: rgb(60, 255, 0);
+    color: white;
+}
+
+.actionsontouitt {
+    display: flex;
+}
+
+.actionsontouitt .actmess {
+    overflow: hidden;
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+.actionsontouitt .actmess.liker:hover {
+    width: calc(3 * 4rem);
+}
+
+.actionsontouitt .actmess .icolike,
+.actionsontouitt .actmess .morelike,
+.actionsontouitt .actmess .lesslike {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    display: inline-flex;
+    align-self: center;
+    align-items: center;
+    /* align-content: center; */
+    font-size: 1.8rem;
+    /* line-height: 1.6rem; */
+    border-radius: 50%;
+    padding: 0 0 0 .2rem;
+    margin: 0;
+    margin: .2rem .1rem .6rem .1rem;
+    /* background-color: rgb(255, 136, 0); */
+    color: rgb(61, 0, 0);
+    border: 1px solid rgba(0, 0, 0, 0.111);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .2);
+}
+
+.actionsontouitt .actmess.liker .icolike {
+    /* background-color: rgb(255, 179, 179); */
+    color: rgb(61, 0, 0);
+}
+
+.actionsontouitt .actmess.commenter .icolike {
+    /* background-color: rgb(68, 118, 255); */
+    color: rgb(255, 255, 255);
+}
+
+.actionsontouitt .actmess .morelike {
+    /* background-color: rgb(21, 255, 0); */
+    color: black;
+}
+
+.actionsontouitt .actmess .lesslike {
+    /* background-color: rgb(255, 81, 0); */
+    color: black;
+}
+
+/* end actions on messages */
+.classeur .feuilles #lesfiches .fiche .page h3 .banned {
+    color: red
+}
+
+.classeur .feuilles #lesfiches .fiche .page.banned {
+    background: rgb(2, 0, 36);
+    background: linear-gradient(28deg, rgba(2, 0, 36, 1) 5%, rgba(255, 252, 0, 1) 5%, rgba(255, 252, 0, 1) 20%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 35%, rgba(255, 252, 0, 1) 35%, rgba(255, 252, 0, 1) 50%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 65%, rgba(255, 252, 0, 1) 65%, rgba(255, 252, 0, 1) 80%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 1) 95%, rgba(255, 252, 0, 1) 95%, rgba(255, 252, 0, 1) 100%);
+}

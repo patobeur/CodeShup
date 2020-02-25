@@ -1,0 +1,58 @@
+
+/* COVER  */
+section.ntrouve {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 2rem);
+  /* background-size: cover;
+  background-position: center top; */
+  background-color: none;
+  padding: 0 2rem 0 2rem;
+  color: rgba(0, 0, 0, 0.795);
+}
+section.ntrouve h1 {
+  font-size: 2.5rem;
+  text-align: center;
+}
+section.ntrouve p {
+  text-align: center;
+  font-size: 1.1rem;
+}
+/* END-COVER */
+
+/* @media (max-width:575px) {
+} */
+@media (min-width:576px) {
+  section.ntrouve h1 {
+    font-size: 3rem;
+  }
+  section.ntrouve p {
+  }
+}
+@media (min-width:860px) {
+  section.ntrouve h1 {
+    font-size: 3.5em;
+  }
+  section.ntrouve p {
+      font-size: 1.3em;
+  }
+}
+@media (min-width:1338px) {
+  section.ntrouve h1 {
+    font-size: 4em;
+  }
+  section.ntrouve p {
+      font-size: 1.4em;
+  }
+}
+@media (min-width:1500px) {
+  section.ntrouve h1 {
+    font-size: 5em;
+  }
+  section.ntrouve p {
+      font-size: 1.5em;
+  }
+}

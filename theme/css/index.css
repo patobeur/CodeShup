@@ -1,0 +1,209 @@
+
+
+/* COVER  */
+section.accueil {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    /* background-size: cover;
+    background-position: center top; */
+    background-color: none;
+    color: rgb(0, 0,0);
+}
+section.accueil h1 {
+    position:relative;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top:40vh;
+}
+section.accueil p {
+  text-align: center;
+  font-size: 1.1rem;
+}
+/* END-COVER */
+
+/* @media (max-width:575px) {
+} */
+@media (min-width:576px) {
+  section.accueil h1 {
+    font-size: 3rem;
+  }
+  section.accueil p {
+  }
+}
+@media (min-width:860px) {
+  section.accueil h1 {
+    font-size: 3.5em;
+  }
+  section.accueil p {
+      font-size: 1.3em;
+  }
+}
+@media (min-width:1338px) {
+  section.accueil h1 {
+    font-size: 4em;
+  }
+  section.accueil p {
+      font-size: 1.4em;
+  }
+}
+@media (min-width:1500px) {
+  section.accueil h1 {
+    font-size: 5em;
+  }
+  section.accueil p {
+      font-size: 1.5em;
+  }
+}
+:root{
+    --coul_01: rgba(255, 0, 149, 0.666);
+    --coul_02: rgba(220, 30, 180, 0.666);
+    --coul_03: rgba(160, 60, 180, 0.666);
+    --coul_04: rgba(180, 90, 220, 0.666);
+    --coul_05: rgba(220, 120, 25,5 0.666);
+    --coul_06: rgba(255, 150, 0 ,0.666);
+    --coul_07: rgba(220, 130, 30, 0.666);
+    --coul_08: rgba(180, 200, 60, 0.666);
+    --coul_09: rgba(160, 220, 90, 0.666);
+    --coul_00: rgba(130, 255, 120, 0.666);
+}
+/* ANIME */
+.area{
+    z-index: -5;
+    background: none;  
+    background: -webkit-linear-gradient(to left, #ffffff, #000000);  
+    width: 100%;
+    height:100%;
+}
+
+.circles{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.circles li{
+    position: absolute;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    animation: animate 12s linear infinite;
+    bottom: -150px;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, .6);
+    padding: 50px 15px;
+    font-size: 2rem;
+    color: black;
+    font-weight: bold;
+    background-size: cover;
+    background-position: center center;
+    background-size: 80%;
+    background-repeat: no-repeat;
+
+}
+
+.circles li:nth-child(1){
+    left: 25%;
+    animation-delay: 5s;
+    animation-duration: 15s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_01.png);
+}
+
+.circles li:nth-child(2){
+    left: 10%;
+    animation-delay: 2s;
+    animation-duration: 10s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_02.png);
+}
+
+.circles li:nth-child(3){
+    left: 70%;
+    animation-delay: 4s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_03.png);
+}
+
+.circles li:nth-child(4){
+    left: 40%;
+    animation-delay: 0s;
+    animation-duration: 10s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_04.png);
+}
+
+.circles li:nth-child(5){
+    left: 65%;
+    animation-delay: 10s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_05.png);
+}
+
+.circles li:nth-child(6){
+    left: 75%;
+    animation-delay: 3s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_06.png);
+}
+
+.circles li:nth-child(7){
+    left: 35%;
+    animation-delay: 18s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_07.png);
+}
+
+.circles li:nth-child(8){
+    left: 50%;
+    animation-delay: 15s;
+    animation-duration: 30s;
+    width: 100px;
+    height: 100px;
+    background-image: url(../tools/p_08.png);
+}
+
+.circles li:nth-child(9){
+    left: 20%;
+    animation-delay: 2s;
+    animation-duration: 35s;
+    width: 100px;
+    height: 100px;
+    background: var(--coul_09);
+}
+
+.circles li:nth-child(10){
+    left: 85%;
+    animation-delay: 0s;
+    animation-duration: 11s;
+    width: 100px;
+    height: 100px;
+    background: var(--coul_10);
+}
+
+@keyframes animate {
+    0%{
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+    }
+    100%{
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 100%;
+    }
+}

@@ -1,0 +1,58 @@
+
+/* COVER  */
+section.heroman {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  /* background-size: cover;
+  background-position: center top; */
+  background-color: none;
+  padding: 0 2rem 0 2rem;
+  color: rgba(255, 255, 255, 0.795);
+}
+section.heroman h1 {
+  font-size: 2.5rem;
+  text-align: center;
+}
+section.heroman p {
+  text-align: center;
+  font-size: 1.1rem;
+}
+/* END-COVER */
+
+/* @media (max-width:575px) {
+} */
+@media (min-width:576px) {
+  section.heroman h1 {
+    font-size: 3rem;
+  }
+  section.heroman p {
+  }
+}
+@media (min-width:860px) {
+  section.heroman h1 {
+    font-size: 3.5em;
+  }
+  section.heroman p {
+      font-size: 1.3em;
+  }
+}
+@media (min-width:1338px) {
+  section.heroman h1 {
+    font-size: 4em;
+  }
+  section.heroman p {
+      font-size: 1.4em;
+  }
+}
+@media (min-width:1500px) {
+  section.heroman h1 {
+    font-size: 5em;
+  }
+  section.heroman p {
+      font-size: 1.5em;
+  }
+}
