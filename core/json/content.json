@@ -140,6 +140,9 @@
 	],
 	"blocs": [
 		"index"
+	],
+	"require": [
+		"test"
 	]
 },
 "login": {

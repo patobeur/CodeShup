@@ -7,14 +7,15 @@ class Page{
     //
     const PJSON         = self::PCORE.'json/';
     const PLOG          = self::PCORE.'log/';
-    const PIMG          = self::PCORE.'log/';
+    const PIMG          = self::PCORE.'img/';
     //
-    const FUNKY         = self::PCORE.'f_';
+    const FUNKY         = self::PCORE.'functions/';
     const VIEW          = self::PCORE.'view/'.'';           // pages parsé à la volé indiqué dans le json
     const PAGEINN       = self::PCORE.'inview/_in_';        // pages a mettre dans view
-    const PIMPPREFIX    = self::PCORE.'php/_inc_';     // pour les pages en include ou require (local au moteur)
-    //
+    // const PIMPPREFIX    = self::PCORE.'php/_inc_';          // pour les pages en include ou require (local au moteur)
+    // FILES
     const PJSONHEADER   = self::PJSON.'content.json';
+    // INCLUDES
     const PNAVIGA       = self::VIEW.'navigation.php';
     const PFOOTER       = self::VIEW.'footer.php';
     //
@@ -42,15 +43,21 @@ class Page{
             $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
     }
     // PUBLIC FUNCTIONS
+    // -----------------------------------------------------------------------------------------------------------------------
+    // GETTER
+    // -----------------------------------------------------------------------------------------------------------------------
     public function do_affichelapagehtml(){
         print $this->get_Dom();
      }
-    // -----------------------------------------------------------------------------------------------------------------------
-    // PUBLIC FUNCTIONS
-    // -----------------------------------------------------------------------------------------------------------------------
 	private function get_List_Menu($kelfamille){
         $n=PHP_EOL;
-        $fichier_importe = file_get_contents(self::PNAVIGA,TRUE).$n;       // lecture du fichier a inclure 
+        // NAVIGATION
+        if (file_exists(self::PNAVIGA)) {
+            $fichier_importe = file_get_contents(self::PNAVIGA,TRUE).$n;       // lecture du fichier a inclure 
+        }
+        else {
+            DEBUG_DIE ? die('le fichier "'.self::PNAVIGA.'" est manquant. !?!') : die();
+        }
         // ------------------------------------------------------------------------------
         $arr_pc = $this->_ObjJson->$kelfamille;                            // arr_pc = pages courantes (arr_ pour array)
         $blocm = $this->get_Indent(0,4,'Navigat')."<!-- Auto in menu -->".$n;
@@ -120,6 +127,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     // -----------------------------------------------------------------------------------------------------------------------
     private function get_Dom(){
         $this->_current_page = $this->get_current_pagename();
+        
         $bloc = $this->get_Header_Html(1);
         //
         $bloc .= $this->get_Contents_Html();
@@ -145,12 +153,6 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         if (isset($this->_ObjJson->structure->meta->doctype)){ $message =  $this->_ObjJson->structure->meta->doctype.$n.$message;}
         return $message;
     }
-	// -----------------------------------------------------------------------------------------------------------------------
-    // SETTER
-    private function set_Current_Page($newvalue){
-        $this->_current_page = $newvalue;
-    }
-    
     // GETTER
     private function get_Contents_Html(){
         $n=PHP_EOL;$bloc="\n";
@@ -183,6 +185,9 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         // FOOTER
         if (file_exists(self::PFOOTER)) {
             $bloc .= file_get_contents(self::PFOOTER,TRUE).$n;  
+        }
+        else {
+            DEBUG_DIE ? die('le fichier "'.self::PFOOTER.'" est manquant. !?!') : die();
         }
 
         
@@ -344,14 +349,14 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                     // echo $nbfichierout;
                     // printair( $cb[$nbfichierout]->page);
 
-                    if ($cb[$nbfichierout]->page!="") $ext_file = self::FUNKY.$cb[$nbfichierout]->page.self::PEXTENSION;
+                    if ($cb[$nbfichierout]->page!="") $ext_file = self::FUNKY.$cb[$nbfichierout]->page.self::PEXTENSION; print_air($ext_file,'require_once');
                     // file to get_contents from
-                    if ($cb[$nbfichierout]->page!="") $ink_file = self::PAGEINN.$cb[$nbfichierout]->page.self::PEXTENSION;
+                    if ($cb[$nbfichierout]->page!="") $ink_file = self::PAGEINN.$cb[$nbfichierout]->page.self::PEXTENSION;print_air($ink_file,'file_get_contents');
                     // file to get_contents from
-                    if ($cb[$nbfichierout]->aremplacer!="") $aremplacer = $cb[$nbfichierout]->aremplacer;
-                    if ($cb[$nbfichierout]->session!="") $lasesssion = $cb[$nbfichierout]->session;
-                    if ($cb[$nbfichierout]->require!="") $require = $cb[$nbfichierout]->require;
-                    if ($cb[$nbfichierout]->visible!="") $visible = $cb[$nbfichierout]->visible;
+                    if ($cb[$nbfichierout]->aremplacer!="") $aremplacer = $cb[$nbfichierout]->aremplacer; print_air($aremplacer,'aremplacer');
+                    if ($cb[$nbfichierout]->session!="") $lasesssion = $cb[$nbfichierout]->session; print_air($lasesssion,'session');
+                    if ($cb[$nbfichierout]->require!="") $require = $cb[$nbfichierout]->require; print_air($require,'require_once');
+                    if ($cb[$nbfichierout]->visible!="") $visible = $cb[$nbfichierout]->visible; print_air($visible,'visible');
 
                     // ------------------- DANGER ! ----------------------------------
                     if ($require) require_once($ext_file); // on appel le fichier demander dans le json (ça craint !!! mais ??? )
@@ -362,18 +367,35 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     }
     // -----------------------------------------------------------------------------------------------------------------------
     private function get_current_pagename(){
-        $NEW_CURR_PAGE = $this->_ObjJson->defaultpage[0];   // page par default
+        $new_current_page = $this->_ObjJson->defaultpage[0];   // page par default
         $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
         
+
         // un pti coup de sécu ici        
         for ($i=0; $i < count($this->_ObjJson->pages); $i++){                    // on prend la liste dess page existantes dans le json
             if (preg_match("'".$this->_ObjJson->pages[$i]."'",$Posted)){         // la page est elle dans l'url ??
-                $NEW_CURR_PAGE = $this->_ObjJson->pages[$i];                     // si oui on prend le nom 
+                $new_current_page = $this->_ObjJson->pages[$i];                     // si oui on prend le nom 
                 // break;                                                        // on stop ou pas pour chopper la dernier
             }
         }
-        $_SESSION['CURR_PAGE'] = $NEW_CURR_PAGE;
-        return $NEW_CURR_PAGE;
+        $_SESSION['CURR_PAGE'] = $new_current_page;
+
+        return $new_current_page;
+    }
+    // -----------------------------------------------------------------------------------------------------------------------
+    private function do_RequireFile($new_current_page){
+        if ($this->_ObjJson->$new_current_page->require != ''){
+            $listedesRequire = $this->_ObjJson->$new_current_page->require;
+            for ( $i = 0; $i < count($listedesRequire); $i++ ){
+                $fichierrequire = self::FUNKY.$listedesRequire[$i].self::PEXTENSION;
+                if (file_exists($fichierrequire)) {
+                    require_once($fichierrequire);  
+                }
+                else{
+                    print_air('il manque le fichier '.$fichierrequire,"erreur get_current_pagename");
+                }
+            }
+        }
     }
     // -----------------------------------------------------------------------------------------------------------------------
     private function get_Jsondecode($url_file){
@@ -391,11 +413,16 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             return False;
         }
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------------------------------
+    // SETTER
+    private function set_Current_Page($newvalue){
+        $this->_current_page = $newvalue;
+    }
+	// -----------------------------------------------------------------------------------------------------------------------
+    // HYDRATE
     private function hydrate_info_var($arr_json){
         for($i = 0; $i < count($arr_json); $i++){
             $method = 'set'.ucfirst($arr_json[$i]);
-            // echo $method;
 			if (method_exists($this, $method)) {
 				$this->$method($arr_json[$i]);
 			}
