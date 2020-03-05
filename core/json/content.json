@@ -140,9 +140,6 @@
 	],
 	"blocs": [
 		"index"
-	],
-	"require": [
-		"test"
 	]
 },
 "login": {
@@ -160,6 +157,9 @@
 		"login.css"
 	],
 	"blocs": [
+		"login"
+	],
+	"require": [
 		"login"
 	]
 },

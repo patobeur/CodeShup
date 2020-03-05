@@ -127,7 +127,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     // -----------------------------------------------------------------------------------------------------------------------
     private function get_Dom(){
         $this->_current_page = $this->get_current_pagename();
-        
+        $this->do_RequireFile($this->_current_page);
         $bloc = $this->get_Header_Html(1);
         //
         $bloc .= $this->get_Contents_Html();
@@ -374,7 +374,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         // un pti coup de sécu ici        
         for ($i=0; $i < count($this->_ObjJson->pages); $i++){                    // on prend la liste dess page existantes dans le json
             if (preg_match("'".$this->_ObjJson->pages[$i]."'",$Posted)){         // la page est elle dans l'url ??
-                $new_current_page = $this->_ObjJson->pages[$i];                     // si oui on prend le nom 
+                $new_current_page = $this->_ObjJson->pages[$i];                  // si oui on prend le nom 
                 // break;                                                        // on stop ou pas pour chopper la dernier
             }
         }
@@ -384,7 +384,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     }
     // -----------------------------------------------------------------------------------------------------------------------
     private function do_RequireFile($new_current_page){
-        if ($this->_ObjJson->$new_current_page->require != ''){
+        if (!empty($this->_ObjJson->$new_current_page->require) ){
             $listedesRequire = $this->_ObjJson->$new_current_page->require;
             for ( $i = 0; $i < count($listedesRequire); $i++ ){
                 $fichierrequire = self::FUNKY.$listedesRequire[$i].self::PEXTENSION;
