@@ -24,7 +24,7 @@ class Page{
     const PEXTENSION    ='.php';
 
 
-    // -----------------------------------------------------------------------------------------------------------------------	
+    // --------------------------------------------------------------------------------	
 	// $auteur =           $Structure_json_arr['auteur'];
     // $date =             $Structure_json_arr['date'];
     // $time_stamp =       $Structure_json_arr['time_stamp'];
@@ -43,12 +43,25 @@ class Page{
             $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
     }
     // PUBLIC FUNCTIONS
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     // GETTER
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     public function do_affichelapagehtml(){
+
         print $this->get_Dom();
-     }
+    }
+    // --------------------------------------------------------------------------------
+    private function get_Dom(){
+        $this->_current_page = $this->get_current_pagename();
+        
+        // integration d'une page php a la volée
+        $this->do_RequireFile($this->_current_page);
+        
+        $bloc = $this->get_Header_Html(1);
+        //
+        $bloc .= $this->get_Contents_Html();
+        return $bloc;
+    }
 	private function get_List_Menu($kelfamille){
         $n=PHP_EOL;
         // NAVIGATION
@@ -80,7 +93,7 @@ class Page{
         // ------------------------------------------------------------------------------
         return $valeurderetour; 
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     /**
      * 
      */
@@ -120,20 +133,11 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                                 <!-- Fin Auto out menu -->';
         return $this->get_RemplacePar('_MENUACTOBEUR_',$A_remplacement, $A_html);
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function get_RemplacePar($txtaenlever,$txtamettre,$html){        
         return ($txtamettre and $txtamettre!='') ? preg_replace($txtaenlever,$txtamettre,$html) : preg_replace($txtaenlever,'',$html);
     }
-    // -----------------------------------------------------------------------------------------------------------------------
-    private function get_Dom(){
-        $this->_current_page = $this->get_current_pagename();
-        $this->do_RequireFile($this->_current_page);
-        $bloc = $this->get_Header_Html(1);
-        //
-        $bloc .= $this->get_Contents_Html();
-        return $bloc;
-    }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
 	private function get_Header_Html($nb_space=0){
         $n=PHP_EOL;$message="";
         $message .= $this->get_all_content_html('head',"meta","head",0); // get all meta
@@ -199,7 +203,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $bloc .= '</html>'.$n;
 		return $bloc;
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
 	private function get_js_html($famille='atouslescoups',$nomchamp,$Origine=0){
         $n=PHP_EOL;$message = '';
         $ARRRRAIE = $this->_ObjJson->$famille;
@@ -217,7 +221,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 		return $message;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
 	private function get_head_meta_html($famille='atouslescoups',$nomchamp='css',$Origine){
         $n=PHP_EOL;$message = '';
         $list = $this->_ObjJson->$famille;
@@ -230,7 +234,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $message =  $this->get_Indent($Origine,1,'get_head_meta_html')."<!-- ".$famille." ".$nomchamp." -->".$n.$message. $this->get_Indent($Origine,1,'get_head_meta_html')."<!-- ".$famille." ".$nomchamp." -->".$n;
 		return $message;
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function get_Indent($Origine=0,$nb=1,$from=''){
         $space="   ";
         if (gettype($Origine)!='integer'){
@@ -246,7 +250,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         }
         return $space;
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function get_all_content_html($koi='head',$choix="meta",$balise="head",$Origine=0){
         // fonction pour la création des metas : title, script, stylesheet
         $n=PHP_EOL;
@@ -332,7 +336,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
 		return $phrase;
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function get_Pageaouvriratouslescoups($ARRRRAIE, $CHILDy){
 
         $n=PHP_EOL;
@@ -365,12 +369,13 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             }
         // }
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function get_current_pagename(){
         $new_current_page = $this->_ObjJson->defaultpage[0];   // page par default
+
         $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
         
-
+        
         // un pti coup de sécu ici        
         for ($i=0; $i < count($this->_ObjJson->pages); $i++){                    // on prend la liste dess page existantes dans le json
             if (preg_match("'".$this->_ObjJson->pages[$i]."'",$Posted)){         // la page est elle dans l'url ??
@@ -382,7 +387,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
         return $new_current_page;
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function do_RequireFile($new_current_page){
         if (!empty($this->_ObjJson->$new_current_page->require) ){
             $listedesRequire = $this->_ObjJson->$new_current_page->require;
@@ -397,28 +402,16 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             }
         }
     }
-    // -----------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
     private function get_Jsondecode($url_file){
-        if (is_string($url_file)){
-            if (file_exists($url_file)) {
-                // $resultjson =  json_decode(file_get_contents($url_file,true));
-                // printair($resultjson);
-                return json_decode(file_get_contents($url_file,true));;
-            }
-            else {
-                return False;
-            }
-        }
-        else {
-            return False;
-        }
+        return (is_string($url_file) && file_exists($url_file)) ? json_decode(file_get_contents($url_file,true)) : False;
     }
-	// -----------------------------------------------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
     // SETTER
     private function set_Current_Page($newvalue){
         $this->_current_page = $newvalue;
     }
-	// -----------------------------------------------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
     // HYDRATE
     private function hydrate_info_var($arr_json){
         for($i = 0; $i < count($arr_json); $i++){

@@ -1,6 +1,9 @@
 <?php
     // Utilitaires / toolbox
 
+    define('DEBUG_A', false); //get_Pageaouvriratouslescoups()
+    define('DEBUG_B', true); //get_Pageaouvriratouslescoups()
+    define('DEBUG_DIE', true); //die
     /**
      * autouploader de class / stacking class
      */
