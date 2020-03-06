@@ -125,7 +125,7 @@
 	],
 	"index": {
 		"title": "Accueil",
-		"actif": "false",
+		"actif": "true",
 		"files": [{
 			"visible": "true",
 			"require": "true",
@@ -183,11 +183,11 @@
 	},
 	"aouvriratouslescoups_info" : "liste de fichiers a ouvrir a tous les coups",
 	"aouvriratouslescoups": {
-		"actif": "false",
+		"actif": "true",
 		"files": [
 			{
-			"visible": "false",
-			"require": "false",
+			"visible": "true",
+			"require": "true",
 			"page": "visitor",
 			"aremplacer": "_VISITOR_",
 			"session": "TICKET"

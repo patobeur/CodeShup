@@ -1,6 +1,7 @@
 <?php
-    function VISITOR(){                                             // La fonction c'est pratique
-            $file = 'log/visites.txt';                                  // le fichier est planqué avant le root (www)
+    function VISITOR(){                                             // La fonction c'est pratique 
+        // echo 'function:'.__FUNCTION__.' / fichier:'.__FILE__;
+            $file = 'log/visites.txt';                              // le fichier est planqué avant le root (www)
             
             if(file_exists($file)){                                 // si le fichier existe
                     $compteur_f = fopen($file, 'r+');               // on ouvre le fichier en ecriture
@@ -22,5 +23,5 @@
             //return '<div id="visites">'.$compte.' visites</div>';   // un return mais ca ne me sert a rien.... pour l'instant ;)
             return $compte;
     }
-    $valeurderetour = 'Hit:'.VISITOR();
+//     $valeurderetour = 'Hit:'.VISITOR();
 ?>

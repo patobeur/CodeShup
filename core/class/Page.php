@@ -89,6 +89,16 @@ class Page{
         } 
         $blocm .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
         if ($_SESSION['CURR_PAGE'] == 'index') {$ISACTIF = ' active';} else  {$ISACTIF = '';}
+
+
+
+
+
+
+
+
+
+
         $valeurderetour = preg_replace("_NAVIGATATOR_",$blocm, $fichier_importe); 
         $valeurderetour = preg_replace("_ACTIVITE_",$ISACTIF, $valeurderetour);
         // ------------------------------------------------------------------------------
@@ -176,25 +186,25 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $bloc .= $header;
 
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
-        // ici je cherche $CURR_PAGE dans le json
-        $cp = $this->_current_page;
-        $tempovalue = count($this->_ObjJson->$cp->blocs);
-        // je prend la liste des pages _in_ a intégrer
+        // ici je cherche dans le json
+        $cp = $this->_current_page; // cb = current page
+        if ($this->_ObjJson->$cp->blocs){
+            $tempovalue = count($this->_ObjJson->$cp->blocs);
+            // je prend la liste des pages _in_ a intégrer
 
-        eco($bloc);
-        for ($nbfichier = 0; $nbfichier < $tempovalue; $nbfichier++){            
-            $blocs .= $this->_ObjJson->$cp->blocs; // cb = current bloc
-            //echo(self::PAGELOC.$files[$nbfichier].self::PEXTENSION);
-            $bloc .= file_get_contents(self::PAGEINN.$blocs[$nbfichier].self::PEXTENSION,TRUE).$n;
+            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){            
+                $fichiers = $this->_ObjJson->$cp->blocs; // cb = current bloc
+                $bloc .= file_get_contents(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,TRUE).$n;
+print_air(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher : ");
+            }
         }
-
         //print_airB($this->_ObjJson->aouvriratouslescoups);//->aouvriratouslescoups);
         // en fin de page
         // ouvrir les pages a include a tous les coups comme visitor
         // à remplacer par un cookies
+// print_airB($bloc,'one');
         $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
-
-        eco($bloc);
+// print_airB($bloc,__FUNCTION__);
         // FOOTER
         if (file_exists(self::PFOOTER)) {
             $bloc .= file_get_contents(self::PFOOTER,TRUE).$n;  
@@ -211,7 +221,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
         $bloc .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;   // on ferme le body
         $bloc .= '</html>'.$n;
-        eco($bloc);
+        // eco($bloc);
 		return $bloc;
     }
     // --------------------------------------------------------------------------------
@@ -355,41 +365,52 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     }
     // --------------------------------------------------------------------------------
     private function get_Pageaouvriratouslescoups($CHILDy){
-        //print_airB($ARRRRAIE,__FUNCTION__);
-        //print_airB($CHILDy,__FUNCTION__);
-
         $n=PHP_EOL;
         $rootactif2 =  'in/_in_';
         $check = [];
-        $check[] = "check";
+        $paquethtml = '';
         // printair($CHILDy); 
-        // printair($this->_ObjJson->aouvriratouslescoups->$CHILDy); 
-        // if ($ARRRRAIE['actif']){
-            $tempovalueout = count($this->_ObjJson->aouvriratouslescoups->$CHILDy);
-            if ($tempovalueout > 0 ){
-                for ($nbfichierout = 0; $nbfichierout < $tempovalueout; $nbfichierout++){
-                    
-                    $files = $this->_ObjJson->aouvriratouslescoups->$CHILDy;
-                    // printair( $files);
-                    // echo $nbfichierout;
-                    // printair( $files[$nbfichierout]->page);
+        //  print_airB($this->_ObjJson->aouvriratouslescoups->actif,'actif'); 
+        if ($this->_ObjJson->aouvriratouslescoups->actif){
 
-                    if ($files[$nbfichierout]->page!="") $ext_file = self::FUNKY.$files[$nbfichierout]->page.self::PEXTENSION;        $check[] = "ext_file(:".$ext_file.")";
-                    if ($files[$nbfichierout]->visible!="") $visible = $files[$nbfichierout]->visible;                                $check[] = "visible(:".$visible.",,)";
+            $files = $this->_ObjJson->aouvriratouslescoups->$CHILDy;
+            $nbFichierout = count($files);
+            if ($nbFichierout > 0 ){
+                for ($numFichierout = 0; $numFichierout < $nbFichierout; $numFichierout++){
+
+                    if ($files[$numFichierout]->page!="")       {$ext_file = self::FUNKY.$files[$numFichierout]->page.self::PEXTENSION;     $check[] = "ext_file(:".$ext_file.")";}
+
+                    if ($files[$numFichierout]->visible!="")    {$visible = $files[$numFichierout]->visible;                                $check[] = "visible(:".$visible.",,)";}
                     // file to get_contents from
-                    if ($files[$nbfichierout]->page!="") $ink_file = self::PAGEINN.$files[$nbfichierout]->page.self::PEXTENSION;      $check[] = "ink_file(:".$ext_file.")";
+
+                    if ($files[$numFichierout]->page!="")       {$ink_file = self::PAGEINN.$files[$numFichierout]->page.self::PEXTENSION;   $check[] = "ink_file(:".$ext_file.")";}
+
                     // file to get_contents from
                     // file to get_contents from
-                    if ($files[$nbfichierout]->aremplacer!="") $aremplacer = $files[$nbfichierout]->aremplacer;                       $check[] = "aremplacer(:".$aremplacer.",,)";
-                    if ($files[$nbfichierout]->session!="") $lasesssion = $files[$nbfichierout]->session;                             $check[] = "session(:".$lasesssion.",,)";
-                    if ($files[$nbfichierout]->require!="") $require = $files[$nbfichierout]->require;                                $check[] = "require(:".$require.",,)";
+                    if ($files[$numFichierout]->aremplacer!="") {$aremplacer = $files[$numFichierout]->aremplacer;                          $check[] = "aremplacer(:".$aremplacer.",,)";}
+
+                    if ($files[$numFichierout]->session!="")    {$lasesssion = $files[$numFichierout]->session;                             $check[] = "session(:".$lasesssion.",,)";}
+ 
+                    if ($files[$numFichierout]->require!="")    {$require = $files[$numFichierout]->require;                                $check[] = "require(:".$require.",,)";}
+
                     // ------------------- DANGER ! ----------------------------------
-                    if ($require) require_once($ext_file); // on appel le fichier demander dans le json 
-                    if ($visible) return preg_replace($aremplacer, $valeurderetour, file_get_contents($ink_file, TRUE)).$n;     $check[] = "file_get_contents(:".$ink_file.",,)";
+                    if ($require){ // on appel le fichier demander dans le json 
+
+                        $test = include_once($ext_file);
+                        $check[] = "included (:".$ext_file.",,)";
+                    };
+                    if ($visible) {
+
+                        $paquethtml .= preg_replace($aremplacer, $valeurderetour, file_get_contents($ink_file, TRUE)).$n;
+                        $check[] = "file_get_contents(:".$ink_file.",,)";
+
+                    }
                 }
             }
-            //print_air($check);
-        // }
+        }
+        print_airB($check,'check');
+        return $paquethtml;
+        // print_airB($check,'check');
     }
     // --------------------------------------------------------------------------------
     private function get_current_pagename(){
