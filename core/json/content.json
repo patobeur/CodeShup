@@ -194,7 +194,6 @@
 			}
 		]
 	},
-	"atouslescoups_info" : "liste des meta a mettre dans le head a tous les coups",
 	"atouslescoups": {
 		"actif": "true",
 		"css": [

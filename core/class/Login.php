@@ -1,7 +1,7 @@
 <?php 
 trait hydratationAndCream{
     public function hydratation($key,$value) {
-        $method = 'set'.ucfirst($key);
+        $method = 'set_'.ucfirst($key);
         if (method_exists(parent, $method)) {
             parent::$method($value);
         }
@@ -13,7 +13,7 @@ trait hydratationAndCream{
     // HYDRATE ARRAY
     protected function hydrate_array($array){
         for($i = 0; $i < count($array); $i++){
-            $method = 'set'.ucfirst($array[$i]);
+            $method = 'set_'.ucfirst($array[$i]);
 			if (method_exists(parent, $method)) {
 				parent::$method($array[$i]);
 			}

@@ -39,7 +39,8 @@ class Page{
 	private $_Originum=0;
     
     public function __construct(){
-            $this->_ObjJson =    $this->get_Jsondecode(self::PJSONHEADER);
+            $this->_ObjJson = $this->get_Jsondecode(self::PJSONHEADER);
+            //print_air(($this->_ObjJson) ? "json file ok" : "error json file",__CLASS__."->".__FUNCTION__);
             $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
     }
     // PUBLIC FUNCTIONS
@@ -47,22 +48,25 @@ class Page{
     // GETTER
     // --------------------------------------------------------------------------------
     public function do_affichelapagehtml(){
-        print_air("start",__FUNCTION__);
-        print $this->get_Dom();
+        //print_airB("start",__CLASS__."->".__FUNCTION__);
+        echo $this->get_Dom();
     }
     // --------------------------------------------------------------------------------
     private function get_Dom(){
         $this->_current_page = $this->get_current_pagename();
-        print_air($this->_current_page,__FUNCTION__);
+        //print_air($this->_current_page,__CLASS__."->".__FUNCTION__);
         // integration d'une page php a la volée
         $this->do_RequireFile($this->_current_page);
         
         $bloc = $this->get_Header_Html(1);
+        //print_html("bloc : ".$bloc);//,__CLASS__."->".__FUNCTION__);
         //
         $bloc .= $this->get_Contents_Html();
+        print_html("bloc : ".$bloc);//,__CLASS__."->".__FUNCTION__);
         return $bloc;
     }
 	private function get_List_Menu($kelfamille){
+        //print_airB($kelfamille,__CLASS__."->".__FUNCTION__);
         $n=PHP_EOL;
         // NAVIGATION
         if (file_exists(self::PNAVIGA)) {
@@ -91,6 +95,7 @@ class Page{
         $valeurderetour = preg_replace('_ACTOBEURTWO_',$this->get_Navigation_Menu('pagesgestion','files'), $valeurderetour);
         $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
         // ------------------------------------------------------------------------------
+        //print_airB($valeurderetour,'valeurderetour');
         return $valeurderetour; 
     }
     // --------------------------------------------------------------------------------
@@ -139,23 +144,24 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     }
     // --------------------------------------------------------------------------------
 	private function get_Header_Html($nb_space=0){
-        $n=PHP_EOL;$message="";
-        $message .= $this->get_all_content_html('head',"meta","head",0); // get all meta
-        $message .= $this->get_head_meta_html('atouslescoups','css',1);
-        $message .= $this->get_head_meta_html($this->_current_page,'css',1);
+        $n=PHP_EOL;$jusquaHead="";
+        $jusquaHead .= $this->get_all_content_html('head',"meta","head",0); // get all meta
+        $jusquaHead .= $this->get_head_meta_html('atouslescoups','css',1);
+        $jusquaHead .= $this->get_head_meta_html($this->_current_page,'css',1);
 
         // head html
-        $message = $this->get_Indent($this->_Originum,1,'Gen_Head1')
-            .'<head>'.$message.$n.$this->get_Indent($this->_Originum,1,'Gen_Head2').'</head>';
+        $jusquaHead = $this->get_Indent($this->_Originum,1,'Gen_Head1')
+            .'<head>'.$jusquaHead.$n.$this->get_Indent($this->_Originum,1,'Gen_Head2').'</head>';
 
-        $message = $this->get_Indent($this->_Originum,1,'Gen_Head3').
+        $jusquaHead = $this->get_Indent($this->_Originum,1,'Gen_Head3').
             "<!-- ". $this->_current_page ." -->".$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head4').
-            $message.$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head5')."<!-- End's  ".
+            $jusquaHead.$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head5')."<!-- End's  ".
             $this->_current_page ." -->".$n;
 
-        if (isset($this->_ObjJson->structure->meta->lang)){    $message =  $this->_ObjJson->structure->meta->lang.$n.$message;}
-        if (isset($this->_ObjJson->structure->meta->doctype)){ $message =  $this->_ObjJson->structure->meta->doctype.$n.$message;}
-        return $message;
+        if (isset($this->_ObjJson->structure->meta->lang)){    $jusquaHead =  $this->_ObjJson->structure->meta->lang.$n.$jusquaHead;}
+        if (isset($this->_ObjJson->structure->meta->doctype)){ $jusquaHead =  $this->_ObjJson->structure->meta->doctype.$n.$jusquaHead;}
+        // eco($jusquaHead);
+        return $jusquaHead;
     }
     // GETTER
     private function get_Contents_Html(){
@@ -164,9 +170,10 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $bloc .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
 
         
-        $surcouche = preg_replace('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
-        $surcouche = preg_replace('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $surcouche);
-        $bloc .=$surcouche;
+        $header = preg_replace('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
+        $header = preg_replace('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
+        
+        $bloc .= $header;
 
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
         // ici je cherche $CURR_PAGE dans le json
@@ -174,18 +181,20 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $tempovalue = count($this->_ObjJson->$cp->blocs);
         // je prend la liste des pages _in_ a intégrer
 
+        eco($bloc);
         for ($nbfichier = 0; $nbfichier < $tempovalue; $nbfichier++){            
-            $blocs = $this->_ObjJson->$cp->blocs; // cb = current bloc
+            $blocs .= $this->_ObjJson->$cp->blocs; // cb = current bloc
             //echo(self::PAGELOC.$files[$nbfichier].self::PEXTENSION);
             $bloc .= file_get_contents(self::PAGEINN.$blocs[$nbfichier].self::PEXTENSION,TRUE).$n;
-
         }
 
+        //print_airB($this->_ObjJson->aouvriratouslescoups);//->aouvriratouslescoups);
         // en fin de page
         // ouvrir les pages a include a tous les coups comme visitor
         // à remplacer par un cookies
-        $bloc .= $this->get_Pageaouvriratouslescoups($this->_ObjJson->aouvriratouslescoups,'files').$n;
+        $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
 
+        eco($bloc);
         // FOOTER
         if (file_exists(self::PFOOTER)) {
             $bloc .= file_get_contents(self::PFOOTER,TRUE).$n;  
@@ -193,6 +202,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         else {
             DEBUG_DIE ? die('le fichier "'.self::PFOOTER.'" est manquant. !?!') : die();
         }
+        // eco($bloc);
 
         
         $bloc .= $this->get_js_html($this->_current_page,'js',2);
@@ -201,6 +211,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
         $bloc .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;   // on ferme le body
         $bloc .= '</html>'.$n;
+        eco($bloc);
 		return $bloc;
     }
     // --------------------------------------------------------------------------------
@@ -251,7 +262,13 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         return $space;
     }
     // --------------------------------------------------------------------------------
-    private function get_all_content_html($koi='head',$choix="meta",$balise="head",$Origine=0){
+    private function get_all_content_html(
+            $koi='head',
+            $choix="meta",
+            $balise="head",
+            $Origine=0
+        )
+        {
         // fonction pour la création des metas : title, script, stylesheet
         $n=PHP_EOL;
         $phrase = $n.$this->get_Indent($Origine,2,'rien')."<!-- json-b-". $koi ."/" . $choix . " -->".$n;
@@ -337,9 +354,9 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 		return $phrase;
     }
     // --------------------------------------------------------------------------------
-    private function get_Pageaouvriratouslescoups($ARRRRAIE, $CHILDy){
-        print_air($ARRRRAIE,__FUNCTION__);
-        print_air($CHILDy,__FUNCTION__);
+    private function get_Pageaouvriratouslescoups($CHILDy){
+        //print_airB($ARRRRAIE,__FUNCTION__);
+        //print_airB($CHILDy,__FUNCTION__);
 
         $n=PHP_EOL;
         $rootactif2 =  'in/_in_';
@@ -371,7 +388,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                     if ($visible) return preg_replace($aremplacer, $valeurderetour, file_get_contents($ink_file, TRUE)).$n;     $check[] = "file_get_contents(:".$ink_file.",,)";
                 }
             }
-            print_air($check);
+            //print_air($check);
         // }
     }
     // --------------------------------------------------------------------------------
@@ -394,8 +411,12 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     }
     // --------------------------------------------------------------------------------
     private function do_RequireFile($new_current_page){
+        
+        //print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
         if (!empty($this->_ObjJson->$new_current_page->require) ){
+            print_air($new_current_page,__CLASS__."->".__FUNCTION__);
             $listedesRequire = $this->_ObjJson->$new_current_page->require;
+            //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
             for ( $i = 0; $i < count($listedesRequire); $i++ ){
                 $fichierrequire = self::FUNKY.$listedesRequire[$i].self::PEXTENSION;
                 if (file_exists($fichierrequire)) {
@@ -406,9 +427,13 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                 }
             }
         }
+        else{
+            print_air($new_current_page." require no file",__CLASS__."->".__FUNCTION__);
+        }
     }
     // --------------------------------------------------------------------------------
     private function get_Jsondecode($url_file){
+        //print_air($url_file,__CLASS__."->".__FUNCTION__);
         return (is_string($url_file) && file_exists($url_file)) ? json_decode(file_get_contents($url_file,true)) : False;
     }
 	// --------------------------------------------------------------------------------
@@ -419,6 +444,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 	// --------------------------------------------------------------------------------
     // HYDRATE
     private function hydrate_info_var($arr_json){
+        print_air($arr_json,__CLASS__."->".__FUNCTION__);
         for($i = 0; $i < count($arr_json); $i++){
             $method = 'set'.ucfirst($arr_json[$i]);
 			if (method_exists($this, $method)) {
