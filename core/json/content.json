@@ -117,8 +117,6 @@
 			}
 		]
 	},
-	"pages_info": "Menu PAGES : liste des pages acceptées",
-	
 	"pages": [
 		"index",
 		"404",
