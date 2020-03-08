@@ -127,12 +127,14 @@
 	"index": {
 		"title": "Accueil",
 		"actif": "true",
-		"files": [{
-			"visible": "true",
-			"require": "true",
-			"page": "visitor",
-			"aremplacer": "_VISITOR_",
-			"session": "TICKET"}
+		"files": [
+			{
+				"visible": "true",
+				"require": "visitor",
+				"page": "visitor",
+				"aremplacer": "_VISITOR_",
+				"session": "TICKET"
+			}
 		],
 		"js": [],
 		"css": [
@@ -146,12 +148,14 @@
 	"login": {
 		"title": "LOGIN",
 		"actif": false,
-		"files": [{
+		"files": [
+			{
 			"visible": "true",
-			"require": "true",
+			"require": "login",
 			"page": "login",
 			"aremplacer": "_LOGIN_",
-			"session": "USER"}
+			"session": "USER"
+		}
 		],
 		"js": [],
 		"css": [

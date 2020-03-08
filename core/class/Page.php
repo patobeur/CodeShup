@@ -11,7 +11,7 @@ class Page{
     //
     const FUNKY         = self::PCORE.'functions/';
     const VIEW          = self::PCORE.'view/'.'';           // pages parsé à la volé indiqué dans le json
-    const VUES       = self::PCORE.'inview/_in_';        // pages a mettre dans view
+    const VUES          = self::PCORE.'inview/_in_';        // pages a mettre dans view
     // const PIMPPREFIX    = self::PCORE.'php/_inc_';          // pour les pages en include ou require (local au moteur)
     // FILES
     const PJSONHEADER   = self::PJSON.'content.json';
@@ -51,23 +51,19 @@ class Page{
     // GETTER
     // --------------------------------------------------------------------------------
     public function do_affichelapagehtml(){
-        //print_airB("start",__CLASS__."->".__FUNCTION__);
-        
-        $this->_current_page = $this->get_current_pagename();
+        $this->_current_page = $this->get_Current_Page();
         echo $this->get_Dom();
     }
     // --------------------------------------------------------------------------------
     private function get_Dom(){
-        // integration d'une page php a la volée
-        $pp = $this->get_File_to_use(self::FUNKY.$this->_current_page.self::PEXTENSION,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) ;
-
         $bloc = $this->get_Header_Html(1);
-        //print_html("bloc : ".$bloc);//,__CLASS__."->".__FUNCTION__);
         //
         $bloc .= $this->get_Contents_Html();
-        print_html("bloc : ".$bloc);//,__CLASS__."->".__FUNCTION__);
         return $bloc;
     }
+
+
+
 	private function get_List_Menu($kelfamille){
         //print_airB($kelfamille,__CLASS__."->".__FUNCTION__);
         $n=PHP_EOL;
@@ -120,15 +116,15 @@ class Page{
         $A_remplacement = '';
         // printair( $this->_ObjJson->$kelfamille->$sousfamille);
         // print(count($this->_ObjJson->$kelfamille->$sousfamille));
-        for ($oo=0; $oo < count($this->_ObjJson->$kelfamille->$sousfamille); $oo++){
+        for ($numFam=0; $numFam < count($this->_ObjJson->$kelfamille->$sousfamille); $numFam++){
             // ici le lien active
             $target='';
-            ($Tablo_Enfants[$oo]->target!='') ? 
-                $target=' target="'.$Tablo_Enfants[$oo]->target.'"' : 
+            ($Tablo_Enfants[$numFam]->target!='') ? 
+                $target=' target="'.$Tablo_Enfants[$numFam]->target.'"' : 
                 $target='';
             //echo($target);
             $A_remplacement .= $this->get_Indent(0,5,'get_Navigation_Menu');
-            $A_remplacement .= '<a class="dropdown-item" href="'.$Tablo_Enfants[$oo]->href.'"'.$target.'>'.$Tablo_Enfants[$oo]->title.'</a>'.PHP_EOL;
+            $A_remplacement .= '<a class="dropdown-item" href="'.$Tablo_Enfants[$numFam]->href.'"'.$target.'>'.$Tablo_Enfants[$numFam]->title.'</a>'.PHP_EOL;
         } 
         $A_html = '                                <!-- Auto out menu -->
                                 <li class="nav-item dropdown">
@@ -157,7 +153,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     // --------------------------------------------------------------------------------
 	private function get_Header_Html($nb_space=0){
         $n=PHP_EOL;$jusquaHead="";
-        $jusquaHead .= $this->get_all_content_html('head',"meta","head",0); // get all meta
+        $jusquaHead .= $this->get_all_metas('head',"meta","head",0); // get all meta
         $jusquaHead .= $this->get_head_meta_html('atouslescoups','css',1);
         $jusquaHead .= $this->get_head_meta_html($this->_current_page,'css',1);
 
@@ -182,42 +178,32 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $bloc .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
 
         
-        $header = preg_replace('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
-        $header = preg_replace('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
+        $header = $this->get_RemplacePar('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
+        $header = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
         
         $bloc .= $header;
 
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
         // ici je cherche dans le json
-        $cp = $this->_current_page; // cb = current page
+        $cp = $this->_current_page;                                             // cp = current page
         if ($this->_ObjJson->$cp->blocs){
-            $tempovalue = count($this->_ObjJson->$cp->blocs);
-            // je prend la liste des pages _in_ a intégrer
+            $tempovalue = count($this->_ObjJson->$cp->blocs);                   // je prend la liste des pages _in_ a intégrer
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){            
-                $fichiers = $this->_ObjJson->$cp->blocs; // cb = current bloc
-                $bloc .= file_get_contents(self::VUES.$fichiers[$numFichier].self::PEXTENSION,TRUE).$n;
-print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher : ");
+                $fichiers = $this->_ObjJson->$cp->blocs;                        // cb = current bloc
+                
+                $require_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION;
+                $bloc .= file_exists($require_file) ?  $this->get_File_to_use('local',$require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
             }
         }
-        //print_airB($this->_ObjJson->aouvriratouslescoups);//->aouvriratouslescoups);
-        // en fin de page
-        // ouvrir les pages a include a tous les coups comme visitor
-        // à remplacer par un cookies
-// print_airB($bloc,'one');
-        $bloc .= $this->get_Pageaouvriratouslescoups('files',"cool",'rrr').$n;
+        // --------------------------------------------------------------------------------------------
+        $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
 // print_airB($bloc,__FUNCTION__);
         // FOOTER
-        if (file_exists(self::PFOOTER)) {
-            $bloc .= file_get_contents(self::PFOOTER,TRUE).$n;  
-        }
-        else {
-            DEBUG_DIE ? die('le fichier "'.self::PFOOTER.'" est manquant. !?!') : die();
-        }
-        // eco($bloc);
-
-        
+        $bloc .= file_exists(self::PFOOTER) ?  $this->get_File_to_use('local',self::PFOOTER,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+        // JS
         $bloc .= $this->get_js_html($this->_current_page,'js',2);
+
         $bloc .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;    // on ferme le div du début <div class="fullpage">
         $bloc .= $this->get_js_html('atouslescoups','js',1);
 
@@ -274,7 +260,7 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
         return $space;
     }
     // --------------------------------------------------------------------------------
-    private function get_all_content_html(
+    private function get_all_metas(
             $koi='head',
             $choix="meta",
             $balise="head",
@@ -366,7 +352,7 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
 		return $phrase;
     }
     // --------------------------------------------------------------------------------
-    private function get_Pageaouvriratouslescoups($CHILDy,$a,$b){
+    private function get_Pageaouvriratouslescoups($CHILDy){
         // print_airB($CHILDy,'get_Pageaouvriratouslescoups : '.$a.$b);
         $nbCheck = 0;
         $paquethtml = '';
@@ -387,19 +373,19 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
                     
                     if ($require_file) // si une page de traitememt php est demandé en require
                     {   
-                        $requiredFile = file_exists($require_file) ?  $this->get_File_to_use($require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                        $requiredFile = file_exists($require_file) ?  $this->get_File_to_use('actions',$require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
                     }
 
                     // if ($include_file) // si une page de traitememt php est demandé en include
                     // {   
-                    //     $includeFile = file_exists($include_file) ?  $this->get_File_to_use($include_file,"include_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                    //     $includeFile = file_exists($include_file) ?  $this->get_File_to_use('actions',$include_file,"include_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
                     // }
                     
                     if ($vue_file)// vues
                     {
                         if ($visible)
                         {
-                            $vueFile = file_exists($vue_file) ?  $this->get_File_to_use($vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                            $vueFile = file_exists($vue_file) ?  $this->get_File_to_use('actions',$vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
                             
                             if ($aremplacer && $requiredFile && $vueFile)
                             {
@@ -419,9 +405,9 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
         return $paquethtml;
     }
     // --------------------------------------------------------------------------------
-    private function get_current_pagename(){
-        $current_page = $this->_default_page;   // page par default
-        $new_current_page = null;                          // page vide
+    private function get_Current_Page(){
+        
+        $new_current_page = null;               // page vide
 
         $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
 
@@ -437,7 +423,7 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
         if (!empty($new_current_page)) 
         {   
             $this->set_Current_Page($new_current_page); 
-            $_SESSION['cms']['user']['current_page'] = $this->get_Current_Page();         
+            $_SESSION['cms']['user']['current_page'] = $this->_current_page;         
         }
         else
         {   // sinon on met la page par defaut ou pas
@@ -461,7 +447,7 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
                     require_once($fichierrequire);  
                 }
                 else{
-                    print_air('il manque le fichier '.$fichierrequire,"erreur get_current_pagename");
+                    print_air('il manque le fichier '.$fichierrequire,"erreur do_RequireFile");
                 }
             }
         }
@@ -479,11 +465,6 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
     private function set_Current_Page($newvalue){
         $this->_current_page = get_clean($newvalue);
     }
-	// --------------------------------------------------------------------------------
-    // GETTER
-    private function get_Current_Page(){
-        return $this->_current_page;
-    }
     private function get_Default_Page(){
         return $this->_default_page;
     }
@@ -494,25 +475,25 @@ print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher 
      * @param string $type require_once|include_once|file_get_contents
      * @return mixed content|true if succes|false if fail
      */
-    private function get_File_to_use($file,$type,$coment=null){
+    private function get_File_to_use($action,$file,$type,$coment=null){
         if (file_exists($file))
         {
             switch($type)
             {
                 case "require_once":
                     require_once($file);
-                    $_SESSION['cms']['actions'][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    $_SESSION['cms'][$action][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
                     return true;
                 break;
                 
                 case "include_once":
                     include_once($file);
-                    $_SESSION['cms']['actions'][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    $_SESSION['cms'][$action][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
                     return true;
                 break;
                 
                 case "file_get_contents":
-                    $_SESSION['cms']['actions'][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    $_SESSION['cms'][$action][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
                     return file_get_contents($file);
                 break;
                 
