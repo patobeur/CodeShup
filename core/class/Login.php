@@ -1,4 +1,19 @@
 <?php 
+Class Login{
+    use hydratationAndCream;
+    private $_login;
+    private $_mail;
+    private $_token;
+
+    public function __construct($donnees){
+        print_air($donnees);
+        $this->hydrate_index($donnees);
+        $this->_token= 'totoro'; // generate_token();
+    }
+    public function get_Func_Name(){
+        print_air('get_Func_Name');
+    }
+}
 trait hydratationAndCream{
     public function hydratation($key,$value) {
         $method = 'set_'.ucfirst($key);
@@ -29,20 +44,5 @@ trait hydratationAndCream{
         }
     }
 
-}
-Class Login{
-    use hydratationAndCream;
-    private $_login;
-    private $_mail;
-    private $_token;
-
-    public function __construct($donnees){
-        print_air($donnees);
-        $this->hydrate_index($donnees);
-        $this->_token= 'totoro'; // generate_token();
-    }
-    public function get_Func_Name(){
-        print_air('get_Func_Name');
-    }
 }
 ?>

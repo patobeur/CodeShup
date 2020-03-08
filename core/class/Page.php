@@ -11,7 +11,7 @@ class Page{
     //
     const FUNKY         = self::PCORE.'functions/';
     const VIEW          = self::PCORE.'view/'.'';           // pages parsé à la volé indiqué dans le json
-    const PAGEINN       = self::PCORE.'inview/_in_';        // pages a mettre dans view
+    const VUES       = self::PCORE.'inview/_in_';        // pages a mettre dans view
     // const PIMPPREFIX    = self::PCORE.'php/_inc_';          // pour les pages en include ou require (local au moteur)
     // FILES
     const PJSONHEADER   = self::PJSON.'content.json';
@@ -29,19 +29,22 @@ class Page{
     // $date =             $Structure_json_arr['date'];
     // $time_stamp =       $Structure_json_arr['time_stamp'];
 
+	private $_Nlog = 0;
 	private $_ObjJson;
 	private $_auteur;
 	private $_date;
 	private $_time_stamp;
     private $_logosrc;
     //
-	private $_current_page='index';
+	private $_current_page='';
+	private $_default_page='';
 	private $_Originum=0;
     
     public function __construct(){
-            $this->_ObjJson = $this->get_Jsondecode(self::PJSONHEADER);
-            //print_air(($this->_ObjJson) ? "json file ok" : "error json file",__CLASS__."->".__FUNCTION__);
-            $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
+        $this->_ObjJson = $this->get_Jsondecode(self::PJSONHEADER);
+        $this->_current_page = $this->_ObjJson->defaultpage[0];
+        $this->_default_page = $this->_ObjJson->defaultpage[0];
+        // $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
     }
     // PUBLIC FUNCTIONS
     // --------------------------------------------------------------------------------
@@ -49,15 +52,15 @@ class Page{
     // --------------------------------------------------------------------------------
     public function do_affichelapagehtml(){
         //print_airB("start",__CLASS__."->".__FUNCTION__);
+        
+        $this->_current_page = $this->get_current_pagename();
         echo $this->get_Dom();
     }
     // --------------------------------------------------------------------------------
     private function get_Dom(){
-        $this->_current_page = $this->get_current_pagename();
-        //print_air($this->_current_page,__CLASS__."->".__FUNCTION__);
         // integration d'une page php a la volée
-        $this->do_RequireFile($this->_current_page);
-        
+        $pp = $this->get_File_to_use(self::FUNKY.$this->_current_page.self::PEXTENSION,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) ;
+
         $bloc = $this->get_Header_Html(1);
         //print_html("bloc : ".$bloc);//,__CLASS__."->".__FUNCTION__);
         //
@@ -82,13 +85,12 @@ class Page{
             // ici le lien active
             $famille = $arr_pc[$oo];                                       // $ARRRAIEE[$kelfamille][$oo]
             $enfant = $this->_ObjJson->$famille;                           // $ARRRAIEE[$ARRRAIEE[$kelfamille][$oo]]
-            // echo $_SESSION['CURR_PAGE'].'=='.$famille.'<br>';
-            if ($_SESSION['CURR_PAGE'] == $famille) {$active = ' active';} else  {$active = '';}
+            if ($this->_current_page == $famille) {$active = ' active';} else  {$active = '';}
             
             $blocm .= $this->get_Indent(0,4,'Navigat').'<a class="dropdown-item'.$active.'" href="?'. $famille.'">'.$enfant->title.'</a>'.$n;
         } 
         $blocm .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
-        if ($_SESSION['CURR_PAGE'] == 'index') {$ISACTIF = ' active';} else  {$ISACTIF = '';}
+        if ($this->_current_page == 'index') {$ISACTIF = ' active';} else  {$ISACTIF = '';}
 
 
 
@@ -194,8 +196,8 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){            
                 $fichiers = $this->_ObjJson->$cp->blocs; // cb = current bloc
-                $bloc .= file_get_contents(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,TRUE).$n;
-print_air(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher : ");
+                $bloc .= file_get_contents(self::VUES.$fichiers[$numFichier].self::PEXTENSION,TRUE).$n;
+print_air(self::VUES.$fichiers[$numFichier].self::PEXTENSION,"blocs à afficher : ");
             }
         }
         //print_airB($this->_ObjJson->aouvriratouslescoups);//->aouvriratouslescoups);
@@ -203,7 +205,7 @@ print_air(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,"blocs à affich
         // ouvrir les pages a include a tous les coups comme visitor
         // à remplacer par un cookies
 // print_airB($bloc,'one');
-        $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
+        $bloc .= $this->get_Pageaouvriratouslescoups('files',"cool",'rrr').$n;
 // print_airB($bloc,__FUNCTION__);
         // FOOTER
         if (file_exists(self::PFOOTER)) {
@@ -364,76 +366,91 @@ print_air(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,"blocs à affich
 		return $phrase;
     }
     // --------------------------------------------------------------------------------
-    private function get_Pageaouvriratouslescoups($CHILDy){
-        $n=PHP_EOL;
-        $rootactif2 =  'in/_in_';
-        $check = [];
+    private function get_Pageaouvriratouslescoups($CHILDy,$a,$b){
+        // print_airB($CHILDy,'get_Pageaouvriratouslescoups : '.$a.$b);
+        $nbCheck = 0;
         $paquethtml = '';
-        // printair($CHILDy); 
-        //  print_airB($this->_ObjJson->aouvriratouslescoups->actif,'actif'); 
         if ($this->_ObjJson->aouvriratouslescoups->actif){
 
             $files = $this->_ObjJson->aouvriratouslescoups->$CHILDy;
             $nbFichierout = count($files);
             if ($nbFichierout > 0 ){
                 for ($numFichierout = 0; $numFichierout < $nbFichierout; $numFichierout++){
+                    
+                    $require_file =     !empty($files[$numFichierout]->require) ?       self::FUNKY.$files[$numFichierout]->require.self::PEXTENSION    : null;
+                    // $include_file =     !empty($files[$numFichierout]->include) ?       self::FUNKY.$files[$numFichierout]->include.self::PEXTENSION    : null;                    
+                    $vue_file =         !empty($files[$numFichierout]->vue) ?           self::VUES.$files[$numFichierout]->require.self::PEXTENSION     : null;
 
-                    if ($files[$numFichierout]->page!="")       {$ext_file = self::FUNKY.$files[$numFichierout]->page.self::PEXTENSION;     $check[] = "ext_file(:".$ext_file.")";}
+                    $aremplacer =       !empty($files[$numFichierout]->aremplacer) ?    $files[$numFichierout]->aremplacer                              : null;
+                    $visible =          !empty($files[$numFichierout]->visible) ?       $files[$numFichierout]->visible                                 : null;
+                    
+                    
+                    if ($require_file) // si une page de traitememt php est demandé en require
+                    {   
+                        $requiredFile = file_exists($require_file) ?  $this->get_File_to_use($require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                    }
 
-                    if ($files[$numFichierout]->visible!="")    {$visible = $files[$numFichierout]->visible;                                $check[] = "visible(:".$visible.",,)";}
-                    // file to get_contents from
-
-                    if ($files[$numFichierout]->page!="")       {$ink_file = self::PAGEINN.$files[$numFichierout]->page.self::PEXTENSION;   $check[] = "ink_file(:".$ext_file.")";}
-
-                    // file to get_contents from
-                    // file to get_contents from
-                    if ($files[$numFichierout]->aremplacer!="") {$aremplacer = $files[$numFichierout]->aremplacer;                          $check[] = "aremplacer(:".$aremplacer.",,)";}
-
-                    if ($files[$numFichierout]->session!="")    {$lasesssion = $files[$numFichierout]->session;                             $check[] = "session(:".$lasesssion.",,)";}
- 
-                    if ($files[$numFichierout]->require!="")    {$require = $files[$numFichierout]->require;                                $check[] = "require(:".$require.",,)";}
-
-                    // ------------------- DANGER ! ----------------------------------
-                    if ($require){ // on appel le fichier demander dans le json 
-
-                        $test = include_once($ext_file);
-                        $check[] = "included (:".$ext_file.",,)";
-                    };
-                    if ($visible) {
-
-                        $paquethtml .= preg_replace($aremplacer, $valeurderetour, file_get_contents($ink_file, TRUE)).$n;
-                        $check[] = "file_get_contents(:".$ink_file.",,)";
-
+                    // if ($include_file) // si une page de traitememt php est demandé en include
+                    // {   
+                    //     $includeFile = file_exists($include_file) ?  $this->get_File_to_use($include_file,"include_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                    // }
+                    
+                    if ($vue_file)// vues
+                    {
+                        if ($visible)
+                        {
+                            $vueFile = file_exists($vue_file) ?  $this->get_File_to_use($vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                            
+                            if ($aremplacer && $requiredFile && $vueFile)
+                            {
+                                $paquethtml .= preg_replace('{{'.$files[$numFichierout]->aremplacer."}}", '010{{COUCOU}}1000101', $vueFile);
+                            }
+                            $check[$nbCheck++] = "file_get_contents(:".$vue_file.",,)";
+    
+                        }
                     }
                 }
             }
         }
-        print_airB($check,'check');
+        if (!empty($check))
+        {
+            $_SESSION['cms']['check'] = $check;
+        }
         return $paquethtml;
-        // print_airB($check,'check');
     }
     // --------------------------------------------------------------------------------
     private function get_current_pagename(){
-        $new_current_page = $this->_ObjJson->defaultpage[0];   // page par default
+        $current_page = $this->_default_page;   // page par default
+        $new_current_page = null;                          // page vide
 
         $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-        
-        
-        // un pti coup de sécu ici        
+
+        // on ne prend qu'une page existante dan la liste
         for ($i=0; $i < count($this->_ObjJson->pages); $i++){                    // on prend la liste dess page existantes dans le json
             if (preg_match("'".$this->_ObjJson->pages[$i]."'",$Posted)){         // la page est elle dans l'url ??
                 $new_current_page = $this->_ObjJson->pages[$i];                  // si oui on prend le nom 
                 // break;                                                        // on stop ou pas pour chopper la dernier
             }
         }
-        $_SESSION['CURR_PAGE'] = $new_current_page;
 
+        // si on trouve une page dans l'url
+        if (!empty($new_current_page)) 
+        {   
+            $this->set_Current_Page($new_current_page); 
+            $_SESSION['cms']['user']['current_page'] = $this->get_Current_Page();         
+        }
+        else
+        {   // sinon on met la page par defaut ou pas
+            $_SESSION['cms']['log'][] = $this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
+            $this->set_Current_Page($this->_default_page);  // page par default
+            $new_current_page = $this->_default_page;       // page par default
+        }
         return $new_current_page;
     }
     // --------------------------------------------------------------------------------
     private function do_RequireFile($new_current_page){
         
-        //print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
+        print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
         if (!empty($this->_ObjJson->$new_current_page->require) ){
             print_air($new_current_page,__CLASS__."->".__FUNCTION__);
             $listedesRequire = $this->_ObjJson->$new_current_page->require;
@@ -460,16 +477,118 @@ print_air(self::PAGEINN.$fichiers[$numFichier].self::PEXTENSION,"blocs à affich
 	// --------------------------------------------------------------------------------
     // SETTER
     private function set_Current_Page($newvalue){
-        $this->_current_page = $newvalue;
+        $this->_current_page = get_clean($newvalue);
     }
 	// --------------------------------------------------------------------------------
+    // GETTER
+    private function get_Current_Page(){
+        return $this->_current_page;
+    }
+    private function get_Default_Page(){
+        return $this->_default_page;
+    }
+    // --------------------------------------------------------------------------------
+    /**
+     * getter de fichiers exterieurs
+     * @param string $file fichier a traiter
+     * @param string $type require_once|include_once|file_get_contents
+     * @return mixed content|true if succes|false if fail
+     */
+    private function get_File_to_use($file,$type,$coment=null){
+        if (file_exists($file))
+        {
+            switch($type)
+            {
+                case "require_once":
+                    require_once($file);
+                    $_SESSION['cms']['actions'][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    return true;
+                break;
+                
+                case "include_once":
+                    include_once($file);
+                    $_SESSION['cms']['actions'][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    return true;
+                break;
+                
+                case "file_get_contents":
+                    $_SESSION['cms']['actions'][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    return file_get_contents($file);
+                break;
+                
+                default :
+                    $_SESSION['cms']['errors'][$this->_Nlog++] = $this->_Nlog."]".$coment." ERROR SWITCH in:".__FUNCTION__.".";
+                    return false;
+                break;
+            }
+        }
+        else
+        {
+            $_SESSION['cms']['errors'][$this->_Nlog++] = $this->_Nlog."]"."Le fichier n'existe pas... ".$coment." la methode $type($file) n'a pas fonctionnée";
+            return false;
+        }
+    }
+    // --------------------------------------------------------------------------------
+    // MODULE ERREURS
+    /**
+     * use : get_errorphrase(__FILE__,__FUNCTION__,__LINE__,{'one','more'},'commentaires')
+     * @param string $file use to be __FILE__ with FULL url
+     * @param string $function use to be __FUNCTION__
+     * @param string $line use to be __LINE__
+     * @param string $arguments use to be array arguments from function
+     * @param string $coment use string
+     */
+    private function get_errorphrase($file,$function,$line,$arguments=null,$coment=null)
+    {
+        if ('array' == gettype($arguments)) 
+        {
+            $splitedarguments = '';
+            $i=0;
+            foreach($arguments as $key => $value)
+            {
+                $splitedarguments .= (++$i < count($arguments)) ? $value.',' : $value;
+            }
+            $arguments = $splitedarguments;
+        }
+        return "$file:[$line] $function($file) ->".$coment;
+    }
+    /**
+     * use : get_errorphrase(__FILE__,__FUNCTION__,__LINE__)
+     * @param string $file use to be __FILE__ with FULL url
+     * @param string $function use to be __FUNCTION__
+     * @param string $line use to be __LINE__
+     * @param string $arguments use to be indexed arguments from function
+     * @param string $coment use string
+     * @return array
+     */
+    // --------------------------------------------------------------------------------
+    private function get_errorphraseindex($file,$function,$line,$arguments=null,$coment=null){
+        // if ('array' == gettype($arguments)) 
+        // {
+        //     $splitedarguments = '';
+        //     $i=0;
+        //     foreach($arguments as $key => $value)
+        //     {
+        //         $splitedarguments .= (++$i < count($arguments)) ? $value.',' : $value;
+        //     }
+        //     $arguments = $splitedarguments;
+        // }
+        return [
+            'line' => $line,
+            'fichier' => $file,
+            'function' => $function."($arguments)",
+            'coment' => $coment
+        ];
+    }
+    // --------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
     // HYDRATE
-    private function hydrate_info_var($arr_json){
-        print_air($arr_json,__CLASS__."->".__FUNCTION__);
-        for($i = 0; $i < count($arr_json); $i++){
-            $method = 'set'.ucfirst($arr_json[$i]);
+    private function hydrate_info_var($array){
+        // print_air($array,__CLASS__."->".__FUNCTION__);
+        for($i = 0; $i < count($array); $i++){
+            $method = 'set'.ucfirst($array[$i]);
 			if (method_exists($this, $method)) {
-				$this->$method($arr_json[$i]);
+				$this->$method($array[$i]);
 			}
         }
     }
