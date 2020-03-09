@@ -39,7 +39,7 @@
 				"typeof": "title",
 				"nameof": "title",
 				"tag": "title",
-				"contentype": "Patobeur"
+				"contentype": "CMS POO"
 			},
 			{
 				"typeof": "name",
@@ -55,7 +55,7 @@
 				"tag": "meta",
 				"contentype": "keywords",
 				"item": "content",
-				"contentitem": "aptéo, site internet, site web, landing page, artisant, artiste,"
+				"contentitem": "cms artisanal, site internet, site web, landing page, artisant, artiste,"
 			},
 			{
 				"typeof": "name",
@@ -80,110 +80,6 @@
 				"type": "type",
 				"typeitem": "image/png"
 			}
-		]
-	},
-	"defaultpage": [
-		"index"
-	],
-	"pagesext":  {
-		"nommenu": "Services",
-		"nomlabel": "service_one",
-		"actif": "true",
-		"files": [
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
-			}
-		]
-	},
-	"pagesgestion":  {
-		"nommenu": "Gestion",
-		"nomlabel": "gestionapp",
-		"files": [
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "Connectez vous!"
-			},
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
-			},
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
-			}
-		]
-	},
-	"pages": [
-		"index",
-		"404",
-		"403",
-		"login"
-	],
-	"index": {
-		"title": "Accueil",
-		"actif": "true",
-		"files": [
-			{
-				"visible": "true",
-				"require": "visitor",
-				"page": "visitor",
-				"aremplacer": "_VISITOR_",
-				"session": "TICKET"
-			}
-		],
-		"js": [],
-		"css": [
-			"index.css",
-			"feuilles.css"
-		],
-		"blocs": [
-			"index"
-		]
-	},
-	"login": {
-		"title": "LOGIN",
-		"actif": false,
-		"files": [
-			{
-			"visible": "true",
-			"require": "login",
-			"page": "login",
-			"aremplacer": "_LOGIN_",
-			"session": "USER"
-		}
-		],
-		"js": [],
-		"css": [
-			"login.css"
-		],
-		"blocs": [
-			"login"
-		],
-		"require": [
-			"login"
-		]
-	},
-	"404": {
-		"title": "404",
-		"actif": false,
-		"js": [],
-		"css": [""],
-		"blocs": [
-			"404"
-		]
-	},
-	"403": {
-		"title": "403",
-		"actif": false,
-		"js": [],
-		"css": [""],
-		"blocs": [
-			"403"
 		]
 	},
 	"aouvriratouslescoups": {

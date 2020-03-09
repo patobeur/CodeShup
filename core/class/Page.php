@@ -14,7 +14,8 @@ class Page{
     const VUES          = self::PCORE.'inview/_in_';        // pages a mettre dans view
     // const PIMPPREFIX    = self::PCORE.'php/_inc_';          // pour les pages en include ou require (local au moteur)
     // FILES
-    const PJSONHEADER   = self::PJSON.'content.json';
+    const PJSONHEADER   = self::PJSON.'structure.json';
+    const PJSONCONTEN   = self::PJSON.'content.json';
     // INCLUDES
     const PNAVIGA       = self::VIEW.'navigation.php';
     const PFOOTER       = self::VIEW.'footer.php';
@@ -31,17 +32,19 @@ class Page{
 
 	private $_Nlog = 0;
 	private $_ObjJson;
-	private $_auteur;
-	private $_date;
-	private $_time_stamp;
-    private $_logosrc;
+	private $_ObjJson2;
+	// private $_auteur;
+	// private $_date;
+	// private $_time_stamp;
+    // private $_logosrc;
     //
 	private $_current_page='';
 	private $_default_page='';
 	private $_Originum=0;
     
     public function __construct(){
-        $this->_ObjJson = $this->get_Jsondecode(self::PJSONHEADER);
+        $this->_ObjJson = $this->get_Jsondecode(self::PJSONCONTEN);
+        $this->_ObjJson2 = $this->get_Jsondecode(self::PJSONHEADER);
         $this->_current_page = $this->_ObjJson->defaultpage[0];
         $this->_default_page = $this->_ObjJson->defaultpage[0];
         // $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
@@ -166,8 +169,8 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $jusquaHead.$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head5')."<!-- End's  ".
             $this->_current_page ." -->".$n;
 
-        if (isset($this->_ObjJson->structure->meta->lang)){    $jusquaHead =  $this->_ObjJson->structure->meta->lang.$n.$jusquaHead;}
-        if (isset($this->_ObjJson->structure->meta->doctype)){ $jusquaHead =  $this->_ObjJson->structure->meta->doctype.$n.$jusquaHead;}
+        if (isset($this->_ObjJson2->structure->meta->lang)){    $jusquaHead =  $this->_ObjJson2->structure->meta->lang.$n.$jusquaHead;}
+        if (isset($this->_ObjJson2->structure->meta->doctype)){ $jusquaHead =  $this->_ObjJson2->structure->meta->doctype.$n.$jusquaHead;}
         // eco($jusquaHead);
         return $jusquaHead;
     }
@@ -185,6 +188,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
         // ici je cherche dans le json
+        // VUES
         $cp = $this->_current_page;                                             // cp = current page
         if ($this->_ObjJson->$cp->blocs){
             $tempovalue = count($this->_ObjJson->$cp->blocs);                   // je prend la liste des pages _in_ a intégrer
@@ -198,14 +202,13 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         }
         // --------------------------------------------------------------------------------------------
         $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
-// print_airB($bloc,__FUNCTION__);
         // FOOTER
         $bloc .= file_exists(self::PFOOTER) ?  $this->get_File_to_use('local',self::PFOOTER,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
         // JS
-        $bloc .= $this->get_js_html($this->_current_page,'js',2);
+        $bloc .= $this->get_js_html($this->_ObjJson,$this->_current_page,'js',2);
 
         $bloc .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;    // on ferme le div du début <div class="fullpage">
-        $bloc .= $this->get_js_html('atouslescoups','js',1);
+        $bloc .= $this->get_js_html($this->_ObjJson,'atouslescoups','js',1);
 
         $bloc .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;   // on ferme le body
         $bloc .= '</html>'.$n;
@@ -213,20 +216,36 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 		return $bloc;
     }
     // --------------------------------------------------------------------------------
-	private function get_js_html($famille='atouslescoups',$nomchamp,$Origine=0){
+	private function get_js_html2($sourceJson,$famille='atouslescoups',$nomchamp,$Origine=0){
         $n=PHP_EOL;$message = '';
-        $ARRRRAIE = $this->_ObjJson->$famille;
-        // printair($ARRRRAIE,'famille: ');
+        $sourceJson = $sourceJson->$famille;
 
 
-            $cc = $ARRRRAIE->$nomchamp; // cc = current champs
+            $cc = $sourceJson->$famille->$nomchamp; // cc = current champs
             $tempovalueout = count($cc);
             if ($tempovalueout > 0 ){
                 for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
-                    $message .= $this->get_Indent($Origine,1,'js_html').'<script src="'.self::PJS.$cc[$num_item].'" type="text/javascript"></script>'.$n;
+                    $message .= $this->get_Indent($Origine,1,'get_js_html').'<script src="'.self::PJS.$cc->$nomchamp[$num_item].'" type="text/javascript"></script>'.$n;
+                    print_airB(self::PJS.$cc->$nomchamp[$num_item],'hhhhhhhhhhhhhh');
                 }
             }
-        $message = $this->get_Indent($Origine,1,'js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
+        $message = $this->get_Indent($Origine,1,'get_js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'get_js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
+		return $message;
+    }
+    // --------------------------------------------------------------------------------
+	private function get_js_html($sourceJson,$famille='atouslescoups',$nomchamp,$Origine=0){
+        $n=PHP_EOL;$message = '';
+        $sourceJson = $this->_ObjJson->$famille;
+
+
+            $cc = $sourceJson->$nomchamp; // cc = current champs
+            $tempovalueout = count($cc);
+            if ($tempovalueout > 0 ){
+                for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
+                    $message .= $this->get_Indent($Origine,1,'get_js_html').'<script src="'.self::PJS.$cc[$num_item].'" type="text/javascript"></script>'.$n;
+                }
+            }
+        $message = $this->get_Indent($Origine,1,'get_js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'get_js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
 		return $message;
     }
 
