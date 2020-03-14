@@ -62,7 +62,7 @@ class Page{
         $bloc = $this->get_Header_Html(1);
         //
         $bloc .= $this->get_Contents_Html();
-        return $bloc;
+        //return $bloc;
     }
 
 
@@ -156,9 +156,9 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     // --------------------------------------------------------------------------------
 	private function get_Header_Html($nb_space=0){
         $n=PHP_EOL;$jusquaHead="";
-        $jusquaHead .= $this->get_all_metas('head',"meta","head",0); // get all meta
-        $jusquaHead .= $this->get_head_meta_html('atouslescoups','css',1);
-        $jusquaHead .= $this->get_head_meta_html($this->_current_page,'css',1);
+        $jusquaHead .= $this->get_all_metas('head',"meta","head",0);                // get all meta from json
+        $jusquaHead .= $this->get_head_meta_html('atouslescoups','css',1);          // get meta from json 
+        $jusquaHead .= $this->get_head_meta_html($this->_current_page,'css',1);     // get css from the wanted page
 
         // head html
         $jusquaHead = $this->get_Indent($this->_Originum,1,'Gen_Head1')
@@ -175,62 +175,42 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         return $jusquaHead;
     }
     // GETTER
-    private function get_Contents_Html(){
+    private function get_Contents_Html(){                                           // ici on construit le body
         $n=PHP_EOL;$bloc="\n";
         $bloc .= $this->get_Indent($this->_Originum,1,'get_Contents_Html').'<body>'.$n;
         $bloc .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
-
-        
+        //
         $header = $this->get_RemplacePar('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
         $header = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
-        
         $bloc .= $header;
-
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
         // ici je cherche dans le json
         // VUES
-        $cp = $this->_current_page;                                             // cp = current page
-        if ($this->_ObjJson->$cp->blocs){
-            $tempovalue = count($this->_ObjJson->$cp->blocs);                   // je prend la liste des pages _in_ a intégrer
+        $cp = $this->_current_page;                                                 // cp = current page
+        if ($this->_ObjJson->$cp->blocs){                                           // si il y'a des pages dans blocs dans le json
+            $tempovalue = count($this->_ObjJson->$cp->blocs);                       // je prend la liste des pages _in_ a intégrer
 
-            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){            
-                $fichiers = $this->_ObjJson->$cp->blocs;                        // cb = current bloc
-                
-                $require_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION;
-                $bloc .= file_exists($require_file) ?  $this->get_File_to_use('local',$require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les pages trouvées 
+                $fichiers = $this->_ObjJson->$cp->blocs;                            // cb = current bloc/page
+                $require_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION; // fichier a require
+                $bloc .= file_exists($require_file)                                 // require si fichier existe
+                    ? $this->get_File_to_use('local',$require_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+                    : false;
             }
         }
         // --------------------------------------------------------------------------------------------
         $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
         // FOOTER
-        $bloc .= file_exists(self::PFOOTER) ?  $this->get_File_to_use('local',self::PFOOTER,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
-        // JS
-        $bloc .= $this->get_js_html($this->_ObjJson,$this->_current_page,'js',2);
-
-        $bloc .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;    // on ferme le div du début <div class="fullpage">
-        $bloc .= $this->get_js_html($this->_ObjJson,'atouslescoups','js',1);
-
-        $bloc .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;   // on ferme le body
+        $bloc .= file_exists(self::PFOOTER)                                         // bloc footer
+            ? $this->get_File_to_use('local',self::PFOOTER,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+            : false; 
+        $bloc .= $this->get_js_html($this->_ObjJson,$this->_current_page,'js',2);   // bloc js header
+        $bloc .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;          // on ferme le div du début <div class="fullpage">
+        $bloc .= $this->get_js_html($this->_ObjJson,'atouslescoups','js',1);        // bloc js fin de page
+        $bloc .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;         // on ferme le body
         $bloc .= '</html>'.$n;
         // eco($bloc);
 		return $bloc;
-    }
-    // --------------------------------------------------------------------------------
-	private function get_js_html2($sourceJson,$famille='atouslescoups',$nomchamp,$Origine=0){
-        $n=PHP_EOL;$message = '';
-        $sourceJson = $sourceJson->$famille;
-
-
-            $cc = $sourceJson->$famille->$nomchamp; // cc = current champs
-            $tempovalueout = count($cc);
-            if ($tempovalueout > 0 ){
-                for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
-                    $message .= $this->get_Indent($Origine,1,'get_js_html').'<script src="'.self::PJS.$cc->$nomchamp[$num_item].'" type="text/javascript"></script>'.$n;
-                    print_airB(self::PJS.$cc->$nomchamp[$num_item],'hhhhhhhhhhhhhh');
-                }
-            }
-        $message = $this->get_Indent($Origine,1,'get_js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'get_js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
-		return $message;
     }
     // --------------------------------------------------------------------------------
 	private function get_js_html($sourceJson,$famille='atouslescoups',$nomchamp,$Origine=0){
@@ -267,15 +247,10 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $space="   ";
         if (gettype($Origine)!='integer'){
             $Origine = intval(1); 
-            $txt ='error OkSpacer '.gettype($Origine).' == '.$Origine.' ('.$from.')<br>';
-            //print $txt;
+            $txt ='error get_Indent '.gettype($Origine).' == '.$Origine.' ('.$from.')<br>';
         }
-
-
         $nb += $Origine;
-        for ($i=1; $i<$nb; $i++){
-            $space .= $space;
-        }
+        for ($i=1; $i<$nb; $i++){$space .= $space;}
         return $space;
     }
     // --------------------------------------------------------------------------------
@@ -288,7 +263,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         {
         // fonction pour la création des metas : title, script, stylesheet
         $n=PHP_EOL;
-        $phrase = $n.$this->get_Indent($Origine,2,'rien')."<!-- json-b-". $koi ."/" . $choix . " -->".$n;
+        $phrase = $n.$this->get_Indent($Origine,2,'rien')."<!-- json-b-". $koi ."/" . $choix . " -->".$n; // html comment 
 		for ($i=0;$i<count($this->_ObjJson->$koi->$choix);$i++){
             $html = "\n";
             $tag = "";$type="";$contentype="";$item="";$contentitem="";
@@ -344,31 +319,27 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                 break;
             }
             if ($ValidationMeta) $phrase .= $this->get_Indent($Origine,2,'rien')."<".$html.">".$n;
-        }
-        $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-b- End\'s '. $koi .'/' . $choix . ' -->'.$n;
+        } // endfor
+        $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-b- End\'s '. $koi .'/' . $choix . ' -->'.$n;     // end html comment 
 
-
-        // GENERATION CSS TROUVE DANS LE JSON
-        //this->_current_page
+        // GENERATION des CSS TROUVés DANS LE JSON
         $cp = $this->_current_page;
         if ($koi=="head" && count($this->_ObjJson->$cp->css)>0) {
-            $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-'. $koi .'/' . $choix . ' -->'.$n;
-            
+            $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-'. $koi .'/' . $choix . ' -->'.$n;         // html comment            
             for ($j=0;$j<count($this->_ObjJson->$cp->css);$j++){
                 if ($this->_ObjJson->$cp->css[$j]!="") {
                     $phrase .= $this->get_Indent($Origine,2,'rien').'<link rel="stylesheet" href="'.self::PCSS.$this->_ObjJson->$cp->css[$j].'">'.$n;
                 }
             }
-            $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-End\'s '. $koi .'/' . $choix . ' -->'.$n;
+            $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-End\'s '. $koi .'/' . $choix . ' -->'.$n;  // end html comment 
         }
-
-
-
         // fin css
-        // encapsulage dans un tag head // desactivé
-        //if ($phrase!="") $phrase = $this->get_Indent($Origine,1,'rien')."<".$balise.">".$n.$phrase.$this->get_Indent($Origine,1,'rien')."</".$balise.">";
+        // encapsulage dans un tag head ($balise) // desactivé
+        // if (!empty($phrase) && !empty($balise)) {
+        //     $phrase = $this->get_Indent($Origine,1,'rien')."<".$balise.">".$n.$phrase.$this->get_Indent($Origine,1,'rien')."</".$balise.">";
+        // }
 
-		return $phrase;
+		// return $phrase;
     }
     // --------------------------------------------------------------------------------
     private function get_Pageaouvriratouslescoups($CHILDy){
@@ -395,7 +366,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                         $requiredFile = file_exists($require_file) ?  $this->get_File_to_use('actions',$require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
                     }
 
-                    // if ($include_file) // si une page de traitememt php est demandé en include
+                    // if ($include_file) // si une page de traitememt php est demandé en include maius bon le require fait le taf pour l'instant
                     // {   
                     //     $includeFile = file_exists($include_file) ?  $this->get_File_to_use('actions',$include_file,"include_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
                     // }
@@ -404,11 +375,16 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                     {
                         if ($visible)
                         {
-                            $vueFile = file_exists($vue_file) ?  $this->get_File_to_use('actions',$vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                            $vueFile = file_exists($vue_file) 
+                                ? $this->get_File_to_use('actions',$vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+                                : false;
                             
-                            if ($aremplacer && $requiredFile && $vueFile)
+                            if ($requiredFile && $vueFile)
                             {
-                                $paquethtml .= preg_replace('{{'.$files[$numFichierout]->aremplacer."}}", '010{{COUCOU}}1000101', $vueFile);
+                                if ($aremplacer)
+                                {
+                                    $paquethtml .= preg_replace('{{'.$files[$numFichierout]->aremplacer."}}", '010{{COUCOU}}1000101', $vueFile);
+                                }
                             }
                             $check[$nbCheck++] = "file_get_contents(:".$vue_file.",,)";
     
@@ -427,7 +403,6 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     private function get_Current_Page(){
         
         $new_current_page = null;               // page vide
-
         $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
 
         // on ne prend qu'une page existante dan la liste
@@ -451,28 +426,6 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $new_current_page = $this->_default_page;       // page par default
         }
         return $new_current_page;
-    }
-    // --------------------------------------------------------------------------------
-    private function do_RequireFile($new_current_page){
-        
-        print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
-        if (!empty($this->_ObjJson->$new_current_page->require) ){
-            print_air($new_current_page,__CLASS__."->".__FUNCTION__);
-            $listedesRequire = $this->_ObjJson->$new_current_page->require;
-            //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
-            for ( $i = 0; $i < count($listedesRequire); $i++ ){
-                $fichierrequire = self::FUNKY.$listedesRequire[$i].self::PEXTENSION;
-                if (file_exists($fichierrequire)) {
-                    require_once($fichierrequire);  
-                }
-                else{
-                    print_air('il manque le fichier '.$fichierrequire,"erreur do_RequireFile");
-                }
-            }
-        }
-        else{
-            print_air($new_current_page." require no file",__CLASS__."->".__FUNCTION__);
-        }
     }
     // --------------------------------------------------------------------------------
     private function get_Jsondecode($url_file){
@@ -590,6 +543,28 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 			if (method_exists($this, $method)) {
 				$this->$method($array[$i]);
 			}
+        }
+    }
+    // --------------------------------------------------------------------------------
+    private function do_RequireFile($new_current_page){
+        
+        print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
+        if (!empty($this->_ObjJson->$new_current_page->require) ){
+            print_air($new_current_page,__CLASS__."->".__FUNCTION__);
+            $listedesRequire = $this->_ObjJson->$new_current_page->require;
+            //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
+            for ( $i = 0; $i < count($listedesRequire); $i++ ){
+                $fichierrequire = self::FUNKY.$listedesRequire[$i].self::PEXTENSION;
+                if (file_exists($fichierrequire)) {
+                    require_once($fichierrequire);  
+                }
+                else{
+                    print_air('il manque le fichier '.$fichierrequire,"erreur do_RequireFile");
+                }
+            }
+        }
+        else{
+            print_air($new_current_page." require no file",__CLASS__."->".__FUNCTION__);
         }
     }
 
