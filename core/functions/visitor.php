@@ -1,7 +1,7 @@
 <?php
     $valeurderetour = '';
         function VISITOR(){                                             // La fonction c'est pratique 
-                $valeurbidon = 'bidon';
+                $valeurbidon = 'test';
                 $file = 'core/log/visites.txt';                         // le fichier est planqué avant le core ??
                 
                 if(file_exists($file)){                                 // si le fichier existe
@@ -19,14 +19,18 @@
                 }
                 if( !isset($_SESSION['cms']['user'][$valeurbidon]) || $_SESSION['cms']['user'][$valeurbidon] != $valeurbidon ){
                         // SI PAS DE SESSION on te compte
-                        $compte++;                                      // on ajoute 1 au compteur ++
-                        $_SESSION['cms']['user'][$valeurbidon] = $valeurbidon; // on colle une betise en session pour pouvoir la tester au passage suivant
-                        $_SESSION['cms']['user']['tekken'] = $compte;          // je rajoute le numero en session, ca ne me sert a rien.... pour l'instant ;)
-                        fseek($compteur_f, 0);                          // je remet le curseur au début du fichier ouvert (je crois ??!!)
-                        fputs($compteur_f, $compte);                    // je remplace le contenu (compte) du fichier par le nouveau (compte++)
+                        $compte++;                                                      // on ajoute 1 au compteur ++
+                        $_SESSION['cms']['user'][$valeurbidon] = $valeurbidon;          // on colle une betise en session pour pouvoir la tester au passage suivant
+                        $_SESSION['cms']['user']['tekken'] = generateToken();           // je rajoute le numero en session, ca ne me sert a rien.... pour l'instant ;)
+                        fseek($compteur_f, 0);                                          // je remet le curseur au début du fichier ouvert (je crois ??!!)
+                        fputs($compteur_f, $compte);                                    // je remplace le contenu (compte) du fichier par le nouveau (compte++)
                 }
-                fclose($compteur_f);                                    // je ferme le fichier txt !
+                fclose($compteur_f);                                                    // je ferme le fichier txt !
                 return $compte;
+        }
+        function generateToken()
+        {
+            return md5(rand(1, 10) . microtime());
         }
     $valeurderetour = 'Hit:'.VISITOR();
 ?>
