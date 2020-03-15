@@ -8,7 +8,15 @@
      * autouploader de class / stacking class
      */
     function chargerClasse($classe) {
-        require_once 'class/'.$classe . '.php';
+        $file = 'core/class/'.$classe . '.php';
+        // if (file_exists($file)) {
+            require_once $file;
+            $_SESSION['cms']['check'][] = "New Class $classe"."() chargée.";
+        // }
+        // else {
+            
+        //     $_SESSION['cms']['errors'][] = "Class $classe non chargée.";
+        // }
     }
     spl_autoload_register('chargerClasse');
 

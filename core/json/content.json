@@ -134,6 +134,11 @@
 				"page": "visitor",
 				"aremplacer": "_VISITOR_",
 				"session": "TICKET"
+			},
+			{
+				"visible": "true",
+				"vue": "anime",
+				"page": "anime"
 			}
 		],
 		"js": [],
@@ -142,6 +147,7 @@
 			"feuilles.css"
 		],
 		"blocs": [
+			"anime",
 			"index"
 		]
 	},
@@ -150,38 +156,42 @@
 		"actif": false,
 		"files": [
 			{
-			"visible": "true",
-			"require": "login",
-			"page": "login",
-			"aremplacer": "_LOGIN_",
-			"session": "USER"
-		}
+				"visible": "true",
+				"vue": "anime"
+			}
 		],
 		"js": [],
 		"css": [
-			"login.css"
+			"login.css",
+			"feuilles.css"
 		],
 		"blocs": [
+			"anime",
 			"login"
 		],
-		"require": [
-			"login"
-		]
+		"require": [],
+		"class": [],
+		"controller": [],
+		"fonction": []
 	},
 	"404": {
 		"title": "404",
 		"actif": false,
-		"js": [],
-		"css": [""],
+		"css": [
+			"feuilles.css"
+		],
 		"blocs": [
 			"404"
-		]
+		],
+		"js": []
 	},
 	"403": {
 		"title": "403",
 		"actif": false,
 		"js": [],
-		"css": [""],
+		"css": [
+			"feuilles.css"
+		],
 		"blocs": [
 			"403"
 		]
@@ -189,6 +199,14 @@
 	"aouvriratouslescoups": {
 		"actif": "true",
 		"files": [
+			{
+			"visible": "true",
+			"require": "",
+			"page": "",
+			"class": "User",
+			"controller": "",
+			"fonction": ""
+			},
 			{
 			"visible": "true",
 			"require": "visitor",

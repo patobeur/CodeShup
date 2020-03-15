@@ -1,21 +1,4 @@
             <!-- LANDING -->
-            <section class="accueil ">
-                <div class="area" >
-                    <h1>Cover</h1>
-                    <ul class="circles">
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li><li>
-                            <li></li>
-                    </ul>
-                </div >
-            </section>
             <section class="classeur">
                 <div class="feuilles shadows outlined">
                     <div id="lesfiches" class="lesfiches">

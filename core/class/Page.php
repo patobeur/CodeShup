@@ -10,6 +10,8 @@ class Page{
     const PIMG          = self::PCORE.'img/';
     //
     const FUNKY         = self::PCORE.'functions/';
+    const CLAS          = self::PCORE.'class/';
+    const CONTR         = self::PCORE.'controller/';
     const VIEW          = self::PCORE.'view/'.'';           // pages parsé à la volé indiqué dans le json
     const VUES          = self::PCORE.'inview/_in_';        // pages a mettre dans view
     // const PIMPPREFIX    = self::PCORE.'php/_inc_';          // pour les pages en include ou require (local au moteur)
@@ -59,49 +61,41 @@ class Page{
     }
     // --------------------------------------------------------------------------------
     private function get_Dom(){
-        $bloc = $this->get_Header_Html(1);
-        //
-        $bloc .= $this->get_Contents_Html();
-        //return $bloc;
+        $dom_blocs = $this->get_Header_Html(1);
+        $dom_blocs .= $this->get_Contents_Html();
+        return $dom_blocs;
     }
 
 
-
+    // USEFUL IN NAVIGATION MENU
 	private function get_List_Menu($kelfamille){
         //print_airB($kelfamille,__CLASS__."->".__FUNCTION__);
         $n=PHP_EOL;
         // NAVIGATION
-        if (file_exists(self::PNAVIGA)) {
-            $fichier_importe = file_get_contents(self::PNAVIGA,TRUE).$n;       // lecture du fichier a inclure 
-        }
-        else {
-            DEBUG_DIE ? die('le fichier "'.self::PNAVIGA.'" est manquant. !?!') : die();
-        }
+        
+        $fichier_importe = $this->get_File_to_use('get_contents',self::PNAVIGA,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+        // if (
+            // $fichier_importe = file_get_contents(self::PNAVIGA,TRUE).$n;       // lecture du fichier a inclure 
+        // }
+        // else {
+        //     DEBUG_DIE ? die('le fichier "'.self::PNAVIGA.'" est manquant. !?!') : die();
+        // }
         // ------------------------------------------------------------------------------
         $arr_pc = $this->_ObjJson->$kelfamille;                            // arr_pc = pages courantes (arr_ pour array)
-        $blocm = $this->get_Indent(0,4,'Navigat')."<!-- Auto in menu -->".$n;
+        $coment_blocs = $this->get_Indent(0,4,'Navigat')."<!-- Auto in menu -->".$n;
         for ($oo=0; $oo < count($arr_pc); $oo++){
             // ici le lien active
             $famille = $arr_pc[$oo];                                       // $ARRRAIEE[$kelfamille][$oo]
             $enfant = $this->_ObjJson->$famille;                           // $ARRRAIEE[$ARRRAIEE[$kelfamille][$oo]]
             if ($this->_current_page == $famille) {$active = ' active';} else  {$active = '';}
             
-            $blocm .= $this->get_Indent(0,4,'Navigat').'<a class="dropdown-item'.$active.'" href="?'. $famille.'">'.$enfant->title.'</a>'.$n;
+            $coment_blocs .= $this->get_Indent(0,4,'Navigat').'<a class="dropdown-item'.$active.'" href="?'. $famille.'">'.$enfant->title.'</a>'.$n;
         } 
-        $blocm .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
-        if ($this->_current_page == 'index') {$ISACTIF = ' active';} else  {$ISACTIF = '';}
+        $coment_blocs .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
+        if ($this->_current_page == 'index') {$is_activ = ' active';} else  {$is_activ = '';}
 
-
-
-
-
-
-
-
-
-
-        $valeurderetour = preg_replace("_NAVIGATATOR_",$blocm, $fichier_importe); 
-        $valeurderetour = preg_replace("_ACTIVITE_",$ISACTIF, $valeurderetour);
+        $valeurderetour = preg_replace("_NAVIGATATOR_",$coment_blocs, $fichier_importe); 
+        $valeurderetour = preg_replace("_ACTIVITE_",$is_activ, $valeurderetour);
         // ------------------------------------------------------------------------------
         $valeurderetour = preg_replace('_ACTOBEURTWO_',$this->get_Navigation_Menu('pagesgestion','files'), $valeurderetour);
         $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
@@ -159,6 +153,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $jusquaHead .= $this->get_all_metas('head',"meta","head",0);                // get all meta from json
         $jusquaHead .= $this->get_head_meta_html('atouslescoups','css',1);          // get meta from json 
         $jusquaHead .= $this->get_head_meta_html($this->_current_page,'css',1);     // get css from the wanted page
+        $jusquaHead .= $this->get_head_meta_html($this->_current_page,'title',1);     // get css from the wanted page
 
         // head html
         $jusquaHead = $this->get_Indent($this->_Originum,1,'Gen_Head1')
@@ -169,80 +164,150 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $jusquaHead.$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head5')."<!-- End's  ".
             $this->_current_page ." -->".$n;
 
-        if (isset($this->_ObjJson2->structure->meta->lang)){    $jusquaHead =  $this->_ObjJson2->structure->meta->lang.$n.$jusquaHead;}
-        if (isset($this->_ObjJson2->structure->meta->doctype)){ $jusquaHead =  $this->_ObjJson2->structure->meta->doctype.$n.$jusquaHead;}
+        if (isset($this->_ObjJson->structure->meta->lang)){    $jusquaHead =  $this->_ObjJson->structure->meta->lang.$n.$jusquaHead;}
+        if (isset($this->_ObjJson->structure->meta->doctype)){ $jusquaHead =  $this->_ObjJson->structure->meta->doctype.$n.$jusquaHead;}
         // eco($jusquaHead);
         return $jusquaHead;
     }
     // GETTER
     private function get_Contents_Html(){                                           // ici on construit le body
-        $n=PHP_EOL;$bloc="\n";
-        $bloc .= $this->get_Indent($this->_Originum,1,'get_Contents_Html').'<body>'.$n;
-        $bloc .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
+        $n=PHP_EOL;
+        $body_blocs="\n";
+        $body_blocs .= $this->get_Indent($this->_Originum,1,'get_Contents_Html').'<body>'.$n;
+        $body_blocs .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
+
+
         //
         $header = $this->get_RemplacePar('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
         $header = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
-        $bloc .= $header;
-        // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
-        // ici je cherche dans le json
-        // VUES
-        $cp = $this->_current_page;                                                 // cp = current page
-        if ($this->_ObjJson->$cp->blocs){                                           // si il y'a des pages dans blocs dans le json
-            $tempovalue = count($this->_ObjJson->$cp->blocs);                       // je prend la liste des pages _in_ a intégrer
 
-            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les pages trouvées 
-                $fichiers = $this->_ObjJson->$cp->blocs;                            // cb = current bloc/page
-                $require_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION; // fichier a require
-                $bloc .= file_exists($require_file)                                 // require si fichier existe
-                    ? $this->get_File_to_use('local',$require_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
-                    : false;
+
+        $body_blocs .= $header;
+        // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
+        $cp = $this->_current_page;                                                 // cp = current page
+        // --------------------------------------------------------------------------------------------
+        // ----------------------------------- GET CURRENT CLASS --------------------------------------
+        if (!empty($this->_ObjJson->$cp->class)){                                   // si il y'a des pages dans class
+            $cc = $this->_ObjJson->$cp->class;                                   // cc = current bloc/class
+            $tempovalue = count($cc);                       // je prend la liste des class a intégrer
+
+            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les class trouvés 
+                $class_file = self::CLAS.$cc[$numFichier].self::PEXTENSION;   // fichier a require
+                $this->get_File_to_use('class',$class_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
-        $bloc .= $this->get_Pageaouvriratouslescoups('files').$n;
+        // ----------------------------------- GET CURRENT CONTROLLER ---------------------------------
+        if (!empty($this->_ObjJson->$cp->require)){                                 // si il y'a des pages dans require
+            $tempovalue = count($this->_ObjJson->$cp->controller);                     // je prend la liste des Controller a intégrer
+            $requires = $this->_ObjJson->$cp->controller;                              // cp = current bloc/require
+
+            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
+                $req_file = self::CONTR.$requires[$numFichier].self::PEXTENSION;    // fichier a require
+                $this->get_File_to_use('controller',$req_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+            }
+        }
+        // --------------------------------------------------------------------------------------------
+        // ----------------------------------- GET CURRENT FUNCTIONS ----------------------------------
+        if (!empty($this->_ObjJson->$cp->fonction)){                                 // si il y'a des pages dans require
+            $tempovalue = count($this->_ObjJson->$cp->fonction);                     // je prend la liste des Controller a intégrer
+            $requires = $this->_ObjJson->$cp->fonction;                              // cp = current bloc/require
+
+            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
+                $req_file = self::FUNKY.$requires[$numFichier].self::PEXTENSION;    // fichier a require
+                $this->get_File_to_use('fonction',$req_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+            }
+        }
+        // --------------------------------------------------------------------------------------------
+        // ----------------------------------- GET CURRENT PAGES BLOCS --------------------------------
+        if ($this->_ObjJson->$cp->blocs){                                           // si il y'a des pages dans blocs dans le json
+            $tempovalue = count($this->_ObjJson->$cp->blocs);                       // je prend la liste des pages _in_ a intégrer
+            $fichiers = $this->_ObjJson->$cp->blocs;                                // cp = current bloc/page
+
+            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les pages trouvées 
+                $get_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION;     // fichier pour file_get_contents
+                $body_blocs .= $this->get_File_to_use('vue',$get_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+            }
+        }
+        // --------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------
+        $body_blocs .= $this->get_Pageaouvriratouslescoups('files').$n;
         // FOOTER
-        $bloc .= file_exists(self::PFOOTER)                                         // bloc footer
-            ? $this->get_File_to_use('local',self::PFOOTER,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+        $body_blocs .= file_exists(self::PFOOTER)                                         // bloc footer
+            ? $this->get_File_to_use('get_contents',self::PFOOTER,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
             : false; 
-        $bloc .= $this->get_js_html($this->_ObjJson,$this->_current_page,'js',2);   // bloc js header
-        $bloc .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;          // on ferme le div du début <div class="fullpage">
-        $bloc .= $this->get_js_html($this->_ObjJson,'atouslescoups','js',1);        // bloc js fin de page
-        $bloc .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;         // on ferme le body
-        $bloc .= '</html>'.$n;
-        // eco($bloc);
-		return $bloc;
+        // $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);            // bloc js header de la page appelée
+        $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;          // on ferme le div du début <div class="fullpage">
+        $body_blocs .= $this->get_end_js_html($this->_current_page,'js',1);               // bloc js a mettre en fin de page
+        $body_blocs .= $this->get_end_js_html('atouslescoups','js',1);                    // bloc js a mettre en fin de page
+        $body_blocs .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;         // on ferme le body
+        $body_blocs .= '</html>'.$n;
+        // --------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------
+        
+
+
+        // ICI COMMENCE LE VRAI TRAVAIL        
+        // ON A NOS CLASS ET FONCTION 
+
+        // eco($body_blocs);
+        return $body_blocs;
+        
+
+
+
     }
     // --------------------------------------------------------------------------------
-	private function get_js_html($sourceJson,$famille='atouslescoups',$nomchamp,$Origine=0){
+    /**
+     * 
+     */
+	private function get_end_js_html($famille='atouslescoups',$nomchamp,$Origine=0){
         $n=PHP_EOL;$message = '';
         $sourceJson = $this->_ObjJson->$famille;
-
-
             $cc = $sourceJson->$nomchamp; // cc = current champs
             $tempovalueout = count($cc);
             if ($tempovalueout > 0 ){
                 for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
-                    $message .= $this->get_Indent($Origine,1,'get_js_html').'<script src="'.self::PJS.$cc[$num_item].'" type="text/javascript"></script>'.$n;
+                    $message .= $this->get_Indent($Origine,1,'get_end_js_html').'<script src="'.self::PJS.$cc[$num_item].'" type="text/javascript"></script>'.$n;
                 }
             }
-        $message = $this->get_Indent($Origine,1,'get_js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'get_js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
+        $message = $this->get_Indent($Origine,1,'get_end_js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'get_end_js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
 		return $message;
     }
-
-    // --------------------------------------------------------------------------------
-	private function get_head_meta_html($famille='atouslescoups',$nomchamp='css',$Origine){
+    // ------------------------------------------------------------------------------
+    /**
+     * 
+     */
+	private function get_head_meta_html($famille,$nomchamp,$Origine){
         $n=PHP_EOL;$message = '';
-        $list = $this->_ObjJson->$famille;
-        $tempovalueout = count($list->$nomchamp);
-        if ($tempovalueout > 0 ){
-            for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
-                $message .= $this->get_Indent($Origine,1,'get_head_meta_html').'<link rel="stylesheet" href="'.self::PCSS.$list->$nomchamp[$num_item].'">'.$n;
+        if ($list = $this->_ObjJson->$famille){
+            if (is_array($list->$nomchamp)){
+                $tempovalueout = count($list->$nomchamp);
+                if ($tempovalueout > 0 ){
+                    for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
+                        $fichierutilise = self::PCSS.$list->$nomchamp[$num_item];
+                        //
+                        
+                        $message .= file_exists($fichierutilise) ? 
+                            $this->get_Indent($Origine,1,'get_head_meta_html').'<link rel="stylesheet" href="'.$fichierutilise.'">'.$n :
+                            $this->set_error($this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__),' le fichier '.$fichierutilise." n'existe pas");
+                    }
+                }
             }
+            elseif (is_string($list->title)){
+                $message .= $this->get_Indent($Origine,1,'get_head_meta_html').'<title>'.$list->title.'</title>'.$n;
+            }
+
+            $message =  $this->get_Indent($Origine,1,'get_head_meta_html')."<!-- ".$famille." ".$nomchamp." -->".$n.$message. $this->get_Indent($Origine,1,'get_head_meta_html')."<!-- ".$famille." ".$nomchamp." -->".$n;
         }
-        $message =  $this->get_Indent($Origine,1,'get_head_meta_html')."<!-- ".$famille." ".$nomchamp." -->".$n.$message. $this->get_Indent($Origine,1,'get_head_meta_html')."<!-- ".$famille." ".$nomchamp." -->".$n;
 		return $message;
     }
-    // --------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+    /**
+     * 
+     */
     private function get_Indent($Origine=0,$nb=1,$from=''){
         $space="   ";
         if (gettype($Origine)!='integer'){
@@ -253,7 +318,10 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         for ($i=1; $i<$nb; $i++){$space .= $space;}
         return $space;
     }
-    // --------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+    /**
+     * 
+     */
     private function get_all_metas(
             $koi='head',
             $choix="meta",
@@ -270,6 +338,8 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             //printair($this->_ObjJson->$koi->$choix);
             //echo $this->_ObjJson->$koi->$choix[$i]->typeof;
             // -------------- 
+            // if (isset($this->_ObjJson->$koi->$choix[$i]->typeof)){          $typeof =          $this->_ObjJson->$koi->$choix[$i]->title;}
+
             if (isset($this->_ObjJson->$koi->$choix[$i]->typeof)){          $typeof =          $this->_ObjJson->$koi->$choix[$i]->typeof;}
             if (isset($this->_ObjJson->$koi->$choix[$i]->nameof)){          $nameof =          $this->_ObjJson->$koi->$choix[$i]->nameof;}
             // --------------
@@ -341,65 +411,73 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
 		// return $phrase;
     }
-    // --------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+    /**
+     * 
+     */
     private function get_Pageaouvriratouslescoups($CHILDy){
         // print_airB($CHILDy,'get_Pageaouvriratouslescoups : '.$a.$b);
         $nbCheck = 0;
         $paquethtml = '';
         if ($this->_ObjJson->aouvriratouslescoups->actif){
 
-            $files = $this->_ObjJson->aouvriratouslescoups->$CHILDy;
+            $files = $this->_ObjJson->aouvriratouslescoups->files;
             $nbFichierout = count($files);
             if ($nbFichierout > 0 ){
                 for ($numFichierout = 0; $numFichierout < $nbFichierout; $numFichierout++){
                     
-                    $require_file =     !empty($files[$numFichierout]->require) ?       self::FUNKY.$files[$numFichierout]->require.self::PEXTENSION    : null;
-                    // $include_file =     !empty($files[$numFichierout]->include) ?       self::FUNKY.$files[$numFichierout]->include.self::PEXTENSION    : null;                    
-                    $vue_file =         !empty($files[$numFichierout]->vue) ?           self::VUES.$files[$numFichierout]->require.self::PEXTENSION     : null;
+                    $require_fonction =     !empty($files[$numFichierout]->fonction) ?       self::FUNKY.$files[$numFichierout]->require.self::PEXTENSION    : null;
+                    $require_class =        !empty($files[$numFichierout]->class) ?         self::CLAS.$files[$numFichierout]->class.self::PEXTENSION    : null;
+                    
+                    $require_controller=    !empty($files[$numFichierout]->controller) ?    self::CONTR.$files[$numFichierout]->controller.self::PEXTENSION    : null;
+                    // $include_file =      !empty($files[$numFichierout]->include) ?       self::FUNKY.$files[$numFichierout]->include.self::PEXTENSION    : null;                    
+                    $vue_file =             !empty($files[$numFichierout]->vue) ?           self::VUES.$files[$numFichierout]->require.self::PEXTENSION     : null;
 
-                    $aremplacer =       !empty($files[$numFichierout]->aremplacer) ?    $files[$numFichierout]->aremplacer                              : null;
-                    $visible =          !empty($files[$numFichierout]->visible) ?       $files[$numFichierout]->visible                                 : null;
+                    $aremplacer =           !empty($files[$numFichierout]->aremplacer) ?    $files[$numFichierout]->aremplacer                              : null;
+                    $visible =              !empty($files[$numFichierout]->visible) ?       $files[$numFichierout]->visible                                 : null;
                     
                     
-                    if ($require_file) // si une page de traitememt php est demandé en require
+                    if ($require_fonction) // si une fonctions de traitememt php est demandé en require
                     {   
-                        $requiredFile = file_exists($require_file) ?  $this->get_File_to_use('actions',$require_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
+                        $requiredFile = $this->get_File_to_use('function',$require_fonction,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
                     }
 
-                    // if ($include_file) // si une page de traitememt php est demandé en include maius bon le require fait le taf pour l'instant
-                    // {   
-                    //     $includeFile = file_exists($include_file) ?  $this->get_File_to_use('actions',$include_file,"include_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)) : false;
-                    // }
-                    
-                    if ($vue_file)// vues
-                    {
-                        if ($visible)
-                        {
+                    if ($require_class) // si une class php est demandé en require
+                    {   
+                        $requiredclass = $this->get_File_to_use('class',$require_class,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                    }
+                    if ($require_controller) // si un controller php est demandé en require
+                    {   
+                        $requiredcontroller = $this->get_File_to_use('controller',$require_controller,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                    }
+                   
+                    if ($vue_file){// vue
+                        if ($visible){
                             $vueFile = file_exists($vue_file) 
-                                ? $this->get_File_to_use('actions',$vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+                                ? $this->get_File_to_use('vue',$vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
                                 : false;
                             
-                            if ($requiredFile && $vueFile)
-                            {
-                                if ($aremplacer)
-                                {
+                            if (!empty($requiredFile) && $vueFile){
+                                if (!empty($aremplacer)){
                                     $paquethtml .= preg_replace('{{'.$files[$numFichierout]->aremplacer."}}", '010{{COUCOU}}1000101', $vueFile);
                                 }
                             }
-                            $check[$nbCheck++] = "file_get_contents(:".$vue_file.",,)";
-    
+                            //$check[$nbCheck++] = "VUE > file_get_contents(:".$vue_file.",,)";
                         }
                     }
                 }
             }
         }
-        if (!empty($check))
-        {
-            $_SESSION['cms']['check'] = $check;
-        }
+        // if (!empty($check))
+        // {
+        //     $_SESSION['cms']['check'] = $check;
+        // }
         return $paquethtml;
     }
-    // --------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+    /**
+     * 
+     */
     private function get_Current_Page(){
         
         $new_current_page = null;               // page vide
@@ -417,28 +495,41 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         if (!empty($new_current_page)) 
         {   
             $this->set_Current_Page($new_current_page); 
-            $_SESSION['cms']['user']['current_page'] = $this->_current_page;         
+            $_SESSION['cms']['user']['current_page'] = $this->_current_page;
+            $_SESSION['cms']['user']['pages']['poi'][] = $_SESSION['cms']['user']['current_page'];    
         }
         else
         {   // sinon on met la page par defaut ou pas
             $_SESSION['cms']['log'][] = $this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
             $this->set_Current_Page($this->_default_page);  // page par default
             $new_current_page = $this->_default_page;       // page par default
+            $_SESSION['cms']['user']['pages']['poi'][] = $_SESSION['cms']['user']['current_page'];    
         }
         return $new_current_page;
     }
-    // --------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+    /**
+     * 
+     */
     private function get_Jsondecode($url_file){
         //print_air($url_file,__CLASS__."->".__FUNCTION__);
         return (is_string($url_file) && file_exists($url_file)) ? json_decode(file_get_contents($url_file,true)) : False;
     }
-	// --------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------
+    /**
+     * setter de la current page
+     * @param string $newvalue nom de la page / page's name
+     */
     // SETTER
     private function set_Current_Page($newvalue){
         $this->_current_page = get_clean($newvalue);
     }
     private function get_Default_Page(){
         return $this->_default_page;
+    }
+    public function set_error($from,$message,$action='errors'){
+        // $from = '';
+        $_SESSION['cms'][$action][++$this->_Nlog] = "[N° $this->_Nlog] $from.$message";
     }
     // --------------------------------------------------------------------------------
     /**
@@ -447,37 +538,47 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
      * @param string $type require_once|include_once|file_get_contents
      * @return mixed content|true if succes|false if fail
      */
-    private function get_File_to_use($action,$file,$type,$coment=null){
+    private function get_File_to_use($action,$file,$type,$from=null){
+        // action = 'get_contents',
+        // $file = self::PNAVIGA,
+        // $type = "file_get_contents",
+        // $from = $this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)
+        // echo $type." (".$file.")".PHP_EOL;
         if (file_exists($file))
         {
             switch($type)
             {
                 case "require_once":
                     require_once($file);
-                    $_SESSION['cms'][$action][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$gg." ".$type."($file) ->:".__FUNCTION__.".";
+                    $this->set_error($from,$type."($file)",$action);
                     return true;
                 break;
                 
                 case "include_once":
                     include_once($file);
-                    $_SESSION['cms'][$action][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$from." ".$type."($file) ->:".__FUNCTION__.".";
+                    $this->set_error($from,$type."($file)",$action);
                     return true;
                 break;
                 
                 case "file_get_contents":
-                    $_SESSION['cms'][$action][$this->_Nlog++] = $this->_Nlog."]".$coment." ".$type."($file) in:".__FUNCTION__.".";
+                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$from." ".$type."($file) ->:".__FUNCTION__.".";
+                    $this->set_error($from,$type."($file)",$action);
                     return file_get_contents($file);
                 break;
                 
                 default :
-                    $_SESSION['cms']['errors'][$this->_Nlog++] = $this->_Nlog."]".$coment." ERROR SWITCH in:".__FUNCTION__.".";
+                    // $_SESSION['cms']['errors'][++$this->_Nlog] = $this->_Nlog."]".$from." ERROR SWITCH ->:".__FUNCTION__.".";
+                    $this->set_error($from,$type."($file) ->:".__FUNCTION__.".",'errors');
                     return false;
                 break;
             }
         }
         else
-        {
-            $_SESSION['cms']['errors'][$this->_Nlog++] = $this->_Nlog."]"."Le fichier n'existe pas... ".$coment." la methode $type($file) n'a pas fonctionnée";
+        {   
+            $this->set_error($from,' le fichier '.$file." n'existe pas. la methode ".$type." (".$file.") n'a pas fonctionnée");
+            // $_SESSION['cms']['errors'][++$this->_Nlog] = $this->_Nlog."]"."Le fichier n'existe pas... ".$from." la methode $type($file) n'a pas fonctionnée";
             return false;
         }
     }

@@ -1,18 +1,24 @@
 <?php 
-Class Login{
+Class User{
     use hydratationAndCream;
     private $_login;
     private $_mail;
     private $_token;
 
-    public function __construct($donnees){
-        print_air($donnees);
+    public function __construct($donnees=['login' => 'testlogin','mail' => 'testmail']){
         $this->hydrate_index($donnees);
         $this->_token= 'totoro'; // generate_token();
+        print_airB($this,'Class');
     }
     public function get_Func_Name(){
-        print_air('get_Func_Name');
+        print_airB(__FUNCTION__);
     }
+    public function set_Login($paquet)  { $this->_login   = $paquet;}
+    public function set_Mail($paquet)   { $this->_mail    = $paquet;}
+    public function set_Token($paquet)  { $this->_token   = $paquet;}
+    public function get_Login()         { return $this->_login;     }
+    public function get_Mail()          { return $this->_mail;      }
+    public function get_Token()         { return $this->_token;     }
 }
 trait hydratationAndCream{
     public function hydratation($key,$value) {
@@ -25,6 +31,40 @@ trait hydratationAndCream{
         }
     }
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // tests
+
+
+
+
+
     // HYDRATE ARRAY
     protected function hydrate_array($array){
         for($i = 0; $i < count($array); $i++){

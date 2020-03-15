@@ -1,7 +1,7 @@
 <?php 
     if ($_POST) {
         if (!empty($_POST['login']) && !empty($_POST['password'])) {
-            $donnes = [   
+            $donnees = [   
                 "login" => get_clean($_POST['login']),
                 "password" => get_clean($_POST['password'])
             ];
@@ -11,6 +11,9 @@
                 get_clean($_POST['password'])
             );
         }
-        $_SESSION['cms']['purpost'] = $_POST;
+        else{
+            
+        }
+        $_SESSION['cms']['post'] = $_POST;
     }
 ?>

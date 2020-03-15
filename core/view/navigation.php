@@ -28,6 +28,12 @@
                                 <li class="nav-item ACTIVITE">
                                     <a class="nav-link" href="?index" title="Accueil">Accueil<span class="sr-only">(current)</span></a>
                                 </li>
+                                <li class="nav-item ACTIVITE">
+                                    <a class="nav-link" href="?login" title="Login">Login<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item ACTIVITE">
+                                    <a class="nav-link" href="deco.php" title="Deco">Deco<span class="sr-only">(current)</span></a>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a
                                         class="nav-link dropdown-toggle"
