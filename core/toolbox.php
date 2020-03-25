@@ -1,22 +1,16 @@
 <?php
     // Utilitaires / toolbox
 
-    define('DEBUG_A', false); //get_Pageaouvriratouslescoups()
-    define('DEBUG_B', true); //get_Pageaouvriratouslescoups()
-    define('DEBUG_DIE', true); //die
+    define('DEBUG_A', false);   //get_Pageaouvriratouslescoups()
+    define('DEBUG_B', true);    //get_Pageaouvriratouslescoups()
+    define('DEBUG_DIE', true);  //die
     /**
      * autouploader de class / stacking class
      */
     function chargerClasse($classe) {
         $file = 'core/class/'.$classe . '.php';
-        // if (file_exists($file)) {
             require_once $file;
-            $_SESSION['cms']['check'][] = "New Class $classe"."() chargée.";
-        // }
-        // else {
-            
-        //     $_SESSION['cms']['errors'][] = "Class $classe non chargée.";
-        // }
+            $_SESSION['cms']['autoload'][] = "New Class $classe"."() chargée.";
     }
     spl_autoload_register('chargerClasse');
 

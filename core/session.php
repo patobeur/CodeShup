@@ -27,10 +27,12 @@
         : $_SESSION['cms']['user']['pages'][ $_SESSION['cms']['user']['current_page'] ] = $_SESSION['cms']['user']['pages'][$_SESSION['cms']['user']['current_page']] + 1
     ;
 
-    $_SESSION['cms']['check'] = [];
+    $_SESSION['cms']['errors'] = [];
+    $_SESSION['cms']['autoload'] = [];
+    $_SESSION['cms']['class'] = [];
+    $_SESSION['cms']['vue'] = [];
     $_SESSION['cms']['actions'] = [];
     $_SESSION['cms']['log'] = [];
-    $_SESSION['cms']['class'] = [];
     $_SESSION['cms']['require'] = [];
     $_SESSION['cms']['get_contents'] = [];
     $_SESSION['cms']['local'] = [];

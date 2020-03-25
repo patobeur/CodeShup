@@ -144,6 +144,7 @@
 		"js": [],
 		"css": [
 			"index.css",
+			"cover.css",
 			"feuilles.css"
 		],
 		"blocs": [
@@ -154,25 +155,16 @@
 	"login": {
 		"title": "LOGIN",
 		"actif": false,
-		"files": [
-			{
-				"visible": "true",
-				"vue": "anime"
-			}
-		],
 		"js": [],
 		"css": [
-			"login.css",
-			"feuilles.css"
+			"login.css"
 		],
 		"blocs": [
-			"anime",
 			"login"
 		],
-		"require": [],
 		"class": [],
-		"controller": [],
-		"fonction": []
+		"controller": ["login"],
+		"require": []
 	},
 	"404": {
 		"title": "404",

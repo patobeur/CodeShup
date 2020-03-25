@@ -1,25 +1,46 @@
 <?php 
 Class User{
     use hydratationAndCream;
-    private $_login;
-    private $_mail;
-    private $_token;
+    public $_mail;
+    public $_passwrd;
+    public $_token;
+    //         
 
-    public function __construct($donnees=['login' => 'testlogin','mail' => 'testmail']){
-        $this->hydrate_index($donnees);
-        $this->_token= 'totoro'; // generate_token();
-        print_airB($this,'Class');
+    public function __construct($donnees=['mail' => null,'passwrd' => null]){
+        // if (!empty($donnees)) {
+        //     $this->hydrate_index($donnees);
+        // }
+        $this->_mail = "";
+        $this->_passwrd = "";
+        $this->_token  = "totoro"; // generate_token();
+        $this->_statut = "visitor";
     }
-    public function get_Func_Name(){
-        print_airB(__FUNCTION__);
+    public function get_UserDatas(){
+        return [ 
+            "mail"    => $this->get_Mail(),
+            "token"   => $this->get_Token()
+        ];
     }
-    public function set_Login($paquet)  { $this->_login   = $paquet;}
-    public function set_Mail($paquet)   { $this->_mail    = $paquet;}
-    public function set_Token($paquet)  { $this->_token   = $paquet;}
-    public function get_Login()         { return $this->_login;     }
-    public function get_Mail()          { return $this->_mail;      }
-    public function get_Token()         { return $this->_token;     }
+    public function set_UserLoginDatas($tableau) { 
+        $this->_mail    = $tableau['mail'];
+        $this->_passwrd = $tableau['passwrd'];
+    }
+
+    public function set_Mail($paquet)  { $this->_mail          = $paquet;}
+    public function set_Passwrd($paquet){ $this->_passwrd       = $paquet;}
+    public function set_Token($paquet)  { $this->_token         = $paquet;}
+
+    public function get_Mail()          { return $this->_mail;            }
+    public function get_Passwrd()       { return $this->_passwrd;         }
+    public function get_Token()         { return $this->_token;           }
 }
+
+
+
+
+
+
+
 trait hydratationAndCream{
     public function hydratation($key,$value) {
         $method = 'set_'.ucfirst($key);

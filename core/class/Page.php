@@ -73,7 +73,7 @@ class Page{
         $n=PHP_EOL;
         // NAVIGATION
         
-        $fichier_importe = $this->get_File_to_use('get_contents',self::PNAVIGA,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+        $fichier_importe = $this->get_File_to_use('get_contents',self::PNAVIGA,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
         // if (
             // $fichier_importe = file_get_contents(self::PNAVIGA,TRUE).$n;       // lecture du fichier a inclure 
         // }
@@ -192,30 +192,30 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $tempovalue = count($cc);                       // je prend la liste des class a intégrer
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les class trouvés 
-                $class_file = self::CLAS.$cc[$numFichier].self::PEXTENSION;   // fichier a require
-                $this->get_File_to_use('class',$class_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                $class_file = self::CLAS.ucfirst($cc[$numFichier]).self::PEXTENSION;   // fichier a require
+                $this->get_File_to_use('class',$class_file,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
         // ----------------------------------- GET CURRENT CONTROLLER ---------------------------------
-        if (!empty($this->_ObjJson->$cp->require)){                                 // si il y'a des pages dans require
+        if (!empty($this->_ObjJson->$cp->controller)){                                 // si il y'a des pages dans require
             $tempovalue = count($this->_ObjJson->$cp->controller);                     // je prend la liste des Controller a intégrer
             $requires = $this->_ObjJson->$cp->controller;                              // cp = current bloc/require
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
-                $req_file = self::CONTR.$requires[$numFichier].self::PEXTENSION;    // fichier a require
-                $this->get_File_to_use('controller',$req_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                $req_file = self::CONTR.ucfirst($requires[$numFichier]).self::PEXTENSION;    // fichier a require
+                $this->get_File_to_use('controller',$req_file,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
-        // ----------------------------------- GET CURRENT FUNCTIONS ----------------------------------
-        if (!empty($this->_ObjJson->$cp->fonction)){                                 // si il y'a des pages dans require
-            $tempovalue = count($this->_ObjJson->$cp->fonction);                     // je prend la liste des Controller a intégrer
-            $requires = $this->_ObjJson->$cp->fonction;                              // cp = current bloc/require
+        // ----------------------------------- GET CURRENT require ----------------------------------
+        if (!empty($this->_ObjJson->$cp->require)){                                 // si il y'a des pages dans require
+            $tempovalue = count($this->_ObjJson->$cp->require);                     // je prend la liste des Controller a intégrer
+            $requires = $this->_ObjJson->$cp->require;                              // cp = current bloc/require
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
                 $req_file = self::FUNKY.$requires[$numFichier].self::PEXTENSION;    // fichier a require
-                $this->get_File_to_use('fonction',$req_file,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                $this->get_File_to_use('require',$req_file,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les pages trouvées 
                 $get_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION;     // fichier pour file_get_contents
-                $body_blocs .= $this->get_File_to_use('vue',$get_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                $body_blocs .= $this->get_File_to_use('vue',$get_file,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $body_blocs .= $this->get_Pageaouvriratouslescoups('files').$n;
         // FOOTER
         $body_blocs .= file_exists(self::PFOOTER)                                         // bloc footer
-            ? $this->get_File_to_use('get_contents',self::PFOOTER,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+            ? $this->get_File_to_use('get_contents',self::PFOOTER,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
             : false; 
         // $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);            // bloc js header de la page appelée
         $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;          // on ferme le div du début <div class="fullpage">
@@ -292,7 +292,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                         
                         $message .= file_exists($fichierutilise) ? 
                             $this->get_Indent($Origine,1,'get_head_meta_html').'<link rel="stylesheet" href="'.$fichierutilise.'">'.$n :
-                            $this->set_error($this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__),' le fichier '.$fichierutilise." n'existe pas");
+                            $this->set_error($this->get_errorphrase('',__FUNCTION__,__LINE__),' le fichier '.$fichierutilise." n'existe pas");
                     }
                 }
             }
@@ -439,22 +439,22 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                     
                     if ($require_fonction) // si une fonctions de traitememt php est demandé en require
                     {   
-                        $requiredFile = $this->get_File_to_use('function',$require_fonction,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                        $requiredFile = $this->get_File_to_use('function',$require_fonction,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
                     }
 
                     if ($require_class) // si une class php est demandé en require
                     {   
-                        $requiredclass = $this->get_File_to_use('class',$require_class,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                        $requiredclass = $this->get_File_to_use('class',$require_class,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
                     }
                     if ($require_controller) // si un controller php est demandé en require
                     {   
-                        $requiredcontroller = $this->get_File_to_use('controller',$require_controller,"require_once",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__));
+                        $requiredcontroller = $this->get_File_to_use('controller',$require_controller,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
                     }
                    
                     if ($vue_file){// vue
                         if ($visible){
                             $vueFile = file_exists($vue_file) 
-                                ? $this->get_File_to_use('vue',$vue_file,"file_get_contents",$this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__))
+                                ? $this->get_File_to_use('vue',$vue_file,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
                                 : false;
                             
                             if (!empty($requiredFile) && $vueFile){
@@ -500,7 +500,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         }
         else
         {   // sinon on met la page par defaut ou pas
-            $_SESSION['cms']['log'][] = $this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
+            $_SESSION['cms']['log'][] = $this->get_errorphrase('',__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
             $this->set_Current_Page($this->_default_page);  // page par default
             $new_current_page = $this->_default_page;       // page par default
             $_SESSION['cms']['user']['pages']['poi'][] = $_SESSION['cms']['user']['current_page'];    
@@ -542,7 +542,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         // action = 'get_contents',
         // $file = self::PNAVIGA,
         // $type = "file_get_contents",
-        // $from = $this->get_errorphrase(__FILE__,__FUNCTION__,__LINE__)
+        // $from = $this->get_errorphrase('',__FUNCTION__,__LINE__)
         // echo $type." (".$file.")".PHP_EOL;
         if (file_exists($file))
         {
@@ -585,8 +585,8 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     // --------------------------------------------------------------------------------
     // MODULE ERREURS
     /**
-     * use : get_errorphrase(__FILE__,__FUNCTION__,__LINE__,{'one','more'},'commentaires')
-     * @param string $file use to be __FILE__ with FULL url
+     * use : get_errorphrase('',__FUNCTION__,__LINE__,{'one','more'},'commentaires')
+     * @param string $file use to be '' with FULL url
      * @param string $function use to be __FUNCTION__
      * @param string $line use to be __LINE__
      * @param string $arguments use to be array arguments from function
@@ -607,8 +607,8 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         return "$file:[$line] $function($file) ->".$coment;
     }
     /**
-     * use : get_errorphrase(__FILE__,__FUNCTION__,__LINE__)
-     * @param string $file use to be __FILE__ with FULL url
+     * use : get_errorphrase('',__FUNCTION__,__LINE__)
+     * @param string $file use to be '' with FULL url
      * @param string $function use to be __FUNCTION__
      * @param string $line use to be __LINE__
      * @param string $arguments use to be indexed arguments from function
