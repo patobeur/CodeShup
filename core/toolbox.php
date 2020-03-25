@@ -50,9 +50,10 @@
      * @param $paquet array give me something to print like a string
      * @param $title string give me something print like a string or integer
      */
-    function print_air($paquet,$title=''){
+    function print_air($paquet,$title='',$top=null){
         if (DEBUG_A){
-            print('<hr><pre>');
+            $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
+            print('<hr>'.$br.'<pre>');
             // echo "function(".__FUNCTION__.")<br>";
             ($title!='') ? print($title.':') : print('print_r:');
             print_r($paquet);
@@ -64,8 +65,9 @@
      * @param $paquet array give me something to print like a string
      * @param $title string give me something print like a string or integer
      */
-    function print_airB($paquet,$title=''){
-        print('<hr><pre>');
+    function print_airB($paquet,$title='',$top=null){
+        $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
+        print('<hr>'.$br.'<pre>');
         // echo "function(".__FUNCTION__.")<br>";
         ($title!='') ? print($title.':') : print('print_r:');
         print_r($paquet);

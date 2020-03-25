@@ -9,6 +9,122 @@
 			"LOGOSRC": "logo_patobeur_transp.png"
 		}
 	},
+	"defaultpage": [
+		"index"
+	],
+	"pagesext":  {
+		"nommenu": "Services",
+		"nomlabel": "service_one",
+		"actif": "true",
+		"files": [
+			{
+				"href": "#",
+				"target": "_out",
+				"title": "test page ext"
+			}
+		]
+	},
+	"pagesgestion":  {
+		"nommenu": "Gestion",
+		"nomlabel": "gestionapp",
+		"files": [
+			{
+				"href": "#",
+				"target": "_out",
+				"title": "Connectez vous!"
+			},
+			{
+				"href": "#",
+				"target": "_out",
+				"title": "test page ext"
+			},
+			{
+				"href": "#",
+				"target": "_out",
+				"title": "test page ext"
+			}
+		]
+	},
+	"pages": ["index","404","403","login"],
+	"index": {
+		"title": "Accueil",
+		"actif": "true",
+		"files": [
+			{
+				"visible": "true",
+				"require": "visitor",
+				"page": "visitor",
+				"aremplacer": "_VISITOR_",
+				"session": "TICKET"
+			},
+			{
+				"visible": "true",
+				"vue": "anime",
+				"page": "anime"
+			}
+		],
+		"js": [],
+		"css": ["index.css","cover.css","feuilles.css"],
+		"blocs": ["anime","index"]
+	},
+	"login": {
+		"title": "LOGIN",
+		"actif": false,
+		"js": [],
+		"css": ["login.css"],
+		"blocs": ["login"],
+		"class": [],
+		"controller": ["login"],
+		"require": []
+	},
+	"404": {
+		"title": "404",
+		"actif": false,
+		"css": ["feuilles.css"],
+		"blocs": ["404"],
+		"js": []
+	},
+	"403": {
+		"title": "403",
+		"actif": false,
+		"js": [],
+		"css": ["feuilles.css"],
+		"blocs": ["403"]
+	},
+	"aouvriratouslescoups": {
+		"actif": "true",
+		"files": [
+			{
+			"visible": "true",
+			"require": "",
+			"page": "",
+			"class": "User",
+			"controller": "",
+			"fonction": ""
+			},
+			{
+			"visible": "true",
+			"require": "visitor",
+			"vue": "visitor",
+			"aremplacer": "VISITOR",
+			"session": "TICKET"
+			}
+		]
+	},
+	"atouslescoups": {
+		"actif": "true",
+		"css": [
+			"bootstrap.min.css",
+			"base.css",
+			"style.css",
+			"footer.css",
+			"surcharge.css",
+			"visitor.css"],
+		"js": [
+			"jquery-3.4.1.min.js",
+			"bootstrap.bundle.min.js",
+			"devtools.js"]
+	},
 	"blocs": {
 		"blocs": {
 			"0": "checksum",
@@ -81,146 +197,6 @@
 				"typeitem": "image/png"
 			}
 		]
-	},
-	"defaultpage": [
-		"index"
-	],
-	"pagesext":  {
-		"nommenu": "Services",
-		"nomlabel": "service_one",
-		"actif": "true",
-		"files": [
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
-			}
-		]
-	},
-	"pagesgestion":  {
-		"nommenu": "Gestion",
-		"nomlabel": "gestionapp",
-		"files": [
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "Connectez vous!"
-			},
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
-			},
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
-			}
-		]
-	},
-	"pages": [
-		"index",
-		"404",
-		"403",
-		"login"
-	],
-	"index": {
-		"title": "Accueil",
-		"actif": "true",
-		"files": [
-			{
-				"visible": "true",
-				"require": "visitor",
-				"page": "visitor",
-				"aremplacer": "_VISITOR_",
-				"session": "TICKET"
-			},
-			{
-				"visible": "true",
-				"vue": "anime",
-				"page": "anime"
-			}
-		],
-		"js": [],
-		"css": [
-			"index.css",
-			"cover.css",
-			"feuilles.css"
-		],
-		"blocs": [
-			"anime",
-			"index"
-		]
-	},
-	"login": {
-		"title": "LOGIN",
-		"actif": false,
-		"js": [],
-		"css": [
-			"login.css"
-		],
-		"blocs": [
-			"login"
-		],
-		"class": [],
-		"controller": ["login"],
-		"require": []
-	},
-	"404": {
-		"title": "404",
-		"actif": false,
-		"css": [
-			"feuilles.css"
-		],
-		"blocs": [
-			"404"
-		],
-		"js": []
-	},
-	"403": {
-		"title": "403",
-		"actif": false,
-		"js": [],
-		"css": [
-			"feuilles.css"
-		],
-		"blocs": [
-			"403"
-		]
-	},
-	"aouvriratouslescoups": {
-		"actif": "true",
-		"files": [
-			{
-			"visible": "true",
-			"require": "",
-			"page": "",
-			"class": "User",
-			"controller": "",
-			"fonction": ""
-			},
-			{
-			"visible": "true",
-			"require": "visitor",
-			"vue": "visitor",
-			"aremplacer": "VISITOR",
-			"session": "TICKET"
-			}
-		]
-	},
-	"atouslescoups": {
-		"actif": "true",
-		"css": [
-			"bootstrap.min.css",
-			"base.css",
-			"style.css",
-			"footer.css",
-			"surcharge.css",
-			"visitor.css"],
-		"js": [
-			"jquery-3.4.1.min.js",
-			"bootstrap.bundle.min.js",
-			"devtools.js"]
 	},
 	"checksum": "checkmefive"
 	}

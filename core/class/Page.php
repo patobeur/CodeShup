@@ -193,7 +193,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les class trouvés 
                 $class_file = self::CLAS.ucfirst($cc[$numFichier]).self::PEXTENSION;   // fichier a require
-                $this->get_File_to_use('class',$class_file,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
+                $this->get_File_to_use('class',$class_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
                 $req_file = self::CONTR.ucfirst($requires[$numFichier]).self::PEXTENSION;    // fichier a require
-                $this->get_File_to_use('controller',$req_file,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
+                $this->get_File_to_use('controller',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
@@ -215,7 +215,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
                 $req_file = self::FUNKY.$requires[$numFichier].self::PEXTENSION;    // fichier a require
-                $this->get_File_to_use('require',$req_file,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
+                $this->get_File_to_use('require',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
@@ -548,6 +548,13 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         {
             switch($type)
             {
+                case "include":
+                    include($file);
+                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$gg." ".$type."($file) ->:".__FUNCTION__.".";
+                    $this->set_error($from,$type."($file)",$action);
+                    return true;
+                break;
+                
                 case "require_once":
                     require_once($file);
                     // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$gg." ".$type."($file) ->:".__FUNCTION__.".";

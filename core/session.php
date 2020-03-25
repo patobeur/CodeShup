@@ -7,6 +7,8 @@
             'log'       => [],
             'errors'    => [],
             'user'      => [
+                'statut' => 'none',
+                'try' => 0,
                 'crea_date' => date('Y:m:d h:m:s'),
                 'last_date' => null,
                 'last_page' => 'none',

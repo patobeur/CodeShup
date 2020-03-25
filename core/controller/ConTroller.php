@@ -6,12 +6,12 @@
     require_once('core/toolbox.php');
 
     $Db = new Db();
-    $Page = new Page();
     $User = new User();
+    $Page = new Page();
     $Page->do_affichelapagehtml();
+    // echo $_Session['cms']['user']['statut'];
     
-    //$User = new User(['mail' => '','passwrd' => '']);
-
+    print_airB($User->get_UserFiche(),'fiche user',1);
     DEBUG ? print_airB($_SESSION,'CMS SESSION') : '';
     // tuto : https://codeshack.io/super-fast-php-mysql-database-class/
 ?>
