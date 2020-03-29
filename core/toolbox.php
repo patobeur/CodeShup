@@ -1,6 +1,5 @@
 <?php
     // Utilitaires / toolbox
-
     define('DEBUG_A', false);   //get_Pageaouvriratouslescoups()
     define('DEBUG_B', true);    //get_Pageaouvriratouslescoups()
     define('DEBUG_DIE', true);  //die
@@ -8,7 +7,7 @@
      * autouploader de class / stacking class
      */
     function chargerClasse($classe) {
-        $file = 'core/class/'.$classe . '.php';
+        $file = 'core/class/Cl_'.$classe . '.php';
             require_once $file;
             $_SESSION['cms']['autoload'][] = "New Class $classe"."() chargée.";
     }
@@ -55,7 +54,7 @@
             $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
             print('<hr>'.$br.'<pre>');
             // echo "function(".__FUNCTION__.")<br>";
-            ($title!='') ? print($title.':') : print('print_r:');
+            ($title!='') ? print($title.': ') : print('print_r: ');
             print_r($paquet);
             print('</pre>');
         }
@@ -69,7 +68,7 @@
         $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
         print('<hr>'.$br.'<pre>');
         // echo "function(".__FUNCTION__.")<br>";
-        ($title!='') ? print($title.':') : print('print_r:');
+        ($title!='') ? print($title.': ') : print('print_r: ');
         print_r($paquet);
         print('</pre>');
     }
@@ -80,7 +79,7 @@
      */
     function var_bump($paquet,$title=''){
         print('<pre><hr>');
-        ($title!='') ? print($title.':') : print('var_dump:');
+        ($title!='') ? print($title.': ') : print('var_dump: ');
         var_dump($paquet);
         print('</pre>');
     }

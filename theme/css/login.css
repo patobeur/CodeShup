@@ -5,7 +5,7 @@ body{
     margin:0;
     padding:0;
 }
-.conect{
+.connect{
     width:300px;
     height:max-content;
     margin-left:auto;
@@ -24,17 +24,17 @@ body{
     -ms-border-radius: 9px;
     -o-border-radius: 9px;
 }
-.conect h3{
+.connect h3{
     padding:0;
     margin:0;
 }
 @media(max-height:300px){
-    .conect{
+    .connect{
         margin-top: 0;
     }
 }
-.conect #login,
-.conect #password{
+.connect #email,
+.connect #password{
     border-color: rgba(0, 0, 0, .3);
     border-radius: 5px;
     padding-left:3px;
@@ -43,7 +43,7 @@ body{
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
 }
-.conect #consub{
+.connect #consub{
     margin-top:5px;
     border-color: rgba(0, 0, 0, .3);
     border-radius: 5px;

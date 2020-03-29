@@ -48,7 +48,7 @@
 	"pages": ["index","404","403","login"],
 	"index": {
 		"title": "Accueil",
-		"actif": "true",
+		"menuactif": "true",
 		"files": [
 			{
 				"visible": "true",
@@ -69,7 +69,7 @@
 	},
 	"login": {
 		"title": "LOGIN",
-		"actif": false,
+		"menuactif": false,
 		"js": [],
 		"css": ["login.css"],
 		"blocs": ["login"],
@@ -79,14 +79,14 @@
 	},
 	"404": {
 		"title": "404",
-		"actif": false,
+		"menuactif": true,
 		"css": ["feuilles.css"],
 		"blocs": ["404"],
 		"js": []
 	},
 	"403": {
 		"title": "403",
-		"actif": false,
+		"menuactif": true,
 		"js": [],
 		"css": ["feuilles.css"],
 		"blocs": ["403"]

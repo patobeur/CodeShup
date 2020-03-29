@@ -28,12 +28,7 @@
                                 <li class="nav-item ACTIVITE">
                                     <a class="nav-link" href="?index" title="Accueil">Accueil<span class="sr-only">(current)</span></a>
                                 </li>
-                                <li class="nav-item ACTIVITE">
-                                    <a class="nav-link" href="?login" title="Login">Login<span class="sr-only">(current)</span></a>
-                                </li>
-                                <li class="nav-item ACTIVITE">
-                                    <a class="nav-link" href="deco.php" title="Deco">Deco<span class="sr-only">(current)</span></a>
-                                </li>
+                                LOGINATOR
                                 <li class="nav-item dropdown">
                                     <a
                                         class="nav-link dropdown-toggle"
@@ -44,9 +39,7 @@
                                         aria-haspopup="true"
                                         aria-expanded="false">Pages</a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-NAVIGATATOR
-                                        <!-- <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#Inscription">HTMLS5 / CSS3</a> -->
+                                        NAVIGATATOR
                                     </div>
                                 </li>
 ACTOBEUR

@@ -1,55 +1,55 @@
 <?php
 
-class Page{
-
-    const PROOT         = '';
-    const PCORE         = self::PROOT.'core/';
-    //
-    const PJSON         = self::PCORE.'json/';
-    const PLOG          = self::PCORE.'log/';
-    const PIMG          = self::PCORE.'img/';
-    //
-    const FUNKY         = self::PCORE.'functions/';
-    const CLAS          = self::PCORE.'class/';
-    const CONTR         = self::PCORE.'controller/';
-    const VIEW          = self::PCORE.'view/'.'';           // pages parsé à la volé indiqué dans le json
-    const VUES          = self::PCORE.'inview/_in_';        // pages a mettre dans view
-    // const PIMPPREFIX    = self::PCORE.'php/_inc_';          // pour les pages en include ou require (local au moteur)
+// definitions
+    define('AAROOT',            '');
+    define('AACORE',            AAROOT.'core/');
+    define('AAINI',             AACORE.'ini/');
+    // REP
+    define("AAJSON",            AACORE.'json/');
+    define("AALOG",             AACORE.'log/');
+    // Formatage des fichiers
+    define("AAFONCTION",        AACORE.'functions/'.'F_');
+    define("AACLASSE",          AACORE.'class/'.'Cl_');
+    define("AACONTROLEUR",      AACORE.'controller/'.'Co_');
+    define("AAVUE",             AACORE.'view/'.'Vu_');          // pages parsées à la volé indiqué dans le json
+    define("AAINVUE",           AACORE.'inview/'.'_in_');       // pages a mettre dans view
+    define("AACONTROLER",       AACORE.'controller/'.'Co_');
     // FILES
-    const PJSONHEADER   = self::PJSON.'structure.json';
-    const PJSONCONTEN   = self::PJSON.'content.json';
+    define("AAJSONHEADER",      AAJSON.'structure.json');
+    define("AAJSONCONTEN",      AAJSON.'content.json');
     // INCLUDES
-    const PNAVIGA       = self::VIEW.'navigation.php';
-    const PFOOTER       = self::VIEW.'footer.php';
-    //
-    const PCSS          = 'theme/css/';
-    const PJS           = 'js/';
-    const PEXTENSION    ='.php';
+    define("AANAVBAR",          AAVUE.'navigation.php');
+    define("AAFOOTER",          AAVUE.'footer.php');
+    // externes
+    define("AAIMAGE",           AAROOT.'img/');
+    define("AACSS",             AAROOT.'theme/css/');
+    define("AAJS",              AAROOT.'js/');
+    // TOOLS
+    define("AAEXTPHP",       '.php');
 
-
+class Page{
     // --------------------------------------------------------------------------------	
-	// $auteur =           $Structure_json_arr['auteur'];
-    // $date =             $Structure_json_arr['date'];
-    // $time_stamp =       $Structure_json_arr['time_stamp'];
-
 	private $_Nlog = 0;
 	private $_ObjJson;
-	private $_ObjJson2;
-	// private $_auteur;
-	// private $_date;
-	// private $_time_stamp;
-    // private $_logosrc;
-    //
+    private $_ObjJson2;
+    
+    private $_User;
+	private $_Bdd;
+
 	private $_current_page='';
 	private $_default_page='';
 	private $_Originum=0;
     
+    // public function __construct($utilisateur,$database){
     public function __construct(){
-        $this->_ObjJson = $this->get_Jsondecode(self::PJSONCONTEN);
-        $this->_ObjJson2 = $this->get_Jsondecode(self::PJSONHEADER);
+        $this->_ObjJson = $this->get_Jsondecode(AAJSONCONTEN);
+        $this->_ObjJson2 = $this->get_Jsondecode(AAJSONHEADER);
         $this->_current_page = $this->_ObjJson->defaultpage[0];
         $this->_default_page = $this->_ObjJson->defaultpage[0];
-        // $this->hydrate_info_var(array('_auteur','_date','_time_stamp','_logosrc'));
+
+        $this->_User = new User();
+        $this->_Bdd  = new Db();
+        
     }
     // PUBLIC FUNCTIONS
     // --------------------------------------------------------------------------------
@@ -66,20 +66,11 @@ class Page{
         return $dom_blocs;
     }
 
-
     // USEFUL IN NAVIGATION MENU
 	private function get_List_Menu($kelfamille){
-        //print_airB($kelfamille,__CLASS__."->".__FUNCTION__);
         $n=PHP_EOL;
-        // NAVIGATION
-        
-        $fichier_importe = $this->get_File_to_use('get_contents',self::PNAVIGA,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
-        // if (
-            // $fichier_importe = file_get_contents(self::PNAVIGA,TRUE).$n;       // lecture du fichier a inclure 
-        // }
-        // else {
-        //     DEBUG_DIE ? die('le fichier "'.self::PNAVIGA.'" est manquant. !?!') : die();
-        // }
+        // NAVIGATION        
+        $fichier_importe = $this->get_File_to_use('get_contents',AANAVBAR,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
         // ------------------------------------------------------------------------------
         $arr_pc = $this->_ObjJson->$kelfamille;                            // arr_pc = pages courantes (arr_ pour array)
         $coment_blocs = $this->get_Indent(0,4,'Navigat')."<!-- Auto in menu -->".$n;
@@ -93,6 +84,60 @@ class Page{
         } 
         $coment_blocs .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
         if ($this->_current_page == 'index') {$is_activ = ' active';} else  {$is_activ = '';}
+        
+
+        $LOGINATOR = '';
+
+
+        //BLOC LOGIN (LOGINATOR)
+        if ($this->_current_page != 'login')
+        {
+            // 
+            if (empty($_SESSION['cms']['profil']))
+            {
+                $LOGINATOR = '
+                    <!-- login menu -->
+                    <li class="nav-item ACTIVITE">
+                        <a class="nav-link" href="?login" title="Accueil">Login<span class="sr-only">(current)</span></a>
+                    </li>
+                    <!-- Fin login menu -->'.PHP_EOL;
+            }
+            else
+            {
+                $LOGINATOR = '
+                    <!-- Auto out menu -->
+                    <li class="nav-item dropdown">
+                        <a
+                            class="nav-link dropdown-toggle"
+                            href="#"
+                            id="gestionprofil"
+                            role="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            Profil
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="gestionprofil">
+                            <!-- Profil -->
+                                <a class="dropdown-item" href="?profil" title="Profil">Profil</a>
+                            <!-- Fin Profil -->
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="deco.php">Deco</a>
+                        </div>
+                    </li>
+                    <!-- Fin Auto out menu -->'.PHP_EOL;
+            }
+        }
+        elseif ($this->_current_page == 'login')// && $this->_User['statut'] == 'visitor')
+        {
+            $LOGINATOR = PHP_EOL;
+
+        }
+
+
+
+
+
 
         $valeurderetour = preg_replace("_NAVIGATATOR_",$coment_blocs, $fichier_importe); 
         $valeurderetour = preg_replace("_ACTIVITE_",$is_activ, $valeurderetour);
@@ -101,6 +146,7 @@ class Page{
         $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
         // ------------------------------------------------------------------------------
         //print_airB($valeurderetour,'valeurderetour');
+        $valeurderetour = preg_replace("_LOGINATOR_",$LOGINATOR, $valeurderetour); 
         return $valeurderetour; 
     }
     // --------------------------------------------------------------------------------
@@ -113,7 +159,8 @@ class Page{
         $A_remplacement = '';
         // printair( $this->_ObjJson->$kelfamille->$sousfamille);
         // print(count($this->_ObjJson->$kelfamille->$sousfamille));
-        for ($numFam=0; $numFam < count($this->_ObjJson->$kelfamille->$sousfamille); $numFam++){
+        for ($numFam=0; $numFam < count($this->_ObjJson->$kelfamille->$sousfamille); $numFam++)
+        {
             // ici le lien active
             $target='';
             ($Tablo_Enfants[$numFam]->target!='') ? 
@@ -123,6 +170,8 @@ class Page{
             $A_remplacement .= $this->get_Indent(0,5,'get_Navigation_Menu');
             $A_remplacement .= '<a class="dropdown-item" href="'.$Tablo_Enfants[$numFam]->href.'"'.$target.'>'.$Tablo_Enfants[$numFam]->title.'</a>'.PHP_EOL;
         } 
+
+
         $A_html = '                                <!-- Auto out menu -->
                                 <li class="nav-item dropdown">
                                     <a
@@ -178,7 +227,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
 
         //
-        $header = $this->get_RemplacePar('_URLROOT_', $this::PROOT, $this->get_List_Menu('pages'));
+        $header = $this->get_RemplacePar('_URLROOT_', AAROOT, $this->get_List_Menu('pages'));
         $header = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
 
 
@@ -192,7 +241,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $tempovalue = count($cc);                       // je prend la liste des class a intégrer
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les class trouvés 
-                $class_file = self::CLAS.ucfirst($cc[$numFichier]).self::PEXTENSION;   // fichier a require
+                $class_file = AACLASSE.ucfirst($cc[$numFichier]).AAEXTPHP;   // fichier a require
                 $this->get_File_to_use('class',$class_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
@@ -203,7 +252,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $requires = $this->_ObjJson->$cp->controller;                              // cp = current bloc/require
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
-                $req_file = self::CONTR.ucfirst($requires[$numFichier]).self::PEXTENSION;    // fichier a require
+                $req_file = AACONTROLEUR.ucfirst($requires[$numFichier]).AAEXTPHP;    // fichier a require
                 $this->get_File_to_use('controller',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
@@ -214,7 +263,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $requires = $this->_ObjJson->$cp->require;                              // cp = current bloc/require
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
-                $req_file = self::FUNKY.$requires[$numFichier].self::PEXTENSION;    // fichier a require
+                $req_file = AAFONCTION.$requires[$numFichier].AAEXTPHP;    // fichier a require
                 $this->get_File_to_use('require',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
@@ -225,7 +274,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $fichiers = $this->_ObjJson->$cp->blocs;                                // cp = current bloc/page
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les pages trouvées 
-                $get_file = self::VUES.$fichiers[$numFichier].self::PEXTENSION;     // fichier pour file_get_contents
+                $get_file = AAINVUE.$fichiers[$numFichier].AAEXTPHP;     // fichier pour file_get_contents
                 $body_blocs .= $this->get_File_to_use('vue',$get_file,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
@@ -233,8 +282,8 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         // --------------------------------------------------------------------------------------------
         $body_blocs .= $this->get_Pageaouvriratouslescoups('files').$n;
         // FOOTER
-        $body_blocs .= file_exists(self::PFOOTER)                                         // bloc footer
-            ? $this->get_File_to_use('get_contents',self::PFOOTER,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
+        $body_blocs .= file_exists(AAFOOTER)                                         // bloc footer
+            ? $this->get_File_to_use('get_contents',AAFOOTER,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
             : false; 
         // $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);            // bloc js header de la page appelée
         $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;          // on ferme le div du début <div class="fullpage">
@@ -270,7 +319,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $tempovalueout = count($cc);
             if ($tempovalueout > 0 ){
                 for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
-                    $message .= $this->get_Indent($Origine,1,'get_end_js_html').'<script src="'.self::PJS.$cc[$num_item].'" type="text/javascript"></script>'.$n;
+                    $message .= $this->get_Indent($Origine,1,'get_end_js_html').'<script src="'.AAJS.$cc[$num_item].'" type="text/javascript"></script>'.$n;
                 }
             }
         $message = $this->get_Indent($Origine,1,'get_end_js_html')."<!-- Début ".$famille." ".$nomchamp." -->".$n.$message.$this->get_Indent($Origine,1,'get_end_js_html')."<!-- Fin ".$famille." ".$nomchamp." -->".$n;
@@ -287,7 +336,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                 $tempovalueout = count($list->$nomchamp);
                 if ($tempovalueout > 0 ){
                     for ($num_item = 0; $num_item < $tempovalueout; $num_item++){
-                        $fichierutilise = self::PCSS.$list->$nomchamp[$num_item];
+                        $fichierutilise = AACSS.$list->$nomchamp[$num_item];
                         //
                         
                         $message .= file_exists($fichierutilise) ? 
@@ -398,7 +447,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-'. $koi .'/' . $choix . ' -->'.$n;         // html comment            
             for ($j=0;$j<count($this->_ObjJson->$cp->css);$j++){
                 if ($this->_ObjJson->$cp->css[$j]!="") {
-                    $phrase .= $this->get_Indent($Origine,2,'rien').'<link rel="stylesheet" href="'.self::PCSS.$this->_ObjJson->$cp->css[$j].'">'.$n;
+                    $phrase .= $this->get_Indent($Origine,2,'rien').'<link rel="stylesheet" href="'.AACSS.$this->_ObjJson->$cp->css[$j].'">'.$n;
                 }
             }
             $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-End\'s '. $koi .'/' . $choix . ' -->'.$n;  // end html comment 
@@ -426,12 +475,12 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             if ($nbFichierout > 0 ){
                 for ($numFichierout = 0; $numFichierout < $nbFichierout; $numFichierout++){
                     
-                    $require_fonction =     !empty($files[$numFichierout]->fonction) ?       self::FUNKY.$files[$numFichierout]->require.self::PEXTENSION    : null;
-                    $require_class =        !empty($files[$numFichierout]->class) ?         self::CLAS.$files[$numFichierout]->class.self::PEXTENSION    : null;
+                    $require_fonction =     !empty($files[$numFichierout]->fonction) ?      AAFONCTION.$files[$numFichierout]->require.AAEXTPHP    : null;
+                    $require_class =        !empty($files[$numFichierout]->class) ?         AACLASSE.$files[$numFichierout]->class.AAEXTPHP    : null;
                     
-                    $require_controller=    !empty($files[$numFichierout]->controller) ?    self::CONTR.$files[$numFichierout]->controller.self::PEXTENSION    : null;
-                    // $include_file =      !empty($files[$numFichierout]->include) ?       self::FUNKY.$files[$numFichierout]->include.self::PEXTENSION    : null;                    
-                    $vue_file =             !empty($files[$numFichierout]->vue) ?           self::VUES.$files[$numFichierout]->require.self::PEXTENSION     : null;
+                    $require_controller=    !empty($files[$numFichierout]->controller) ?    AACONTROLEUR.$files[$numFichierout]->controller.AAEXTPHP    : null;
+                    // $include_file =      !empty($files[$numFichierout]->include) ?       AAFONCTION.$files[$numFichierout]->include.AAEXTPHP    : null;                    
+                    $vue_file =             !empty($files[$numFichierout]->vue) ?           AAINVUE.$files[$numFichierout]->require.AAEXTPHP     : null;
 
                     $aremplacer =           !empty($files[$numFichierout]->aremplacer) ?    $files[$numFichierout]->aremplacer                              : null;
                     $visible =              !empty($files[$numFichierout]->visible) ?       $files[$numFichierout]->visible                                 : null;
@@ -491,6 +540,12 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             }
         }
 
+        // on evite de réafficher la page login une fois loggué
+        if (!empty($_SESSION['cms']['profil']) AND $new_current_page=='login'){
+            $new_current_page='index';
+        }
+
+
         // si on trouve une page dans l'url
         if (!empty($new_current_page)) 
         {   
@@ -515,6 +570,11 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         //print_air($url_file,__CLASS__."->".__FUNCTION__);
         return (is_string($url_file) && file_exists($url_file)) ? json_decode(file_get_contents($url_file,true)) : False;
     }
+
+
+
+
+
 	// ------------------------------------------------------------------------------
     /**
      * setter de la current page
@@ -527,20 +587,27 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
     private function get_Default_Page(){
         return $this->_default_page;
     }
+    // 
+    /**
+     * affichage des info dans la session
+     * @param string $action famille dans SESSION (errors par defaut)
+     * @param string $message texte a afficher
+     * @param string $from source de l'appel
+     */
     public function set_error($from,$message,$action='errors'){
-        // $from = '';
         $_SESSION['cms'][$action][++$this->_Nlog] = "[N° $this->_Nlog] $from.$message";
     }
     // --------------------------------------------------------------------------------
     /**
-     * getter de fichiers exterieurs
-     * @param string $file fichier a traiter
+     * getter de fichiers exterieurs + sender d'erreurs
+     * @param string $action famille dans SESSION
      * @param string $type require_once|include_once|file_get_contents
+     * @param string $from source call
      * @return mixed content|true if succes|false if fail
      */
     private function get_File_to_use($action,$file,$type,$from=null){
         // action = 'get_contents',
-        // $file = self::PNAVIGA,
+        // $file = AANAVBAR,
         // $type = "file_get_contents",
         // $from = $this->get_errorphrase('',__FUNCTION__,__LINE__)
         // echo $type." (".$file.")".PHP_EOL;
@@ -662,7 +729,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $listedesRequire = $this->_ObjJson->$new_current_page->require;
             //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
             for ( $i = 0; $i < count($listedesRequire); $i++ ){
-                $fichierrequire = self::FUNKY.$listedesRequire[$i].self::PEXTENSION;
+                $fichierrequire = AAFONCTION.$listedesRequire[$i].AAEXTPHP;
                 if (file_exists($fichierrequire)) {
                     require_once($fichierrequire);  
                 }
