@@ -18,5 +18,5 @@
     //     }
     //     $_SESSION['cms']['post'] = $_POST;
     // }
-    print_airB('coucou',__FILE__,1)
+    // print_airB('coucou',__FILE__,1)
 ?>

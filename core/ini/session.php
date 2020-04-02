@@ -1,32 +1,39 @@
 <?php    
-    if (empty($_SESSION['cms']))
+    if (empty($_SESSION))
     {
+        $_SESSION['user'] = 
+        [
+            'pages' =>
+            [
+                'poi' => []
+            ],
+            'statut' => 'none',
+            'try' => 0,
+            'crea_date' => date('Y:m:d h:m:s'),
+            'last_date' => null,
+            'last_page' => 'none',
+            'current_page' => 'index',
+            'hit' => 0,
+            'pages' => []
+        ];
         $_SESSION['cms'] = [
             'check'     => [],
             'actions'    => [],
             'log'       => [],
-            'errors'    => [],
-            'user'      => [
-                'statut' => 'none',
-                'try' => 0,
-                'crea_date' => date('Y:m:d h:m:s'),
-                'last_date' => null,
-                'last_page' => 'none',
-                'current_page' => 'index',
-                'hit' => 0,
-                'pages' => []
-            ],
+            'errors'    => []
         ];
+        // print_r($_SESSION);
     }
     else 
     {   // deja passé par là
-        $_SESSION['cms']['user']['last_page'] = $_SESSION['cms']['user']['current_page'];
-        $_SESSION['cms']['user']['hit']++;
+        // print_r($_SESSION);
+        $_SESSION['user']['last_page'] = $_SESSION['user']['current_page'];
+        $_SESSION['user']['hit']++;
     }
 
-    empty($_SESSION['cms']['user']['pages'][ $_SESSION['cms']['user']['current_page'] ])
-        ? $_SESSION['cms']['user']['pages'][ $_SESSION['cms']['user']['current_page'] ] = 1
-        : $_SESSION['cms']['user']['pages'][ $_SESSION['cms']['user']['current_page'] ] = $_SESSION['cms']['user']['pages'][$_SESSION['cms']['user']['current_page']] + 1
+    empty($_SESSION['user']['pages'][ $_SESSION['user']['current_page'] ])
+        ? $_SESSION['user']['pages'][ $_SESSION['user']['current_page'] ] = 1
+        : $_SESSION['user']['pages'][ $_SESSION['user']['current_page'] ] = $_SESSION['user']['pages'][$_SESSION['user']['current_page']] + 1
     ;
 
     $_SESSION['cms']['errors'] = [];
@@ -38,6 +45,6 @@
     $_SESSION['cms']['require'] = [];
     $_SESSION['cms']['get_contents'] = [];
     $_SESSION['cms']['local'] = [];
-    // $_SESSION['cms']['user']['pages']['poi'][] = $_SESSION['cms']['user']['current_page'];
-    $_SESSION['cms']['user']['last_date'] = date('Y:m:d h:m:s');
+    // $_SESSION['user']['pages']['poi'][] = $_SESSION['user']['current_page'];
+    $_SESSION['user']['last_date'] = date('Y:m:d h:m:s');
 ?>

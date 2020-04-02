@@ -1,60 +1,54 @@
 <?php
 // ConTroller > Login
 
-    if ($_POST) {
-        $login_Err['errors'] = [];
-        echo '<br><br><br>------------> POST NOT EMPTY';
-        if (!empty($_POST['login']) && !empty($_POST['password']))
+    $replace_in_vue = [
+        'password' => '',
+        'login'    => '',
+        'Ilogin'    => ''
+    ];
+    $donnees = [
+        'passwrd' => null,
+        'email' => null
+    ];
+    if ($_POST)
+    {
+
+        if (!empty($_POST['password']))
         {
-            $donnees = [
-                "email" => get_clean($_POST['login']),
-                "passwrd" => md5(get_clean($_POST['password']))
-            ];      
-            if (!filter_var(get_clean($donnees['email']), FILTER_VALIDATE_EMAIL))
+            $donnees['passwrd'] = md5(get_clean($_POST['password']));
+            // print_airB($donnees['passwrd'],'passwrd check');
+        }
+        else{
+            $replace_in_vue['password'] = 'Il manque un mot de passe !';
+        }
+        
+        if (!empty($_POST['login']))
+        {
+            if (  filter_var(get_clean($_POST['login']),FILTER_VALIDATE_EMAIL)  )
             {
-                $login_Err['errors']['mail'][] = 'mail non valide';
+                $donnees['email'] = get_clean($_POST['login']);
+                $replace_in_vue['login'] = '';
+                $replace_in_vue['Ilogin'] = $donnees['email'];
             }
-            else 
-            {
+            else{
+                $replace_in_vue['login'] = 'Email incorrect !';
+            }
+        }
+        else{
+            $replace_in_vue['login'] = 'Il manque un Email !';
+        }
+
+        if (!empty($donnees['email']) && !empty($donnees['passwrd']))
+        {
                 $this->_Bdd  = new Db();
                 if ($this->_Bdd->is_exist_user($donnees)){
                     $_SESSION['user']['statut'] = 'logged';
+                    // REDIRECTION VERS INDEX
+                    $this->set_Current_Page('index');
+                    header('location:'.dirname($_SERVER['PHP_SELF']).'/?index');
                 }
-                
-
-                // $this->_User = new User();
-                // print_airB($this->_User,'kkkkkkkkk',1);
-                // print_airB($this->_Bdd->get_fetchall_from('z_user'),'liste des users:');
-
-            }
-
-
-    
-
-
-
-
-            // if(!empty($this->User)) 
-            // {
-            //     print_airB($this->User,'111111111111111111111111',1);
-            //     $this->User::set_UserLoginDatas($donnees);
-            // }
-            // else{
-            //     print_airB('n\'existe pas','user');
-
-            // }
-            // if(empty($this->_Bdd))
-            // {
-            //     print_airB('n\'existe pas','bdd');
-            // }
-        }
-        else
-        {
-            $login_Err['errors'] = [
-                'passwrd' => 'vide',
-                'mail'    => 'vide'
-            ];
         }
         $_SESSION['cms']['post'] = $_POST;
-    }
+    }   
+    Page::set_replace_in_vue($replace_in_vue);
 ?>

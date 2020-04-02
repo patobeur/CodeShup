@@ -1,54 +1,31 @@
 <?php
-
-// definitions
-    define('AAROOT',            '');
-    define('AACORE',            AAROOT.'core/');
-    define('AAINI',             AACORE.'ini/');
-    // REP
-    define("AAJSON",            AACORE.'json/');
-    define("AALOG",             AACORE.'log/');
-    // Formatage des fichiers
-    define("AAFONCTION",        AACORE.'functions/'.'F_');
-    define("AACLASSE",          AACORE.'class/'.'Cl_');
-    define("AACONTROLEUR",      AACORE.'controller/'.'Co_');
-    define("AAVUE",             AACORE.'view/'.'Vu_');          // pages parsées à la volé indiqué dans le json
-    define("AAINVUE",           AACORE.'inview/'.'_in_');       // pages a mettre dans view
-    define("AACONTROLER",       AACORE.'controller/'.'Co_');
-    // FILES
-    define("AAJSONHEADER",      AAJSON.'structure.json');
-    define("AAJSONCONTEN",      AAJSON.'content.json');
-    // INCLUDES
-    define("AANAVBAR",          AAVUE.'navigation.php');
-    define("AAFOOTER",          AAVUE.'footer.php');
-    // externes
-    define("AAIMAGE",           AAROOT.'img/');
-    define("AACSS",             AAROOT.'theme/css/');
-    define("AAJS",              AAROOT.'js/');
-    // TOOLS
-    define("AAEXTPHP",       '.php');
+// Class Page
 
 class Page{
     // --------------------------------------------------------------------------------	
 	private $_Nlog = 0;
 	private $_ObjJson;
-    private $_ObjJson2;
-    
+    private $_flash_time;
     private $_User;
 	private $_Bdd;
 
 	private $_current_page='';
 	private $_default_page='';
-	private $_Originum=0;
+    private $_Originum=0;
+    
+    private $_replace_in_vue = [];
+
     
     // public function __construct($utilisateur,$database){
-    public function __construct(){
-        $this->_ObjJson = $this->get_Jsondecode(AAJSONCONTEN);
-        $this->_ObjJson2 = $this->get_Jsondecode(AAJSONHEADER);
+    public function __construct($timer){
+        $this->_flash_time = $timer;
+        $this->_ObjJson =  $this->get_Jsondecode(AAJSONCONTEN);
+        // $this->_ObjJson2 = $this->get_Jsondecode(AAJSONHEADER);
         $this->_current_page = $this->_ObjJson->defaultpage[0];
         $this->_default_page = $this->_ObjJson->defaultpage[0];
-
-        $this->_User = new User();
-        $this->_Bdd  = new Db();
+        //
+        // $this->_User = new User();
+        // $this->_Bdd  = new Db();
         
     }
     // PUBLIC FUNCTIONS
@@ -63,7 +40,8 @@ class Page{
     private function get_Dom(){
         $dom_blocs = $this->get_Header_Html(1);
         $dom_blocs .= $this->get_Contents_Html();
-        return $dom_blocs;
+        
+        return preg_replace('_{{FLASH}}_','chargement de la page en '.($this->_flash_time-microtime(true))." Microsecondes environs, tout est relatif, hein !", $dom_blocs);
     }
 
     // USEFUL IN NAVIGATION MENU
@@ -80,31 +58,43 @@ class Page{
             $enfant = $this->_ObjJson->$famille;                           // $ARRRAIEE[$ARRRAIEE[$kelfamille][$oo]]
             if ($this->_current_page == $famille) {$active = ' active';} else  {$active = '';}
             
-            $coment_blocs .= $this->get_Indent(0,4,'Navigat').'<a class="dropdown-item'.$active.'" href="?'. $famille.'">'.$enfant->title.'</a>'.$n;
+            $coment_blocs .= $this->get_Indent(0,4,'Navigat').'<a class="dropdown-item'.$active.'" href="?'. $famille.'"><span>📄</span> '.$enfant->title.'</a>'.$n;
         } 
         $coment_blocs .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
         if ($this->_current_page == 'index') {$is_activ = ' active';} else  {$is_activ = '';}
         
 
-        $LOGINATOR = '';
+        $blocLogin = '';
 
 
-        //BLOC LOGIN (LOGINATOR)
+        //BLOC LOGIN (blocLogin)
         if ($this->_current_page != 'login')
         {
             // 
-            if (empty($_SESSION['cms']['profil']))
+            if (empty($_SESSION['profil']))
             {
-                $LOGINATOR = '
+                $blocLogin = '
                     <!-- login menu -->
-                    <li class="nav-item ACTIVITE">
-                        <a class="nav-link" href="?login" title="Accueil">Login<span class="sr-only">(current)</span></a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="?login" title="Accueil">☉ Login</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
+                    </li>'.PHP_EOL;
+
+                if (!empty($_SESSION['profil']['level']) && $_SESSION['profil']['level'] == 'admin' AND DEBUG){  
+                    $blocLogin .= '
+                    <li class="nav-item">
+                        <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
+                    </li>'.PHP_EOL;
+                }
+
+                $blocLogin .= '
                     <!-- Fin login menu -->'.PHP_EOL;
             }
             else
             {
-                $LOGINATOR = '
+                $blocLogin = '
                     <!-- Auto out menu -->
                     <li class="nav-item dropdown">
                         <a
@@ -119,10 +109,11 @@ class Page{
                         </a>
                         <div class="dropdown-menu" aria-labelledby="gestionprofil">
                             <!-- Profil -->
-                                <a class="dropdown-item" href="?profil" title="Profil">Profil</a>
+                                <a class="dropdown-item" href="?profil" title="Profil">☉ Profil</a>
+                                <a class="dropdown-item" href="?panier" title="Panier">☉ Panier</a>
                             <!-- Fin Profil -->
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="deco.php">Deco</a>
+                            <a class="dropdown-item" title="Deco" href="deco.php">☉ Deco</a>
                         </div>
                     </li>
                     <!-- Fin Auto out menu -->'.PHP_EOL;
@@ -130,13 +121,9 @@ class Page{
         }
         elseif ($this->_current_page == 'login')// && $this->_User['statut'] == 'visitor')
         {
-            $LOGINATOR = PHP_EOL;
+            $blocLogin = PHP_EOL;
 
         }
-
-
-
-
 
 
         $valeurderetour = preg_replace("_NAVIGATATOR_",$coment_blocs, $fichier_importe); 
@@ -146,7 +133,7 @@ class Page{
         $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
         // ------------------------------------------------------------------------------
         //print_airB($valeurderetour,'valeurderetour');
-        $valeurderetour = preg_replace("_LOGINATOR_",$LOGINATOR, $valeurderetour); 
+        $valeurderetour = preg_replace("_LOGINATOR_",$blocLogin, $valeurderetour); 
         return $valeurderetour; 
     }
     // --------------------------------------------------------------------------------
@@ -162,13 +149,16 @@ class Page{
         for ($numFam=0; $numFam < count($this->_ObjJson->$kelfamille->$sousfamille); $numFam++)
         {
             // ici le lien active
-            $target='';
-            ($Tablo_Enfants[$numFam]->target!='') ? 
-                $target=' target="'.$Tablo_Enfants[$numFam]->target.'"' : 
-                $target='';
+            $target = ($Tablo_Enfants[$numFam]->target!='') ? 
+                ' target="'.$Tablo_Enfants[$numFam]->target.'"' : 
+                '';
+            // ici le title
+            $title = ($Tablo_Enfants[$numFam]->title!='') ? 
+                ' title="'.$Tablo_Enfants[$numFam]->title.'"' : 
+                '';
             //echo($target);
             $A_remplacement .= $this->get_Indent(0,5,'get_Navigation_Menu');
-            $A_remplacement .= '<a class="dropdown-item" href="'.$Tablo_Enfants[$numFam]->href.'"'.$target.'>'.$Tablo_Enfants[$numFam]->title.'</a>'.PHP_EOL;
+            $A_remplacement .= '<a class="dropdown-item" href="'.$Tablo_Enfants[$numFam]->href.'"'.$target.$title.'>'.$Tablo_Enfants[$numFam]->title.'</a>'.PHP_EOL;
         } 
 
 
@@ -181,10 +171,11 @@ class Page{
                                         role="button"
                                         data-toggle="dropdown"
                                         aria-haspopup="true"
-                                        aria-expanded="false">'.$this->_ObjJson->$kelfamille->nommenu.'</a>
+                                        aria-expanded="false">☉ '.$this->_ObjJson->$kelfamille->nommenu.'</a>
                                     <div class="dropdown-menu" aria-labelledby="'.$this->_ObjJson->$kelfamille->nomlabel.'">
                                         <!-- Auto out '.$this->_ObjJson->$kelfamille->nommenu.' -->
-MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJson->$kelfamille->nommenu.' -->
+MENUACTOBEUR
+                                        <!-- Fin out '.$this->_ObjJson->$kelfamille->nommenu.' -->
                                         <!-- <div class="dropdown-divider"></div>
                                         <a class="dropdown-item">End</a> -->
                                     </div>
@@ -231,28 +222,27 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         $header = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
 
 
-        $body_blocs .= $header;
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
         $cp = $this->_current_page;                                                 // cp = current page
         // --------------------------------------------------------------------------------------------
         // ----------------------------------- GET CURRENT CLASS --------------------------------------
         if (!empty($this->_ObjJson->$cp->class)){                                   // si il y'a des pages dans class
-            $cc = $this->_ObjJson->$cp->class;                                   // cc = current bloc/class
-            $tempovalue = count($cc);                       // je prend la liste des class a intégrer
+            $cc = $this->_ObjJson->$cp->class;                                      // cc = current bloc/class
+            $tempovalue = count($cc);                                               // je prend la liste des class a intégrer
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les class trouvés 
-                $class_file = AACLASSE.ucfirst($cc[$numFichier]).AAEXTPHP;   // fichier a require
+                $class_file = AACLASSE.ucfirst($cc[$numFichier]).AAEXTPHP;          // fichier a require
                 $this->get_File_to_use('class',$class_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
         // --------------------------------------------------------------------------------------------
         // ----------------------------------- GET CURRENT CONTROLLER ---------------------------------
-        if (!empty($this->_ObjJson->$cp->controller)){                                 // si il y'a des pages dans require
-            $tempovalue = count($this->_ObjJson->$cp->controller);                     // je prend la liste des Controller a intégrer
-            $requires = $this->_ObjJson->$cp->controller;                              // cp = current bloc/require
+        if (!empty($this->_ObjJson->$cp->controller)){                              // si il y'a des pages dans require
+            $tempovalue = count($this->_ObjJson->$cp->controller);                  // je prend la liste des Controller a intégrer
+            $requires = $this->_ObjJson->$cp->controller;                           // cp = current bloc/require
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
-                $req_file = AACONTROLEUR.ucfirst($requires[$numFichier]).AAEXTPHP;    // fichier a require
+                $req_file = AACONTROLEUR.ucfirst($requires[$numFichier]).AAEXTPHP;  // fichier a require
                 $this->get_File_to_use('controller',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
@@ -263,7 +253,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $requires = $this->_ObjJson->$cp->require;                              // cp = current bloc/require
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
-                $req_file = AAFONCTION.$requires[$numFichier].AAEXTPHP;    // fichier a require
+                $req_file = AAFONCTION.$requires[$numFichier].AAEXTPHP;             // fichier a require
                 $this->get_File_to_use('require',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
@@ -274,39 +264,112 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             $fichiers = $this->_ObjJson->$cp->blocs;                                // cp = current bloc/page
 
             for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les pages trouvées 
-                $get_file = AAINVUE.$fichiers[$numFichier].AAEXTPHP;     // fichier pour file_get_contents
+                $get_file = AAINVUE.$fichiers[$numFichier].AAEXTPHP;                // fichier pour file_get_contents
+
                 $body_blocs .= $this->get_File_to_use('vue',$get_file,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // ici test pour modifier la vue a la volée
+                if($this->get_replace_in_vue())
+                {   
+                    foreach($this->get_replace_in_vue() as $key => $value)
+                    {
+                        $body_blocs = str_replace("{{".$key."}}" , $value, $body_blocs);
+                    }
+                }
+                
+
+
+
+
+
+
+
             }
         }
+        // $body_blocs .= $header;
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
-        $body_blocs .= $this->get_Pageaouvriratouslescoups('files').$n;
+        $body_blocs = $header.$this->get_Pageaouvriratouslescoups('files').$n.$body_blocs;
+
+        
+        // --------------------------------------------------------------------------------------------
         // FOOTER
         $body_blocs .= file_exists(AAFOOTER)                                         // bloc footer
             ? $this->get_File_to_use('get_contents',AAFOOTER,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
             : false; 
-        // $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);            // bloc js header de la page appelée
-        $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;          // on ferme le div du début <div class="fullpage">
-        $body_blocs .= $this->get_end_js_html($this->_current_page,'js',1);               // bloc js a mettre en fin de page
-        $body_blocs .= $this->get_end_js_html('atouslescoups','js',1);                    // bloc js a mettre en fin de page
-        $body_blocs .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;         // on ferme le body
+
+
+
+
+        $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);       // bloc js header de la page appelée
+        $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;     // on ferme le div du début <div class="fullpage">
+        $body_blocs .= $this->get_end_js_html($this->_current_page,'js',1);          // bloc js a mettre en fin de page
+        $body_blocs .= $this->get_end_js_html('atouslescoups','js',1);               // bloc js a mettre en fin de page
+
+        $body_blocs .= $this->get_Indent($this->_Originum,1,'rien').'{{FLASH}}</body>'.$n;// on ferme le body
         $body_blocs .= '</html>'.$n;
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
-        
-
-
         // ICI COMMENCE LE VRAI TRAVAIL        
         // ON A NOS CLASS ET FONCTION 
 
-        // eco($body_blocs);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return $body_blocs;
-        
-
-
-
     }
     // --------------------------------------------------------------------------------
     /**
@@ -500,7 +563,7 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                         $requiredcontroller = $this->get_File_to_use('controller',$require_controller,"require_once",$this->get_errorphrase('',__FUNCTION__,__LINE__));
                     }
                    
-                    if ($vue_file){// vue
+                    if ($vue_file){ // vue
                         if ($visible){
                             $vueFile = file_exists($vue_file) 
                                 ? $this->get_File_to_use('vue',$vue_file,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
@@ -508,6 +571,10 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
                             
                             if (!empty($requiredFile) && $vueFile){
                                 if (!empty($aremplacer)){
+
+
+
+
                                     $paquethtml .= preg_replace('{{'.$files[$numFichierout]->aremplacer."}}", '010{{COUCOU}}1000101', $vueFile);
                                 }
                             }
@@ -528,38 +595,81 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
      * 
      */
     private function get_Current_Page(){
-        
         $new_current_page = null;               // page vide
-        $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+        // recup url pour trouver la page a afficher
+        // $a = $_SERVER['REQUEST_URI'];
+        // $b = $_SERVER['PHP_SELF'];
+        // $c = preg_replace($a,'---', $b);
+        // $d = explode(" ",$b,10);
 
-        // on ne prend qu'une page existante dan la liste
-        for ($i=0; $i < count($this->_ObjJson->pages); $i++){                    // on prend la liste dess page existantes dans le json
-            if (preg_match("'".$this->_ObjJson->pages[$i]."'",$Posted)){         // la page est elle dans l'url ??
-                $new_current_page = $this->_ObjJson->pages[$i];                  // si oui on prend le nom 
-                // break;                                                        // on stop ou pas pour chopper la dernier
+    
+            // print_airB([
+            //     'REQUEST_URI' => $a
+            //     ,'PHP_SELF' => $b
+            //     ,'c' => $c
+            //     ,'d' => $c
+            //     ,'SERVER_NAME' => $_SERVER['SERVER_NAME']
+            //     ,'QUERY_STRING' => $_SERVER['QUERY_STRING']
+            //     ,'HTTPS' => $_SERVER['HTTPS']
+            //     ,'HTTP_HOST' => $_SERVER['HTTP_HOST']
+            //     ,'HTTP_CONNECTION' => $_SERVER['HTTP_CONNECTION']
+            //     ,'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT']
+            //     ,'REQUEST_TIME_FLOAT' => $_SERVER['REQUEST_TIME_FLOAT']
+            //     ,'PHP_SELF' => $_SERVER['PHP_SELF']
+            //     ,'GET' => $_GET
+            //     // ,'argv' => $argv
+            //     // ,'argc' => $argc
+            // ],'url',1);
+            
+            parse_str($_SERVER['QUERY_STRING'], $array_arg);
+            // print_r($array_arg);
+
+            $r = $_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; 
+            $r = explode('/', $r);
+            $r = array_filter($r);
+            
+            // print_airB( preg_replace('_.php_','', $r[count($r)-1],1),'koi',1);
+
+            // $arr = parse_url($_SERVER['REQUEST_URI']);
+            // print_r($arr);
+
+
+
+
+            $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+            // on ne prend qu'une page existante dans la liste
+            for ($i=0; $i < count($this->_ObjJson->pages); $i++){                    // on prend la liste des pages existantes dans le json
+                if (preg_match("'".$this->_ObjJson->pages[$i]."'",$Posted)){         // la page est elle dans l'url ??
+                    $new_current_page = $this->_ObjJson->pages[$i];                  // si oui on prend le nom 
+                    // break;                                                        // on stop ou pas pour chopper la derniere
+                }
             }
-        }
 
-        // on evite de réafficher la page login une fois loggué
-        if (!empty($_SESSION['cms']['profil']) AND $new_current_page=='login'){
-            $new_current_page='index';
-        }
+            // on evite de réafficher la page login une fois logguélogin
+            if (!empty($_SESSION['profil']) AND $new_current_page=='login'){
+                $new_current_page='index';
+            }
 
 
-        // si on trouve une page dans l'url
-        if (!empty($new_current_page)) 
-        {   
-            $this->set_Current_Page($new_current_page); 
-            $_SESSION['cms']['user']['current_page'] = $this->_current_page;
-            $_SESSION['cms']['user']['pages']['poi'][] = $_SESSION['cms']['user']['current_page'];    
-        }
-        else
-        {   // sinon on met la page par defaut ou pas
-            $_SESSION['cms']['log'][] = $this->get_errorphrase('',__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
-            $this->set_Current_Page($this->_default_page);  // page par default
-            $new_current_page = $this->_default_page;       // page par default
-            $_SESSION['cms']['user']['pages']['poi'][] = $_SESSION['cms']['user']['current_page'];    
-        }
+            // si on trouve une page dans l'url
+            if (!empty($new_current_page)) 
+            {   
+                $this->set_Current_Page($new_current_page); 
+                $_SESSION['user']['current_page'] = $this->_current_page;
+                $_SESSION['user']['pages']['poi'][] = $this->_current_page;    
+            }
+            else
+            {   // sinon on met la page par defaut ou pas
+                $_SESSION['cms']['log'][] = $this->get_errorphrase('',__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
+                $this->set_Current_Page($this->_default_page);  // page par default
+                $new_current_page = $this->_default_page;       // page par default
+                $_SESSION['user']['pages']['poi'][] = $_SESSION['user']['current_page'];    
+            }
+
+
+
+
+
         return $new_current_page;
     }
     // ------------------------------------------------------------------------------
@@ -575,15 +685,38 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
 
 
 
+    // SETTER
 	// ------------------------------------------------------------------------------
     /**
      * setter de la current page
      * @param string $newvalue nom de la page / page's name
      */
-    // SETTER
-    private function set_Current_Page($newvalue){
+    public function set_Current_Page($newvalue){
         $this->_current_page = get_clean($newvalue);
     }
+	// ------------------------------------------------------------------------------
+    public function set_replace_in_vue($data){
+        $this->_replace_in_vue[$this->_current_page] = $data;
+    }
+	// ------------------------------------------------------------------------------
+    // public function set_replace_in_vue_obj($obj){
+    //     foreach($obj as $key as $value)
+    //     {
+    //         $this->_replace_in_vue[$this->_current_page] = $data;
+    //     }
+    // }
+    // ------------------------------------------------------------------------------
+    public function get_replace_in_vue(){
+        if (!empty($this->_replace_in_vue[$this->_current_page]))
+        {
+            return $this->_replace_in_vue[$this->_current_page];
+        }
+        // else
+        // {
+        //     return false;
+        // }
+    }
+	// ------------------------------------------------------------------------------
     private function get_Default_Page(){
         return $this->_default_page;
     }
@@ -617,33 +750,28 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
             {
                 case "include":
                     include($file);
-                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$gg." ".$type."($file) ->:".__FUNCTION__.".";
                     $this->set_error($from,$type."($file)",$action);
                     return true;
                 break;
                 
                 case "require_once":
                     require_once($file);
-                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$gg." ".$type."($file) ->:".__FUNCTION__.".";
                     $this->set_error($from,$type."($file)",$action);
                     return true;
                 break;
                 
                 case "include_once":
                     include_once($file);
-                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$from." ".$type."($file) ->:".__FUNCTION__.".";
                     $this->set_error($from,$type."($file)",$action);
                     return true;
                 break;
                 
                 case "file_get_contents":
-                    // $_SESSION['cms'][$action][++$this->_Nlog] = $this->_Nlog."]".$from." ".$type."($file) ->:".__FUNCTION__.".";
                     $this->set_error($from,$type."($file)",$action);
                     return file_get_contents($file);
                 break;
                 
                 default :
-                    // $_SESSION['cms']['errors'][++$this->_Nlog] = $this->_Nlog."]".$from." ERROR SWITCH ->:".__FUNCTION__.".";
                     $this->set_error($from,$type."($file) ->:".__FUNCTION__.".",'errors');
                     return false;
                 break;
@@ -652,7 +780,6 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         else
         {   
             $this->set_error($from,' le fichier '.$file." n'existe pas. la methode ".$type." (".$file.") n'a pas fonctionnée");
-            // $_SESSION['cms']['errors'][++$this->_Nlog] = $this->_Nlog."]"."Le fichier n'existe pas... ".$from." la methode $type($file) n'a pas fonctionnée";
             return false;
         }
     }
@@ -721,26 +848,44 @@ MENUACTOBEUR                                        <!-- Fin out '.$this->_ObjJs
         }
     }
     // --------------------------------------------------------------------------------
-    private function do_RequireFile($new_current_page){
+    // private function do_RequireFile($new_current_page){
         
-        print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
-        if (!empty($this->_ObjJson->$new_current_page->require) ){
-            print_air($new_current_page,__CLASS__."->".__FUNCTION__);
-            $listedesRequire = $this->_ObjJson->$new_current_page->require;
-            //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
-            for ( $i = 0; $i < count($listedesRequire); $i++ ){
-                $fichierrequire = AAFONCTION.$listedesRequire[$i].AAEXTPHP;
-                if (file_exists($fichierrequire)) {
-                    require_once($fichierrequire);  
-                }
-                else{
-                    print_air('il manque le fichier '.$fichierrequire,"erreur do_RequireFile");
-                }
-            }
-        }
-        else{
-            print_air($new_current_page." require no file",__CLASS__."->".__FUNCTION__);
-        }
+    //     print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
+    //     if (!empty($this->_ObjJson->$new_current_page->require) ){
+    //         // print_air($new_current_page,__CLASS__."->".__FUNCTION__);
+    //         $listedesRequire = $this->_ObjJson->$new_current_page->require;
+    //         //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
+    //         for ( $i = 0; $i < count($listedesRequire); $i++ ){
+    //             $fichierrequire = AAFONCTION.$listedesRequire[$i].AAEXTPHP;
+    //             if (file_exists($fichierrequire)) {
+    //                 require_once($fichierrequire);  
+    //             }
+    //             else{
+    //                 print_air('il manque le fichier '.$fichierrequire,"erreur do_RequireFile");
+    //             }
+    //         }
+    //     }
+    //     else{
+    //         print_air($new_current_page." require no file",__CLASS__."->".__FUNCTION__);
+    //     }
+    // }
+
+    private function wtf(){        
+        // print_airB([
+        //     'url' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY)
+        //     ,'REQUEST_URI' => $_SERVER['REQUEST_URI']
+        //     ,'SERVER_NAME' => $_SERVER['SERVER_NAME']
+        //     ,'QUERY_STRING' => $_SERVER['QUERY_STRING']
+        //     ,'HTTPS' => $_SERVER['HTTPS']
+        //     ,'HTTP_HOST' => $_SERVER['HTTP_HOST']
+        //     ,'HTTP_CONNECTION' => $_SERVER['HTTP_CONNECTION']
+        //     ,'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT']
+        //     ,'REQUEST_TIME_FLOAT' => $_SERVER['REQUEST_TIME_FLOAT']-$a
+        //     ,'PHP_SELF' => $_SERVER['PHP_SELF']
+        //     ,'GET' => $_GET
+        //     // ,'argv' => $argv
+        //     // ,'argc' => $argc
+        // ],'url',1);
     }
 
 }

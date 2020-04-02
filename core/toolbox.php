@@ -1,15 +1,19 @@
 <?php
     // Utilitaires / toolbox
-    define('DEBUG_A', false);   //get_Pageaouvriratouslescoups()
-    define('DEBUG_B', true);    //get_Pageaouvriratouslescoups()
-    define('DEBUG_DIE', true);  //die
+    // a remettre dans les class ou pas
     /**
      * autouploader de class / stacking class
      */
     function chargerClasse($classe) {
-        $file = 'core/class/Cl_'.$classe . '.php';
-            require_once $file;
-            $_SESSION['cms']['autoload'][] = "New Class $classe"."() chargée.";
+        if(file_exists(AACLASSE.$classe . AAEXTPHP)){
+            $file = AACLASSE.$classe . AAEXTPHP;
+                require_once $file;
+                $_SESSION['cms']['autoload'][] = "New Class $classe"."() chargée.";
+        }
+        else{
+            $_SESSION['cms']['errors'][] = "New Class $classe"."() n'est pas chargée correctement.";
+            die();
+        }
     }
     spl_autoload_register('chargerClasse');
 
@@ -82,5 +86,25 @@
         ($title!='') ? print($title.': ') : print('var_dump: ');
         var_dump($paquet);
         print('</pre>');
+    }
+    function getUserIpAddr(){
+        if(!empty($_SERVER['HTTP_CLIENT_IP'])){
+            //ip from share internet
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+            //ip pass from proxy
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }else{
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+    function isitrightvar($email,$type){
+        switch ($type) {
+            case "mail":
+                if (preg_match('#^[\w.-]+@[\w.-]+\.[a-z]{2,6}$#i', $email)) {
+                    return TRUE;
+                }
+        }
     }
 ?>

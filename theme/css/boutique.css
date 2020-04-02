@@ -1,0 +1,79 @@
+/* BOUTIQUE  */
+section.classeur {
+    background-color : rgba(101, 248, 56, 0.562)
+}
+#boutique {
+    width : 80%;
+    margin-right : auto;
+    margin-left : auto;
+    background-color : rgba(248, 158, 56, 0.562)
+}
+.boutique {
+    margin:0;
+    padding:0;
+    /* display:inline; */
+    width:100%;
+    /* background-color:rgba(255, 255, 255, 1); */
+    /* outline: dashed red; */
+}
+ul.cat_arianne {
+    margin:0;
+    padding:0;
+    display: flex;
+    list-style:none;
+    /* background-color:rgba(255, 196, 0, 0.808);; */
+}
+li.cat_item {
+    margin:0;
+    padding:0 8px;
+    background-color:rgb(255, 255, 255);
+    outline: 1px solid rgba(0, 0, 0,0.5);
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    font-size : 1.2em;
+}
+li.cat_item:hover {
+    background-color:rgb(0, 0, 0);
+    outline: 1px solid rgba(0, 0, 0,0.5);
+    align-items: center;
+    font-size : 1.2em;
+    color : rgba(255, 255, 255, 1)
+}
+li.cat_item a {
+    color : rgb(0, 0, 0)
+}
+li.cat_item:hover a {
+    color : rgba(255, 255, 255, 1)
+}
+.arianne .item .lien {
+    margin:0;
+    padding:0;
+    display:inline;
+}
+
+.boutique .pagearticle {
+    padding:0;
+    background-color:rgb(255, 255, 255);
+}
+
+.boutique .pagearticle section.articles {
+    padding:0;
+    padding-top:5px;
+    background-color:rgba(62, 49, 240, 1);
+    flex-wrap: wrap;
+    display:flex;
+}
+
+.boutique .pagearticle section.articles article.article{
+    width : calc( (100% / 4) - 10px);
+    /* min-width : 200px; */
+    padding:5px;
+    margin:0 5px 5px 5px;
+    background-color:rgba(125, 240, 49, 1);
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+}

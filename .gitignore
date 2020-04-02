@@ -1,3 +1,4 @@
-theme/css/bootstrap.min.css
-theme/css/bootstrap.min.css.map
-core/json/contentb.json
+core/ini/bdd.php
+o2switch.php
+core/request.php
+old/

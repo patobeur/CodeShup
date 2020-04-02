@@ -1,7 +1,7 @@
 <?php
     class Db {
 
-        protected $_dbDatas;
+        // protected $_dbDatas;
         protected $db;
 
         protected $tables = [
@@ -28,20 +28,9 @@
         // public function __construct($host = null,$username = null,$password = null,$dbname = null)
         public function __construct()
         {   
-            $this->_dbDatas = [
-                'host' => '127.0.0.1',
-                'dbname' => 'code_shop',
-                'username' => 'root',
-                'password' => "",
-                'charset' => "utf8"
-            ];
             try {
-                $bdd = new PDO
-                    (
-                        'mysql:host='.$this->_dbDatas['host'].';dbname='.$this->_dbDatas['dbname'].';'.$this->_dbDatas['password'],
-                        $this->_dbDatas['username'], $this->_dbDatas['password']
-                    ); 
-                // $bdd->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES UTF8');
+                $bdd = new PDO('mysql:host='.DB['host'].';dbname='.DB['dbname'].';'.DB['attributs'],DB['username'], DB['password']); 
+                $bdd->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES UTF8');
                 $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
                 $bdd->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
                 $this->db = $bdd;
@@ -49,83 +38,291 @@
             catch (PDOException $e){
                 // echo "Error : ";// . $e->getMessage() . "<br/>";
                 $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
-            die();
-            }
+                // die($e->getMessage());
+            }            
+        }
+        
+        private function get_selectus($values)
+        {
+            // print_airB($values,'values');
+            // $rep = "(";
+            // foreach($values as $keyA => $valuesA){
+            //     switch ($keyA)
+            //     {
+            //         case "SELECT";
+            //             $rep .= $keyA;
+            //             $table = null;
+            //             foreach($valuesA[$keyA] as $key2){
+            //                 $table = $valuesA[$keyA];
+            //                 foreach($key2 as $key3 => $value3){                            
+            //                     $rep .= (($key2<1) ? ' ' : '').(($key2>0) ? ',' : '').$key2;
+            //                 }
+            //             }
+            //         break;
+            //         case "JOIN";
+            //             $rep .= " ".$keyz." ";
+            //         break;
+            //         case "WHERE";
+            //             $rep .= $keyz." ";
+            //         break;
+            //         case "ORDER BY";
+            //             $rep .= $keyz." ";
+            //         break;
+            //         case "LIMITE";
+            //             $rep .= $keyz." ";
+            //         break;
+            //     }
+            // }
+            // $rep = $rep.")";
+            // $select  = "SELECT z_prodcat.label,z_prodcat.cat_id";
+            // $from = " FROM z_prodcat";
+            // $where = "WHERE z_prodcat.parent_cat_id IS NULL";
+            // $order = "ORDER BY z_prodcat.label";
 
-            // $this->compteexiste([
-            //     "email" => "patobeur41@gmail.com",
-            //     "passwrd" => "toto"
-            // ]);
+
+            // $requete_phrase  = "SELECT distinct(z_prodcat.label),z_prodcat.cat_id from z_prodcat WHERE z_prodcat.parent_cat_id IS NULL ORDER BY z_prodcat.label";
+            // $requete_categories = $this->db->prepare($requete_phrase);
+            // $requete_categories->execute();  
+            // $reponse_categories = $requete_categories->fetchall();
+            // print_airB($rep,'rep');
+        }
+        
+        // ------------------------------------------------------------------------
+        public function get_categories($datas = null){return $this->get_Pcategories();}
+        private function get_Pcategories()
+        {
+            $requete_phrase  = "SELECT distinct(z_prodcat.label),z_prodcat.cat_id from z_prodcat WHERE z_prodcat.parent_cat_id IS NULL ORDER BY z_prodcat.label ASC";
             
-        }
-        public function is_exist_user($datas)
-        {
-            $requete = $this->db->prepare("SELECT user_id,rule_id FROM z_user WHERE email = :email AND passwrd = :passwrd");
-            $requete->bindParam(':passwrd', $datas['passwrd'], PDO::PARAM_STR, 32);
-            $requete->bindParam(':email',   $datas['email'],   PDO::PARAM_STR, 64);
-            try {
-                $requete->execute();
-                $reponse = $requete->fetch();                
-                $requete = null;
-                
-                $donnees = [
-                    "user_id" => $reponse->user_id,
-                    "rule_id" => $reponse->rule_id
-                ];      
-                $this->set_user_id_datas($donnees);
-            }
-            catch (PDOException $e){
-                // echo "Error : ".__FILE__." ".__FUNCTION__;// . $e->getMessage() . "<br/>";
-                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":";//.$e->getMessage();
-                die();
-            }
-        }
-        public function set_user_id_datas($donnees)
-        {
-            $requete = $this->db->prepare("SELECT username,firstname,email,phone,birthdate,section_id,promo_id,last_update,created,activated FROM z_profil WHERE user_id = :user_id AND activated = 1");
-            $requete->bindParam(':user_id',  $donnees['user_id'],   PDO::PARAM_INT);
+            if ($this->query = $this->db->prepare($requete_phrase)) {}
 
+            $requete_categories = $this->db->prepare($requete_phrase);
             try {
-                $requete->execute();
-                $reponse = $requete->fetch();
+                $requete_categories->execute();  
+                $reponse = $requete_categories->fetchall();
+                // print_airB($reponse,'fetchall',1);
+                return $reponse;
             }
             catch (PDOException $e){
-                // echo "Error : ".__FILE__." ".__FUNCTION__." ".__LINE__;// . $e->getMessage() . "<br/>";
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                die($e->getMessage());
+                return null;
+            }
+
+        }
+        // ------------------------------------------------------------------------
+        public function get_articles(){return $this->get_Particles();}
+        private function get_Particles()
+        {
+            $select = "SELECT *";
+            // $select = "z_product.product_id,z_product.name,z_product.create_time,z_product.update_time,z_product.stock,z_product.alerte,z_product.cat_id,z_product.price,z_product.vendor_id,z_product.content";
+            $from = " FROM z_product";
+            $where = "";//" WHERE z_product.name >0";
+            $order = "";//" ORDER BY z_product.name ASC";
+            $limite = "";//" LIMITE 1";
+            $requete  = $select.$from.$where.$order;
+            $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+                // print_airB($reponse,'fetchall',1);
+                return $reponse;
+            }
+            catch (PDOException $e){
                 $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
                 die();
+                return null;
             }
-                $requete = null;
 
-            if (!empty($reponse))
-            {
-                    $_SESSION['cms']['user']['statut'] = 'logged';
-                    $_SESSION['cms']['profil']['accred'] = $donnees['rule_id'];
-                    $_SESSION['cms']['profil']['level'] = $this->get_accred_name($donnees['rule_id']);
-                    $_SESSION['cms']['profil']['username'] = $reponse->username;
-                    $_SESSION['cms']['profil']['email'] = $reponse->email;
-                    $_SESSION['cms']['profil']['section_id'] = $reponse->section_id;
-                    $_SESSION['cms']['profil']['promo_id'] = $reponse->promo_id;
-                    $_SESSION['cms']['profil']['last_update'] = $reponse->last_update;
-                    $_SESSION['cms']['profil']['created'] = $reponse->created;
-            }
         }
-
-
-        
-        public function get_accred_name($datas)
+        private function get_boutique($categorie)
         {
-            $requete = $this->db->prepare("SELECT ruleset FROM z_rule WHERE rule_id = :rule_id");
-            $requete->bindParam(':rule_id', $datas, PDO::PARAM_INT);
+            // $wtf = [
+            //     [
+            //         "type" => "SELECT",
+            //         "action" => 
+            //         [
+            //             "z_prodcat" =>
+            //             "champs" =>
+            //                 [
+            //                     "label","cat_id"
+            //                 ]
+            //         ]
+            //     ],
+            //     [
+            //         "type" => "WHERE",
+            //         "z_prodcat" => 
+            //         [
+            //             "champs" =>
+            //                 [
+            //                     null, "z_prodcat", "IS NULL", null
+            //                 ]
+            //         ]
+            //     ],
+            //     [
+            //         "type" => "ORDER BY",
+            //         "z_prodcat" => 
+            //         [
+            //             "DESC" => 
+            //             [
+            //                 "label"
+            //             ]
+            //         ]
+            //     ],
+                // [
+                //     "type" => "JOIN",
+                //     "direction" => "LEFT",
+                //     "table" => null,
+                //     "champs" => null
+                // ],
+            //     "SELECT" =>
+            //     [   
+            //         "z_prodcat" => 
+            //         [
+            //             "label","cat_id"
+            //         ]
+            //     ],
+            //     "JOIN" => [],
+            //     "WHERE" =>
+            //     [
+            //         [
+            //             "", "z_prodcat", "IS", "NULL"
+            //         ]
+            //     ],
+            //     "ORDER BY" => 
+            //     [
+            //         "DESC" => 
+            //         [
+            //             "label"
+            //         ]
+            //     ]
+            // ];
+            // $i = $this->get_selectus($wtf);
+
+
+            $requete_phrase  = "SELECT distinct(z_prodcat.label),z_prodcat.cat_id from z_prodcat WHERE z_prodcat.parent_cat_id IS NULL ORDER BY z_prodcat.label";
+            $requete_categories = $this->db->prepare($requete_phrase);
+            $requete_categories->execute();  
+            $reponse_categories = $requete_categories->fetchall();    
+
+            print_airB($reponse_categories,'reponse_categories');
+
+            // print_airB($reponse_categories,'youyouyoyu',1);
+            $select  = "SELECT z_prodcat.label,z_prodcat.cat_id";
+            $from = " FROM z_prodcat";
+            $where = "WHERE z_prodcat.parent_cat_id IS NULL";
+            $requete = $this->db->prepare("$select $from $where");
+
+
+            $select  = "SELECT z_prodcat.label,z_prodcat.cat_id";
+            $from = " FROM z_prodcat";
+            $where = "WHERE z_prodcat.parent_cat_id IS NULL";
+            $requete = $this->db->prepare("$select $from $where");
             try {
                 $requete->execute();
-                $reponse = $requete->fetch();                
+                // $requete->debugDumpParams();   // debug affichage    
+                $reponse = $requete->fetchall();    
+                // print_airB($reponse,'go',1);
+                //$requete->debugDumpParams();   // debug affichage           
                 $requete = null;
-                return $reponse->ruleset;
+                return $reponse;
             }
             catch (PDOException $e){
-                // echo "Error : ".__FILE__." ".__FUNCTION__;// . $e->getMessage() . "<br/>";
-                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":";//.$e->getMessage();
-                die();
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                // die();
+                return false;
+            }
+        }
+//         private function get_boutique($categorie)
+//         {
+//             // $select  = "z_prodcat.label,z_prodcat.cat_id,z_prodcat.end_time,z_prodcat.start_time,z_prodcat.create_time,z_prodcat.parent_cat_id ";
+//             // $select  = "z_prodcat.label,z_prodcat.cat_id,z_prodcat.parent_cat_id";
+//             $select  = "SELECT z_prodcat.label,z_prodcat.cat_id";
+//             // $select .= ",z_product.product_id, z_product.name, z_product.create_time, z_product.update_time";
+//             // $select .= ",z_product.stock, z_product.alerte, z_product.cat_id, z_product.price, z_product.vendor_id, z_product.content";
+//             // $select = "*";
+//             $from = " FROM z_prodcat";
+//             // $from .= ",z_product";
+//             $where = "WHERE z_prodcat.parent_cat_id IS NULL";
+//             // $where = '';
+//             $requete = $this->db->prepare("$select $from $where");
+// // ,z_product.product_id, z_product.name, z_product.create_time, z_product.update_time
+// // ,z_product.stock, z_product.alerte, z_product.cat_id, z_product.price, z_product.vendor_id, z_product.content 
+
+//             // /*WHERE 
+//             //         z_user.user_id = z_profil.user_id AND activated = 1
+//             //         AND z_user.rule_id = z_rule.rule_id
+//             //         AND z_user.email = :email AND z_user.passwrd = :passwrd
+                
+//             //     GROUPE BY z_prodcat.label*/
+
+//             // $requete->bindParam(':passwrd', $datas['passwrd'], PDO::PARAM_STR, 32);
+//             // $requete->bindParam(':email',   $datas['email'],   PDO::PARAM_STR, 64);
+//             // $requete->bindParam(':rule_id', $datas, PDO::PARAM_INT);
+//             try {
+//                 $requete->execute();
+//                 $requete->debugDumpParams();   // debug affichage    
+//                 $reponse = $requete->fetchall();    
+//                 // print_airB($reponse,'go',1);
+//                 //$requete->debugDumpParams();   // debug affichage           
+//                 $requete = null;
+//                 return $reponse;
+//             }
+//             catch (PDOException $e){
+//                 $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+//                 // die();
+//                 return false;
+//             }
+//         }
+        public function is_exist_user($datas)
+        {
+            $requete = $this->db->prepare(
+                "SELECT
+                    z_user.user_id,z_user.rule_id,
+                    z_rule.ruleset,
+                    z_profil.username,z_profil.firstname,z_profil.email,z_profil.section_id,
+                    z_profil.promo_id,z_profil.last_update,z_profil.created,z_profil.activated
+                FROM 
+                    z_user,z_profil,z_rule
+                WHERE 
+                    z_user.user_id = z_profil.user_id AND activated = 1
+                    AND z_user.rule_id = z_rule.rule_id
+                    AND z_user.email = :email AND z_user.passwrd = :passwrd
+                "
+            );
+            $requete->bindParam(':passwrd', $datas['passwrd'], PDO::PARAM_STR, 32);
+            $requete->bindParam(':email',   $datas['email'],   PDO::PARAM_STR, 64);
+            // $requete->bindParam(':rule_id', $datas, PDO::PARAM_INT);
+            try {
+                $requete->execute();
+                $requete->debugDumpParams();   // debug affichage        
+                $reponse = $requete->fetch();
+                //$requete->debugDumpParams();   // debug affichage           
+                $requete = null;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                // die();
+                return false;
+            }
+            if (!empty($reponse))
+            {
+                print_airB($reponse,'reponse',1);
+                $_SESSION['user']['statut'] = 'logged';
+                $_SESSION['profil']['ruleset'] = $reponse->ruleset;
+                $_SESSION['profil']['rule_id'] = $reponse->rule_id;
+                $_SESSION['profil']['username'] = ucfirst($reponse->username);
+                $_SESSION['profil']['firstname'] = $reponse->firstname;
+                $_SESSION['profil']['email'] = $reponse->email;
+                $_SESSION['profil']['section_id'] = $reponse->section_id;
+                $_SESSION['profil']['promo_id'] = $reponse->promo_id;
+                $_SESSION['profil']['last_update'] = $reponse->last_update;
+                $_SESSION['profil']['created'] = $reponse->created;
+                $_SESSION['profil']['activated'] = $reponse->activated;
+    
+                return true;
+            }
+            else{
+                return false;
             }
         }
         public function get_fetchall_from($datas)
@@ -142,8 +339,5 @@
                 $requete = null;
                 return $reponse;                
         }
-
-        // INSERT INTO `z_user` (`email`, `passwrd`, `rule_id`, `created`, `updated`) VALUES ('tutu@gmail.com', 'tutu', '3', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-
     }
 ?>

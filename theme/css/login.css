@@ -33,7 +33,7 @@ body{
         margin-top: 0;
     }
 }
-.connect #email,
+.connect #login,
 .connect #password{
     border-color: rgba(0, 0, 0, .3);
     border-radius: 5px;

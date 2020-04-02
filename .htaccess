@@ -1,3 +1,5 @@
 Options all -Indexes
-ErrorDocument 403 cms_poo/?403
-ErrorDocument 404 cms_poo/?404
+# onerrors
+ErrorDocument 403 /?403
+ErrorDocument 404 /?404
+ErrorDocument 500 /500.php

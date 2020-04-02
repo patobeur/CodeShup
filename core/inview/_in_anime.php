@@ -1,8 +1,6 @@
-
             <!-- ANIME -->
             <section class="feuilles">
                 <div class="area" >
-                    <h1>Cover</h1>
                     <ul class="circles">
                             <li></li>
                             <li></li>

@@ -6,7 +6,7 @@
 	"CHARTE": {
 		"NAV": {
 			"IMGROOT": "theme/img/",
-			"LOGOSRC": "logo_patobeur_transp.png"
+			"LOGOSRC": "codeshup.svg"
 		}
 	},
 	"defaultpage": [
@@ -25,18 +25,19 @@
 		]
 	},
 	"pagesgestion":  {
-		"nommenu": "Gestion",
-		"nomlabel": "gestionapp",
+		"nommenu": "Shop",
+		"nomlabel": "shopapp",
+		"href": "?boutique",
 		"files": [
 			{
-				"href": "#",
-				"target": "_out",
-				"title": "Connectez vous!"
+				"href": "?boutique",
+				"target": "_self",
+				"title": "Code Shop"
 			},
 			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
+				"href": "?panier",
+				"target": "_self",
+				"title": "Mon Panier"
 			},
 			{
 				"href": "#",
@@ -45,7 +46,7 @@
 			}
 		]
 	},
-	"pages": ["index","404","403","login"],
+	"pages": ["index","404","403","login","profil","boutique"],
 	"index": {
 		"title": "Accueil",
 		"menuactif": "true",
@@ -64,17 +65,37 @@
 			}
 		],
 		"js": [],
-		"css": ["index.css","cover.css","feuilles.css"],
-		"blocs": ["anime","index"]
+		"css": ["index.css","cover.css"],
+		"blocs": ["cover","index","informations"]
 	},
 	"login": {
-		"title": "LOGIN",
+		"title": "Login",
 		"menuactif": false,
 		"js": [],
 		"css": ["login.css"],
 		"blocs": ["login"],
 		"class": [],
 		"controller": ["login"],
+		"require": []
+	},
+	"boutique": {
+		"title": "Code-Shop",
+		"menuactif": false,
+		"js": [],
+		"css": ["boutique.css"],
+		"blocs": ["boutique"],
+		"class": ["boutique"],
+		"controller": ["boutique"],
+		"require": []
+	},
+	"profil": {
+		"title": "Profil",
+		"menuactif": false,
+		"js": [],
+		"css": ["profil.css"],
+		"blocs": ["profil"],
+		"class": [],
+		"controller": ["profil"],
 		"require": []
 	},
 	"404": {
@@ -95,12 +116,7 @@
 		"actif": "true",
 		"files": [
 			{
-			"visible": "true",
-			"require": "",
-			"page": "",
-			"class": "User",
-			"controller": "",
-			"fonction": ""
+			"class": "User"
 			},
 			{
 			"visible": "true",
