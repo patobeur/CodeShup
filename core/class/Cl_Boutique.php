@@ -21,7 +21,14 @@ Class Boutique
             die();
         }
     }
-    public function get_categories(){return $this->_DbBoutique->get_categories();}
-    public function get_articles(){return $this->_DbBoutique->get_articles();}
+    public function get_categories(){
+        return $this->_DbBoutique->get_categories();
+    }
+    public function get_articlesByCategorieId($categorie){
+        return $this->_DbBoutique->get_articlesByCategorieId($categorie);
+    }
+    public function get_articles(){
+        return $this->_DbBoutique->get_articles();
+    }
 }
 ?>

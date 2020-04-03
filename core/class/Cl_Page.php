@@ -40,8 +40,13 @@ class Page{
     private function get_Dom(){
         $dom_blocs = $this->get_Header_Html(1);
         $dom_blocs .= $this->get_Contents_Html();
+
+        // dernière minute
+        $github = DISTANT ? '<span class="credit"><a class="github-button" href="https://github.com/patobeur" data-color-scheme="no-preference: dark; light: dark; dark: dark;" aria-label="Follow @patobeur on GitHub">Follow @patobeur</a><script async defer src="https://buttons.github.io/buttons.js"></script></span>' : '';
+        $dom_blocs = preg_replace('_{{GITHUB}}_',$github, $dom_blocs);
+        $dom_blocs = preg_replace('_{{FLASH}}_','chargement de la page en '.($this->_flash_time-microtime(true))." Microsecondes environs, tout est relatif, hein !", $dom_blocs);
         
-        return preg_replace('_{{FLASH}}_','chargement de la page en '.($this->_flash_time-microtime(true))." Microsecondes environs, tout est relatif, hein !", $dom_blocs);
+        return $dom_blocs;
     }
 
     // USEFUL IN NAVIGATION MENU
@@ -213,7 +218,7 @@ MENUACTOBEUR
     private function get_Contents_Html(){                                           // ici on construit le body
         $n=PHP_EOL;
         $body_blocs="\n";
-        $body_blocs .= $this->get_Indent($this->_Originum,1,'get_Contents_Html').'<body>'.$n;
+        $body_blocs .= $this->get_Indent($this->_Originum,1,'get_Contents_Html').'<body id="top">'.$n;
         $body_blocs .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
 
 
@@ -325,7 +330,7 @@ MENUACTOBEUR
         $body_blocs .= $this->get_end_js_html($this->_current_page,'js',1);          // bloc js a mettre en fin de page
         $body_blocs .= $this->get_end_js_html('atouslescoups','js',1);               // bloc js a mettre en fin de page
 
-        $body_blocs .= $this->get_Indent($this->_Originum,1,'rien').'{{FLASH}}</body>'.$n;// on ferme le body
+        $body_blocs .= $this->get_Indent($this->_Originum,1,'rien').'</body>'.$n;// on ferme le body
         $body_blocs .= '</html>'.$n;
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
@@ -595,7 +600,7 @@ MENUACTOBEUR
      * 
      */
     private function get_Current_Page(){
-        $new_current_page = null;               // page vide
+        $new_current_page = null; // page vide
         // recup url pour trouver la page a afficher
         // $a = $_SERVER['REQUEST_URI'];
         // $b = $_SERVER['PHP_SELF'];
@@ -628,13 +633,7 @@ MENUACTOBEUR
             $r = explode('/', $r);
             $r = array_filter($r);
             
-            // print_airB( preg_replace('_.php_','', $r[count($r)-1],1),'koi',1);
-
-            // $arr = parse_url($_SERVER['REQUEST_URI']);
-            // print_r($arr);
-
-
-
+            
 
             $Posted = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
             // on ne prend qu'une page existante dans la liste
@@ -645,10 +644,32 @@ MENUACTOBEUR
                 }
             }
 
-            // on evite de réafficher la page login une fois logguélogin
+
+
+
+
+
+
+
+            /* -------------------- REGLES ---------------------/
+               -----------------------------------------------*/
+            // on evite de réafficher la page login une fois loggué 
             if (!empty($_SESSION['profil']) AND $new_current_page=='login'){
                 $new_current_page='index';
             }
+            // on evite d'afficher la page profil sans être loggué
+            if (empty($_SESSION['profil']) AND $new_current_page=='profil'){
+                $new_current_page='login';
+            }
+            /* ------------------ FIN REGLES ------------------*/
+
+
+
+
+
+
+
+
 
 
             // si on trouve une page dans l'url
@@ -656,16 +677,15 @@ MENUACTOBEUR
             {   
                 $this->set_Current_Page($new_current_page); 
                 $_SESSION['user']['current_page'] = $this->_current_page;
-                $_SESSION['user']['pages']['poi'][] = $this->_current_page;    
+                $_SESSION['user']['pages']['road'][] = $this->_current_page;    
             }
             else
             {   // sinon on met la page par defaut ou pas
                 $_SESSION['cms']['log'][] = $this->get_errorphrase('',__FUNCTION__,__LINE__,null," Action => initialisation de current_page ".$new_current_page.") : ");
                 $this->set_Current_Page($this->_default_page);  // page par default
                 $new_current_page = $this->_default_page;       // page par default
-                $_SESSION['user']['pages']['poi'][] = $_SESSION['user']['current_page'];    
+                $_SESSION['user']['pages']['road'][] = $_SESSION['user']['current_page'];    
             }
-
 
 
 

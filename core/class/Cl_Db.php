@@ -88,6 +88,40 @@
         }
         
         // ------------------------------------------------------------------------
+        public function get_articlesByCategorieId($categorie){
+            return $this->get_ParticlesByCategorieId($categorie);
+        }
+        private function get_ParticlesByCategorieId($categorie)
+        {
+            // print_airB($categorie->cat_id,'categorie',1);
+            $select     = "SELECT *";
+            $from       = " FROM z_product";
+            $where      = " WHERE z_product.cat_id = :catid";
+            // $where      .= " AND ";
+            $order      = " ORDER BY z_product.name ASC";
+            $limite     = "";//" LIMITE 1";
+            // $requete_phrase = "SELECT *";
+            // $requete_phrase .= " from z_product";
+            // $requete_phrase .= " WHERE z_product.cat_id = :catid";
+            // $requete_phrase .= " AND z_product.cat_id = :catid";
+            // $requete_phrase .= " ORDER BY z_product.name";
+            
+            $requete_categories = $this->db->prepare($select.$from.$where.$order.$limite);
+            $requete_categories->bindParam(':catid', $categorie->cat_id, PDO::PARAM_INT, 32);
+            try {
+                $requete_categories->execute();  
+                // $requete_categories->debugDumpParams();   // debug affichage   
+                $reponse = $requete_categories->fetchall(); 
+                return $reponse;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                die($e->getMessage());
+                return null;
+            }
+
+        }
+        // ------------------------------------------------------------------------
         public function get_categories($datas = null){return $this->get_Pcategories();}
         private function get_Pcategories()
         {
@@ -204,7 +238,7 @@
             $requete_categories->execute();  
             $reponse_categories = $requete_categories->fetchall();    
 
-            print_airB($reponse_categories,'reponse_categories');
+            // print_airB($reponse_categories,'reponse_categories');
 
             // print_airB($reponse_categories,'youyouyoyu',1);
             $select  = "SELECT z_prodcat.label,z_prodcat.cat_id";
@@ -273,6 +307,13 @@
 //                 return false;
 //             }
 //         }
+
+
+
+/*      -----------------------------------------------------------------------------------/
+        ------------------                USER               -----------------------------/
+        --------------------------------------------------------------------------------*/
+        /* ------------------          CONNECTING           ---------------------------*/
         public function is_exist_user($datas)
         {
             $requete = $this->db->prepare(
@@ -294,7 +335,7 @@
             // $requete->bindParam(':rule_id', $datas, PDO::PARAM_INT);
             try {
                 $requete->execute();
-                $requete->debugDumpParams();   // debug affichage        
+                // $requete->debugDumpParams();   // debug affichage        
                 $reponse = $requete->fetch();
                 //$requete->debugDumpParams();   // debug affichage           
                 $requete = null;
@@ -306,7 +347,7 @@
             }
             if (!empty($reponse))
             {
-                print_airB($reponse,'reponse',1);
+                $this->set_last_connect($reponse->user_id);
                 $_SESSION['user']['statut'] = 'logged';
                 $_SESSION['profil']['ruleset'] = $reponse->ruleset;
                 $_SESSION['profil']['rule_id'] = $reponse->rule_id;
@@ -318,26 +359,62 @@
                 $_SESSION['profil']['last_update'] = $reponse->last_update;
                 $_SESSION['profil']['created'] = $reponse->created;
                 $_SESSION['profil']['activated'] = $reponse->activated;
-    
+                $_SESSION['profil']['connected'] = date('Y-m-d H:i:s');
                 return true;
             }
             else{
+                $_SESSION['user']['try'] += 1;
                 return false;
             }
         }
-        public function get_fetchall_from($datas)
+        /* ------------------      SET LAST CONNECT        ---------------------------*/
+        private function set_last_connect($user_id)
         {
-                $table = $datas;
+
+            $requete = $this->db->prepare("UPDATE z_user SET last_connect = '".date('Y-m-d H:i:s')."' WHERE z_user.user_id = :user_id");
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            try {
+                $requete->execute();      
+                //$reponse = $requete->fetch();
+                $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage           
+                // $requete = null;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                die();
+            }
+            $requete = null;
+        }
+
+
+        // public function get_fetchall_from($datas)
+        // {
+        //         $table = $datas;
             
-                $requete = $this->db->prepare("SELECT email,created,updated FROM ".$table); //" WHERE email = :email AND passwrd = :passwrd");
-                // $requete->bindParam(':email', $email, PDO::PARAM_STR, 50);
-                // $requete->bindParam(':passwrd', $passwrd, PDO::PARAM_STR, 50);
-                // $requete->debugDumpParams(); 
-                $requete->execute();
-                $reponse = $requete->fetchall();
-                // fermeture
-                $requete = null;
-                return $reponse;                
+        //         $requete = $this->db->prepare("SELECT email,created,updated FROM ".$table); //" WHERE email = :email AND passwrd = :passwrd");
+        //         // $requete->bindParam(':email', $email, PDO::PARAM_STR, 50);
+        //         // $requete->bindParam(':passwrd', $passwrd, PDO::PARAM_STR, 50);
+        //         // $requete->debugDumpParams(); 
+        //         $requete->execute();
+        //         $reponse = $requete->fetchall();
+        //         // fermeture
+        //         $requete = null;
+        //         return $reponse;                
+        // }
+        private function wtf($user_id){
+            $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
+            $requete = $this->db->prepare("UPDATE z_user SET email = md5(email) WHERE z_user.user_id != :user_id");
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            try {
+                $requete->execute();   
+                $requete->debugDumpParams();   // debug affichage     
+            }
+            catch (PDOException $e){
+            $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage      
+                die();
+            }
+            $requete = null;
+
         }
     }
 ?>

@@ -12,8 +12,35 @@
     if (class_exists('Db')) {
         $Boutique  = new Boutique();
         $lescategories = $Boutique->get_categories();
-        $lesarticles   = $Boutique->get_articles();
+            
+        if (!empty($lescategories)) 
+        {
+            if (isset($_GET['boutique']) AND empty($_GET['boutique']) AND !empty($_GET['cat']))
+            {   
+                // print_airB($lescategories,'coucou',1);
+                foreach ($lescategories as $value)
+                {
+                    if ($value->label === get_clean($_GET['cat']))
+                    {
+                        $categorie = $value;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        
+        if (!empty($categorie))
+        {
+            $lesarticles = $Boutique->get_articlesByCategorieId($categorie);
+        }
+        else{
+            $lesarticles = $Boutique->get_articles();
+        }
     }
+
+
     if (!empty($lescategories)) 
     {
         $retour = [];
@@ -25,6 +52,7 @@
         //           debut                      fin    breakline
         $capsule = ['<ul class="cat_arianne">','</ul>',PHP_EOL];
     }
+
     if (!empty($lesarticles)) 
     {
         $retour_articles = '';
@@ -45,6 +73,32 @@
 
 
 
+    function add_or_change_parameter($parameter, $value)
+    {
+        /* <a href="<?php echo add_or_change_parameter("page", "2"); ?>">Click to go to page 2</a> */
+      $params = array();
+      $output = "?";
+      $firstRun = true;
+      foreach($_GET as $key=>$val)
+      {
+       if($key != $parameter)
+       {
+        if(!$firstRun)
+        {
+         $output .= "&";
+        }
+        else
+        {
+         $firstRun = false;
+        }
+        $output .= $key."=".urlencode($val);
+       }
+      }
+      if(!$firstRun)
+       $output .= "&";
+      $output .= $parameter."=".urlencode($value);
+      return htmlentities($output);
+    } 
 
 
 

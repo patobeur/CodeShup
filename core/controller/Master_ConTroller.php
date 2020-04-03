@@ -2,9 +2,9 @@
 // ConTroller principal > Controller
     $timer = microtime(true);
     if (isset($_GET['kill'])) header("Location:deco.php" );
-    require_once('core/ini/definitions.php'); // MonkeyBusiness ;( 
-    require_once('core/ini/bdd.php');   
-    require_once('core/ini/session.php');
+    include('core/ini/definitions.php'); // MonkeyBusiness
+    include(AAINI.'bdd.php');   
+    include(AAINI.'session.php');
     require_once('core/cookie.php');
     require_once('core/toolbox.php');
 

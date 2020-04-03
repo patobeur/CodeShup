@@ -1,6 +1,7 @@
             <!-- HEADER -->
             <header>
                 <!-- navigation -->
+                <div id="scroll-to-top" class="top"><span class="toplink">⏶</span></div>
                 <nav class="navbar navbar-expand-md navbar-dark main-nav">
                     <div class="container">
                         <a class="navbar-brand" href="?index" title="lien vers SITENAME">

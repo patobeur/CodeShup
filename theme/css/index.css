@@ -192,7 +192,7 @@ section.accueil p {
     outline: 1px solid rgba(0, 0, 0, 0.222);
     color: rgb(0, 0, 0);
     text-transform: uppercase;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 800;
     line-height: 2rem;
     margin: 0 0 .5rem 0;
@@ -481,7 +481,7 @@ section.accueil p {
     align-self: center;
     align-items: center;
     /* align-content: center; */
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     /* line-height: 1.6rem; */
     border-radius: 50%;
     padding: 0 0 0 .2rem;
@@ -521,4 +521,9 @@ section.accueil p {
 .classeur .feuilles #lesfiches .fiche .page.banned {
     background: rgb(2, 0, 36);
     background: linear-gradient(28deg, rgba(2, 0, 36, 1) 5%, rgba(255, 252, 0, 1) 5%, rgba(255, 252, 0, 1) 20%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 35%, rgba(255, 252, 0, 1) 35%, rgba(255, 252, 0, 1) 50%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 65%, rgba(255, 252, 0, 1) 65%, rgba(255, 252, 0, 1) 80%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 1) 95%, rgba(255, 252, 0, 1) 95%, rgba(255, 252, 0, 1) 100%);
+}
+
+.classeur .feuilles #lesfiches .fiche .page a:hover {
+    background: rgb(2, 0, 36);
+    color: rgb(146, 146, 153);
 }

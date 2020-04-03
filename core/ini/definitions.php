@@ -1,7 +1,21 @@
 <?php
-
-    Define('DEBUG' , false);
+ 
     define('STARTT',            $_SERVER['REQUEST_TIME_FLOAT']);
+    
+    if ($_SERVER['SERVER_NAME'] == '127.0.0.1' OR $_SERVER['SERVER_NAME'] == 'localhost')
+    {        
+        define('DISTANT', false);
+        Define('DEBUG' , true);
+        define('DEBUG_B', true);
+        define('DEBUG_DIE', true);
+    }
+    else {
+        define('DISTANT', true);
+        Define('DEBUG' , false);
+        define('DEBUG_B', false);
+        define('DEBUG_DIE', false);
+    }
+
     // definitions
     define('AAROOT',            '');
     define('AACORE',            AAROOT.'core/');
@@ -28,9 +42,5 @@
     define("AACSS",             AAROOT.'theme/css/');
     define("AAJS",              AAROOT.'js/');
     // TOOLS
-    define("AAEXTPHP",       '.php');    
-    // fichier toolbox
-    define('DEBUG_A', false);   //get_Pageaouvriratouslescoups()
-    define('DEBUG_B', true);    //get_Pageaouvriratouslescoups()
-    define('DEBUG_DIE', true);  //die
+    define("AAEXTPHP",       '.php');   
 ?>

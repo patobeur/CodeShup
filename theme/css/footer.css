@@ -11,6 +11,7 @@ footer{
   align-items: center;
   padding:.2rem 1rem;
 }
+
 footer .container{
   display:flex;
   flex-direction: column;
@@ -22,20 +23,9 @@ footer .container .social h1{
   padding:0;
   margin:0;
 }
-footer .container .social .top a{
-  line-height: 1rem;
-  font-size: 1rem;
-  text-decoration: none;
-  color: white;
-}
 footer .container .social .credit .github-button{
   line-height: 1rem;
   font-size: 1.2rem;
-  padding:0;
-  margin:0;
-}
-footer .container .social .top{
-  line-height: 1rem;
   padding:0;
   margin:0;
 }

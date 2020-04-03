@@ -38,7 +38,7 @@
      * @param $title string give me something print like a string or integer
      */
     function print_html($paquet,$title=''){
-        if (DEBUG_A){
+        if (DEBUG){
             print('<hr>');
             ($title!='') ? print($title.':') : print('HTML:');
             echo($paquet);
@@ -54,7 +54,7 @@
      * @param $title string give me something print like a string or integer
      */
     function print_air($paquet,$title='',$top=null){
-        if (DEBUG_A){
+        if (DEBUG){
             $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
             print('<hr>'.$br.'<pre>');
             // echo "function(".__FUNCTION__.")<br>";
@@ -69,12 +69,14 @@
      * @param $title string give me something print like a string or integer
      */
     function print_airB($paquet,$title='',$top=null){
-        $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
-        print('<hr>'.$br.'<pre>');
-        // echo "function(".__FUNCTION__.")<br>";
-        ($title!='') ? print($title.': ') : print('print_r: ');
-        print_r($paquet);
-        print('</pre>');
+        if (DEBUG){
+            $br = (!empty($top)) ? "<br><br><br><br><br><br>" : "";
+            print('<hr>'.$br.'<pre>');
+            // echo "function(".__FUNCTION__.")<br>";
+            ($title!='') ? print($title.': ') : print('print_r: ');
+            print_r($paquet);
+            print('</pre>');
+        }
     }
     /**
      * clean var_dump() function
@@ -82,12 +84,14 @@
      * @param $title string give me something print like a string or integer
      */
     function var_bump($paquet,$title=''){
-        print('<pre><hr>');
-        ($title!='') ? print($title.': ') : print('var_dump: ');
-        var_dump($paquet);
-        print('</pre>');
+        if (DEBUG){
+            print('<pre><hr>');
+            ($title!='') ? print($title.': ') : print('var_dump: ');
+            var_dump($paquet);
+            print('</pre>');
+        }
     }
-    function getUserIpAddr(){
+    function get_Ip(){
         if(!empty($_SERVER['HTTP_CLIENT_IP'])){
             //ip from share internet
             $ip = $_SERVER['HTTP_CLIENT_IP'];

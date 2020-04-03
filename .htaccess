@@ -1,5 +1,27 @@
 Options all -Indexes
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://localhost/git/github/cms_poo/$1 [R,L]
+
 # onerrors
-ErrorDocument 403 /?403
-ErrorDocument 404 /?404
-ErrorDocument 500 /500.php
+ErrorDocument 403 https://localhost/git/github/cms_poo/?403
+ErrorDocument 404 https://localhost/git/github/cms_poo/?404
+ErrorDocument 500 https://localhost/git/github/cms_poo/500.php
+#ErrorDocument 501 https://localhost/git/github/cms_poo/500.php
+
+
+#Ces règles lancent le script testing.php avec la variable GET contenant l’URL mis par l’utilisateur.
+#RewriteCond %{REQUEST_URI} !testing.php
+#RewriteRule (.*) testing.php?var=$1
+
+#Si votre site est n’est pas présent dans le dossier cible,
+#cela force l’adresse de votre site à être de type www.exemple.com,
+#alors qu’en réalité la page appelée est : www.exemple.com/MonSite
+#RewriteEngine on
+#Rewritecond %{HTTP_HOST} ^exemple.com
+#Rewritecond %{REQUEST_URI} !^/MonSite
+#Rewriterule ^(.*)$ /MonSite/
+
+
+#RewriteRule .* 500.php
+#RewriteRule .*\.(gif|GIF|jpg|JPG|bmp|BMP|wav|mp3|wmv|avi|mpeg)$ - [F]
