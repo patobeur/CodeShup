@@ -12,16 +12,18 @@ Class User
     public function __construct($donnees=['mail' => null,'passwrd' => null])
     {
         // if (!empty($donnees)) { $this->hydrate_index($donnees); }
-        $this->_mail = "vide";
-        $this->_passwrd = "iugfhmisughmsiughmsujloj";
-        $this->_token  = "oumghdifughmfiughdmiugh"; // generate_token();
+        $this->_mail = "ko";
+        $this->_passwrd = "ko";
+        $this->_token  = $this->set_Token(); // generate_token();
         $this->_statut = "visitor";
         $this->_connected = false;
     }
     // basic setter
     public function set_Mail($paquet)       { $this->_mail          = $paquet;}
     public function set_Passwrd($paquet)    { $this->_passwrd       = $paquet;}
-    public function set_Token($paquet)      { $this->_token         = $paquet;}
+    public function set_Token()             {
+        $this->_token         = md5(rand(1, 10) . microtime());
+    }
     public function set_Statut($paquet)     { $this->_statut        = $paquet;}
     public function set_Connected($paquet)  { $this->_connected     = $paquet;}
     // basic getter

@@ -1,35 +1,35 @@
 <?php
 // Class Page
-
 class Page{
-    // --------------------------------------------------------------------------------	
-	private $_Nlog = 0;
-	private $_ObjJson;
+    private $_Nlog = 0;
+    private $_ObjJson;
     private $_flash_time;
     private $_User;
-	private $_Bdd;
+    private $_Db;
 
-	private $_current_page='';
-	private $_default_page='';
+    private $_current_page='';
+    private $_default_page='';
     private $_Originum=0;
-    
-    private $_replace_in_vue = [];
 
+    private $_replace_in_vue = [];
     
-    // public function __construct($utilisateur,$database){
     public function __construct($timer){
         $this->_flash_time = $timer;
-        $this->_ObjJson =  $this->get_Jsondecode(AAJSONCONTEN);
+        if (file_exists(AAJSONCONTEN)) 
+        {
+            $this->_ObjJson =  $this->get_Jsondecode(AAJSONCONTEN);
+        }
+        else
+        {
+            echo 'il manque le fichier base';
+        }
         // $this->_ObjJson2 = $this->get_Jsondecode(AAJSONHEADER);
         $this->_current_page = $this->_ObjJson->defaultpage[0];
         $this->_default_page = $this->_ObjJson->defaultpage[0];
-        //
-        // $this->_User = new User();
-        // $this->_Bdd  = new Db();
+        $this->_Db = new Db();
         
     }
     // PUBLIC FUNCTIONS
-    // --------------------------------------------------------------------------------
     // GETTER
     // --------------------------------------------------------------------------------
     public function do_affichelapagehtml(){
@@ -37,7 +37,8 @@ class Page{
         echo $this->get_Dom();
     }
     // --------------------------------------------------------------------------------
-    private function get_Dom(){
+    private function get_Dom()
+    {
         $dom_blocs = $this->get_Header_Html(1);
         $dom_blocs .= $this->get_Contents_Html();
 
@@ -50,7 +51,8 @@ class Page{
     }
 
     // USEFUL IN NAVIGATION MENU
-	private function get_List_Menu($kelfamille){
+    private function get_List_Menu($kelfamille)
+    {
         $n=PHP_EOL;
         // NAVIGATION        
         $fichier_importe = $this->get_File_to_use('get_contents',AANAVBAR,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
@@ -66,11 +68,9 @@ class Page{
             $coment_blocs .= $this->get_Indent(0,4,'Navigat').'<a class="dropdown-item'.$active.'" href="?'. $famille.'"><span>📄</span> '.$enfant->title.'</a>'.$n;
         } 
         $coment_blocs .= $this->get_Indent(0,4,'Navigat')."<!-- Fin Auto in menu -->";
-        if ($this->_current_page == 'index') {$is_activ = ' active';} else  {$is_activ = '';}
-        
+        if ($this->_current_page == 'index') {$is_activ = ' active';} else  {$is_activ = '';} 
 
         $blocLogin = '';
-
 
         //BLOC LOGIN (blocLogin)
         if ($this->_current_page != 'login')
@@ -129,15 +129,14 @@ class Page{
             $blocLogin = PHP_EOL;
 
         }
-
-
+        
         $valeurderetour = preg_replace("_NAVIGATATOR_",$coment_blocs, $fichier_importe); 
         $valeurderetour = preg_replace("_ACTIVITE_",$is_activ, $valeurderetour);
         // ------------------------------------------------------------------------------
         $valeurderetour = preg_replace('_ACTOBEURTWO_',$this->get_Navigation_Menu('pagesgestion','files'), $valeurderetour);
         $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
         // ------------------------------------------------------------------------------
-        //print_airB($valeurderetour,'valeurderetour');
+
         $valeurderetour = preg_replace("_LOGINATOR_",$blocLogin, $valeurderetour); 
         return $valeurderetour; 
     }
@@ -272,26 +271,9 @@ MENUACTOBEUR
                 $get_file = AAINVUE.$fichiers[$numFichier].AAEXTPHP;                // fichier pour file_get_contents
 
                 $body_blocs .= $this->get_File_to_use('vue',$get_file,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                // ------------------------------------------
+                // ------------------------------------------
+                // ------------------------------------------
                 // ici test pour modifier la vue a la volée
                 if($this->get_replace_in_vue())
                 {   
@@ -300,31 +282,23 @@ MENUACTOBEUR
                         $body_blocs = str_replace("{{".$key."}}" , $value, $body_blocs);
                     }
                 }
-                
-
-
-
-
-
-
-
+                // ------------------------------------------
+                // ------------------------------------------
+                // ------------------------------------------
+                // ------------------------------------------ 
             }
         }
         // $body_blocs .= $header;
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
         $body_blocs = $header.$this->get_Pageaouvriratouslescoups('files').$n.$body_blocs;
-
-        
         // --------------------------------------------------------------------------------------------
+
         // FOOTER
         $body_blocs .= file_exists(AAFOOTER)                                         // bloc footer
             ? $this->get_File_to_use('get_contents',AAFOOTER,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
             : false; 
-
-
-
-
+        // --------------------------------------------------------------------------------------------
         $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);       // bloc js header de la page appelée
         $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;     // on ferme le div du début <div class="fullpage">
         $body_blocs .= $this->get_end_js_html($this->_current_page,'js',1);          // bloc js a mettre en fin de page
@@ -335,51 +309,10 @@ MENUACTOBEUR
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
-        // --------------------------------------------------------------------------------------------
-        // ICI COMMENCE LE VRAI TRAVAIL        
         // ON A NOS CLASS ET FONCTION 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return $body_blocs;
     }
     // --------------------------------------------------------------------------------
-    /**
-     * 
-     */
 	private function get_end_js_html($famille='atouslescoups',$nomchamp,$Origine=0){
         $n=PHP_EOL;$message = '';
         $sourceJson = $this->_ObjJson->$famille;
@@ -394,9 +327,6 @@ MENUACTOBEUR
 		return $message;
     }
     // ------------------------------------------------------------------------------
-    /**
-     * 
-     */
 	private function get_head_meta_html($famille,$nomchamp,$Origine){
         $n=PHP_EOL;$message = '';
         if ($list = $this->_ObjJson->$famille){
@@ -422,9 +352,6 @@ MENUACTOBEUR
 		return $message;
     }
     // ------------------------------------------------------------------------------
-    /**
-     * 
-     */
     private function get_Indent($Origine=0,$nb=1,$from=''){
         $space="   ";
         if (gettype($Origine)!='integer'){
@@ -436,9 +363,6 @@ MENUACTOBEUR
         return $space;
     }
     // ------------------------------------------------------------------------------
-    /**
-     * 
-     */
     private function get_all_metas(
             $koi='head',
             $choix="meta",
@@ -452,10 +376,6 @@ MENUACTOBEUR
 		for ($i=0;$i<count($this->_ObjJson->$koi->$choix);$i++){
             $html = "\n";
             $tag = "";$type="";$contentype="";$item="";$contentitem="";
-            //printair($this->_ObjJson->$koi->$choix);
-            //echo $this->_ObjJson->$koi->$choix[$i]->typeof;
-            // -------------- 
-            // if (isset($this->_ObjJson->$koi->$choix[$i]->typeof)){          $typeof =          $this->_ObjJson->$koi->$choix[$i]->title;}
 
             if (isset($this->_ObjJson->$koi->$choix[$i]->typeof)){          $typeof =          $this->_ObjJson->$koi->$choix[$i]->typeof;}
             if (isset($this->_ObjJson->$koi->$choix[$i]->nameof)){          $nameof =          $this->_ObjJson->$koi->$choix[$i]->nameof;}
@@ -506,7 +426,7 @@ MENUACTOBEUR
                 break;
             }
             if ($ValidationMeta) $phrase .= $this->get_Indent($Origine,2,'rien')."<".$html.">".$n;
-        } // endfor
+        } 
         $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-b- End\'s '. $koi .'/' . $choix . ' -->'.$n;     // end html comment 
 
         // GENERATION des CSS TROUVés DANS LE JSON
@@ -526,12 +446,9 @@ MENUACTOBEUR
         //     $phrase = $this->get_Indent($Origine,1,'rien')."<".$balise.">".$n.$phrase.$this->get_Indent($Origine,1,'rien')."</".$balise.">";
         // }
 
-		// return $phrase;
+		return $phrase;
     }
     // ------------------------------------------------------------------------------
-    /**
-     * 
-     */
     private function get_Pageaouvriratouslescoups($CHILDy){
         // print_airB($CHILDy,'get_Pageaouvriratouslescoups : '.$a.$b);
         $nbCheck = 0;
@@ -601,11 +518,6 @@ MENUACTOBEUR
      */
     private function get_Current_Page(){
         $new_current_page = null; // page vide
-        // recup url pour trouver la page a afficher
-        // $a = $_SERVER['REQUEST_URI'];
-        // $b = $_SERVER['PHP_SELF'];
-        // $c = preg_replace($a,'---', $b);
-        // $d = explode(" ",$b,10);
 
     
             // print_airB([
@@ -626,12 +538,12 @@ MENUACTOBEUR
             //     // ,'argc' => $argc
             // ],'url',1);
             
-            parse_str($_SERVER['QUERY_STRING'], $array_arg);
-            // print_r($array_arg);
+            // parse_str($_SERVER['QUERY_STRING'], $array_arg);
+            // // print_r($array_arg);
 
-            $r = $_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; 
-            $r = explode('/', $r);
-            $r = array_filter($r);
+            // $r = $_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; 
+            // $r = explode('/', $r);
+            // $r = array_filter($r);
             
             
 
@@ -659,6 +571,10 @@ MENUACTOBEUR
             }
             // on evite d'afficher la page profil sans être loggué
             if (empty($_SESSION['profil']) AND $new_current_page=='profil'){
+                $new_current_page='login';
+            }
+            // on evite d'afficher le panier sans être loggué
+            if (empty($_SESSION['profil']) AND $new_current_page=='panier'){
                 $new_current_page='login';
             }
             /* ------------------ FIN REGLES ------------------*/
@@ -700,10 +616,6 @@ MENUACTOBEUR
         //print_air($url_file,__CLASS__."->".__FUNCTION__);
         return (is_string($url_file) && file_exists($url_file)) ? json_decode(file_get_contents($url_file,true)) : False;
     }
-
-
-
-
 
     // SETTER
 	// ------------------------------------------------------------------------------
@@ -759,11 +671,6 @@ MENUACTOBEUR
      * @return mixed content|true if succes|false if fail
      */
     private function get_File_to_use($action,$file,$type,$from=null){
-        // action = 'get_contents',
-        // $file = AANAVBAR,
-        // $type = "file_get_contents",
-        // $from = $this->get_errorphrase('',__FUNCTION__,__LINE__)
-        // echo $type." (".$file.")".PHP_EOL;
         if (file_exists($file))
         {
             switch($type)
@@ -838,16 +745,6 @@ MENUACTOBEUR
      */
     // --------------------------------------------------------------------------------
     private function get_errorphraseindex($file,$function,$line,$arguments=null,$coment=null){
-        // if ('array' == gettype($arguments)) 
-        // {
-        //     $splitedarguments = '';
-        //     $i=0;
-        //     foreach($arguments as $key => $value)
-        //     {
-        //         $splitedarguments .= (++$i < count($arguments)) ? $value.',' : $value;
-        //     }
-        //     $arguments = $splitedarguments;
-        // }
         return [
             'line' => $line,
             'fichier' => $file,
@@ -867,46 +764,5 @@ MENUACTOBEUR
 			}
         }
     }
-    // --------------------------------------------------------------------------------
-    // private function do_RequireFile($new_current_page){
-        
-    //     print_air($this->_ObjJson->$new_current_page,__CLASS__."->".__FUNCTION__."['$new_current_page']");
-    //     if (!empty($this->_ObjJson->$new_current_page->require) ){
-    //         // print_air($new_current_page,__CLASS__."->".__FUNCTION__);
-    //         $listedesRequire = $this->_ObjJson->$new_current_page->require;
-    //         //print_air($listedesRequire,__CLASS__."->".__FUNCTION__);
-    //         for ( $i = 0; $i < count($listedesRequire); $i++ ){
-    //             $fichierrequire = AAFONCTION.$listedesRequire[$i].AAEXTPHP;
-    //             if (file_exists($fichierrequire)) {
-    //                 require_once($fichierrequire);  
-    //             }
-    //             else{
-    //                 print_air('il manque le fichier '.$fichierrequire,"erreur do_RequireFile");
-    //             }
-    //         }
-    //     }
-    //     else{
-    //         print_air($new_current_page." require no file",__CLASS__."->".__FUNCTION__);
-    //     }
-    // }
-
-    private function wtf(){        
-        // print_airB([
-        //     'url' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY)
-        //     ,'REQUEST_URI' => $_SERVER['REQUEST_URI']
-        //     ,'SERVER_NAME' => $_SERVER['SERVER_NAME']
-        //     ,'QUERY_STRING' => $_SERVER['QUERY_STRING']
-        //     ,'HTTPS' => $_SERVER['HTTPS']
-        //     ,'HTTP_HOST' => $_SERVER['HTTP_HOST']
-        //     ,'HTTP_CONNECTION' => $_SERVER['HTTP_CONNECTION']
-        //     ,'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT']
-        //     ,'REQUEST_TIME_FLOAT' => $_SERVER['REQUEST_TIME_FLOAT']-$a
-        //     ,'PHP_SELF' => $_SERVER['PHP_SELF']
-        //     ,'GET' => $_GET
-        //     // ,'argv' => $argv
-        //     // ,'argc' => $argc
-        // ],'url',1);
-    }
-
 }
 ?>

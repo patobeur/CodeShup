@@ -5,13 +5,13 @@
     if ($_SERVER['SERVER_NAME'] == '127.0.0.1' OR $_SERVER['SERVER_NAME'] == 'localhost')
     {        
         define('DISTANT', false);
-        Define('DEBUG' , true);
+        define('DEBUG' , true);
         define('DEBUG_B', true);
         define('DEBUG_DIE', true);
     }
     else {
         define('DISTANT', true);
-        Define('DEBUG' , false);
+        define('DEBUG' , false);
         define('DEBUG_B', false);
         define('DEBUG_DIE', false);
     }
@@ -32,7 +32,6 @@
     define("AAVUE",             AACORE.'View/'.'Vu_');          // pages parsées à la volé indiqué dans le json
     define("AAINVUE",           AACORE.'inview/'.'_in_');       // pages a mettre dans view
     // FILES
-    define("AAJSONHEADER",      AAJSON.'structure.json');
     define("AAJSONCONTEN",      AAJSON.'content.json');
     // INCLUDES
     define("AANAVBAR",          AAVUE.'navigation.php');

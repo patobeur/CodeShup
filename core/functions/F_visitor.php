@@ -1,6 +1,6 @@
 <?php
     $valeurderetour = '';
-        function VISITOR(){                                             // La fonction c'est pratique 
+        function VISITOR(){                                                     // La fonction c'est pratique 
                 if( !empty($_SESSION['cms']['user']['done'])){
                         $file = 'core/log/visites.txt';                         // le fichier est planqué avant le core ?? pas encore
                         
@@ -17,14 +17,14 @@
                                 $compte = 1;                                    // et met compte à 1
                         }
                         if(file_exists($file)){                                 // si le fichier existe
-                                $compte++;                                                      // on ajoute 1 au compteur ++
-                                $_SESSION['cms']['user']['done'] = true;                        // on colle true en session pour pouvoir la tester au passage suivant
-                                $_SESSION['cms']['user']['count'] = $compte;                        // on colle true en session pour pouvoir la tester au passage suivant
-                                $_SESSION['cms']['user']['tekken'] = generateToken();           // je rajoute le numero en session, ca ne me sert a rien.... pour l'instant ;)
+                                $compte++;                                      // on ajoute 1 au compteur ++
+                                $_SESSION['cms']['user']['done'] = true;        // on colle true en session pour pouvoir la tester au passage suivant
+                                $_SESSION['cms']['user']['count'] = $compte;    // on colle true en session pour pouvoir la tester au passage suivant
+                                $_SESSION['cms']['user']['tekken'] = getToken();// je rajoute le numero en session, ca ne me sert a rien.... pour l'instant ;)
 
-                                fseek($fileCounter, 0);                                          // je remet le curseur au début du fichier ouvert (je crois ??!!)
-                                fputs($fileCounter, $compte);                                    // je remplace le contenu (compte) du fichier par le nouveau (compte++)
-                                fclose($fileCounter);                                                    // je ferme le fichier txt !
+                                fseek($fileCounter, 0);                         // je remet le curseur au début du fichier ouvert (je crois ??!!)
+                                fputs($fileCounter, $compte);                   // je remplace le contenu (compte) du fichier par le nouveau (compte++)
+                                fclose($fileCounter);                           // je ferme le fichier txt !
                                 return $compte;
                         }
                         else
@@ -33,7 +33,7 @@
                         }
                 }
         }
-        function generateToken()
+        function getToken()
         {
             return md5(rand(1, 10) . microtime());
         }

@@ -46,7 +46,7 @@
 			}
 		]
 	},
-	"pages": ["index","404","403","login","profil","boutique"],
+	"pages": ["index","404","403","login","profil","boutique","panier"],
 	"index": {
 		"title": "Accueil",
 		"menuactif": "true",
@@ -80,12 +80,21 @@
 	},
 	"boutique": {
 		"title": "Code-Shop",
-		"menuactif": false,
+		"menuactif": true,
 		"js": [],
 		"css": ["boutique.css"],
 		"blocs": ["boutique"],
 		"class": ["boutique"],
 		"controller": ["boutique"],
+		"require": []
+	},
+	"panier": {
+		"title": "Panier",
+		"menuactif": false,
+		"js": [],
+		"css": ["panier.css"],
+		"blocs": ["panier"],
+		"controller": ["panier"],
 		"require": []
 	},
 	"profil": {

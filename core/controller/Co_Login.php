@@ -40,8 +40,7 @@
 
         if (!empty($donnees['email']) && !empty($donnees['passwrd']))
         {
-                $this->_Bdd  = new Db();
-                if ($this->_Bdd->is_exist_user($donnees)){
+                if ($this->_Db->is_exist_user($donnees)){
                     // REDIRECTION VERS INDEX
                     Page::set_Current_Page('index');
                     header('location:'.dirname($_SERVER['PHP_SELF']).'/?'.Page::get_Current_Page());
