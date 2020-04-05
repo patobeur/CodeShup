@@ -39,6 +39,7 @@ date_default_timezone_set('Europe/Amsterdam');
     $_SESSION['cms']['actions'] = [];
     $_SESSION['cms']['log'] = [];
     $_SESSION['cms']['local'] = [];
+    $_SESSION['cms']['controller'] = [];
 
     // $_SESSION['user']['pages']['poi'][] = $_SESSION['user']['current_page'];
     $_SESSION['user']['hit']++;

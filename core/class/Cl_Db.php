@@ -52,7 +52,7 @@
         {
             $requete_phrase  = "SELECT distinct(z_prodcat.label),z_prodcat.cat_id from z_prodcat WHERE z_prodcat.parent_cat_id IS NULL ORDER BY z_prodcat.label ASC";
             
-            if ($this->query = $this->db->prepare($requete_phrase)) {}
+            // if ($this->query = $this->db->prepare($requete_phrase)) {}
 
             $requete_categories = $this->db->prepare($requete_phrase);
             try {
@@ -207,9 +207,109 @@
         //         $requete = null;
         //         return $reponse;                
         // }
-        private function wtf($user_id){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        // ------------------------------------------------------------------------
+        public function get_users($datas = null){return $this->get_Pusers();}
+        private function get_Pusers()
+        {
+            $select     = "SELECT *";
+            // $select = "z_user.user_id";
+            $from       = " FROM z_user";
+            $where      = "";//" WHERE z_product.name >0";
+            $order      = "";//" ORDER BY z_product.name ASC";
+            $limite     = "";//" LIMITE 1";
+            $requete    = $select.$from.$where.$order;
+            $requete    = $this->db->prepare($requete);
+
+            // if ($this->query = $this->db->prepare($requete)) {}
+
+            // $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();  
+                $reponse = $requete->fetchall();
+                // print_airB($reponse,'fetchall',1);
+                return $reponse;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage(); 
+                DISTANT ? die() : die($e->getMessage());
+                return null;
+            }
+
+        }
+
+
+
+        
+        // ------------------------------------------------------------------------
+        public function get_profilsparutilisateur($user_id){return $this->get_Pprofilsparutilisateur($user_id);}
+        private function get_Pprofilsparutilisateur($user_id)
+        {
+            $select     = "SELECT *";
+            // $select = "z_user.user_id";
+            $from       = " FROM z_profil";
+            $where      = " WHERE z_profil.user_id = :user_id";
+            $order      = " ORDER BY z_profil.user_id ASC";
+            $limite     = "";//" LIMITE 1";
+            $requete    = $select.$from.$where.$order;
+            $requete    = $this->db->prepare($requete);
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+
+            // if ($this->query = $this->db->prepare($requete)) {}
+
+            // $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();  
+                $reponse = $requete->fetchall();
+                // print_airB($reponse,'fetchall',1);
+                return $reponse;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage(); 
+                DISTANT ? die() : die($e->getMessage());
+                return null;
+            }
+
+        }
+
+
+
+
+
+
+        private function md5UserMailById($user_id){
             $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
             $requete = $this->db->prepare("UPDATE z_user SET email = md5(email) WHERE z_user.user_id != :user_id");
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            try {
+                $requete->execute();   
+                $requete->debugDumpParams();   // debug affichage     
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage     
+                DISTANT ? die() : die($e->getMessage());
+            }
+            $requete = null;
+        }
+        public function md5UserMailByIdExcept($user_id){
+            $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
+            $requete = $this->db->prepare("UPDATE z_user SET email = 'toto@mail.eu' WHERE z_user.user_id != :user_id");
             $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
             try {
                 $requete->execute();   

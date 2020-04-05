@@ -1,0 +1,4 @@
+Options all -Indexes
+ErrorDocument 403 https://localhost/git/github/cms_poo/admin/
+ErrorDocument 404 https://localhost/git/github/cms_poo/admin/
+ErrorDocument 500 https://localhost/git/github/cms_poo/admin/

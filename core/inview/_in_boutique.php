@@ -1,14 +1,16 @@
 <br><br><br>
             <!-- BOUTIQUE -->
             <section class="classeur">
-                <div class="shadows outlined">
-                    <div id="boutique" class="boutique">
-                        {{TITRE}} > {{PSEUDO}}
-                        {{ARIANNE}}
-                        <div class="pagearticle clean">
-                                {{ARTICLES}}
-                        </div>
+                {{ARIANNE}}
+                <div class="text-center">
+                <h1>{{TITRE}}</h1>
+                </div>
+                <div class="container">
+                    <div class="card-columns">
+                    {{ARTICLES}}
                     </div>
                 </div>
-            </section>
+
+
+                </section>
             <!-- END's BOUTIQUE -->

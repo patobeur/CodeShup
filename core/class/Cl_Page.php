@@ -87,12 +87,12 @@ class Page{
                         <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
                     </li>'.PHP_EOL;
 
-                if (!empty($_SESSION['profil']['level']) && $_SESSION['profil']['level'] == 'admin' AND DEBUG){  
-                    $blocLogin .= '
-                    <li class="nav-item">
-                        <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
-                    </li>'.PHP_EOL;
-                }
+                    if (!empty($_SESSION['profil']['ruleset']) && $_SESSION['profil']['ruleset'] == 'admin' AND DEBUG){  
+                        $blocLogin .= '
+                        <li class="nav-item">
+                            <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
+                        </li>'.PHP_EOL;
+                    }
 
                 $blocLogin .= '
                     <!-- Fin login menu -->'.PHP_EOL;
@@ -122,6 +122,12 @@ class Page{
                         </div>
                     </li>
                     <!-- Fin Auto out menu -->'.PHP_EOL;
+                    if (!empty($_SESSION['profil']['ruleset']) && $_SESSION['profil']['ruleset'] == 'admin'){  
+                        $blocLogin .= '
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin/" title="Admin">☉ Admin</a>
+                        </li>'.PHP_EOL;
+                    }
             }
         }
         elseif ($this->_current_page == 'login')// && $this->_User['statut'] == 'visitor')
