@@ -79,7 +79,7 @@
 
     // if (!empty($_GET))
     // {
-        if ($page_cible)
+        if (!empty($page_cible))
         {
             //si on trouve une page demandée
             switch($page_cible)
