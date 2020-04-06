@@ -9,6 +9,9 @@
             case '/codeshup/admin/index.php':
                 $rooter = '../';
             break;
+            case '/git/github/cms_poo/admin/index.php':
+                $rooter = '../';
+            break;
 
             default:
                 $rooter = '';

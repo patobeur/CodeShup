@@ -57,10 +57,10 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
 
-      <!-- Heading -->
+      <!-- Heading
       <div class="sidebar-heading">
         Interface
-      </div>
+      </div> -->
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
@@ -70,15 +70,29 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Components:</h6>
+            <!-- <h6 class="collapse-header">Actions:</h6> -->
             <a class="collapse-item" href="?nouvelutilisateur">Nouvel Utilisateur</a>
             <a class="collapse-item" href="?utilisateurs">Liste des Utilisateurs</a>
             <a class="collapse-item" href="?profilsparutilisateur">Profils des Utilisateurs</a>
           </div>
         </div>
       </li>
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#headingprofil" aria-expanded="true" aria-controls="headingprofil">
+          <i class="fas fa-fw fa-cog"></i>
+          <span>Profils</span>
+        </a>
+        <div id="headingprofil" class="collapse" aria-labelledby="headingprofil" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <!-- <h6 class="collapse-header">Actions:</h6> -->
+            <a class="collapse-item" href="?nouvelutilisateur">Nouveau profil</a>
+            <a class="collapse-item" href="?profils">Liste des profils</a>
+          </div>
+        </div>
+      </li>
 
-      <!-- Nav Item - Utilities Collapse Menu -->
+      <!-- Nav Item - Utilities Collapse Menu
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
           <i class="fas fa-fw fa-wrench"></i>
@@ -93,17 +107,17 @@
             <a class="collapse-item" href="utilities-other.html">Other</a>
           </div>
         </div>
-      </li>
+      </li> -->
 
-      <!-- Divider -->
-      <hr class="sidebar-divider">
+      <!-- Divider
+      <hr class="sidebar-divider"> -->
 
-      <!-- Heading -->
+      <!-- Heading
       <div class="sidebar-heading">
         Addons
-      </div>
+      </div> -->
 
-      <!-- Nav Item - Pages Collapse Menu -->
+      <!-- Nav Item - Pages Collapse Menu
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
           <i class="fas fa-fw fa-folder"></i>
@@ -121,21 +135,21 @@
             <a class="collapse-item" href="blank.html">Blank Page</a>
           </div>
         </div>
-      </li>
+      </li> -->
 
-      <!-- Nav Item - Charts -->
+      <!-- Nav Item - Charts
       <li class="nav-item">
         <a class="nav-link" href="charts.html">
           <i class="fas fa-fw fa-chart-area"></i>
           <span>Charts</span></a>
-      </li>
+      </li> -->
 
-      <!-- Nav Item - Tables -->
+      <!-- Nav Item - Tables
       <li class="nav-item">
         <a class="nav-link" href="tables.html">
           <i class="fas fa-fw fa-table"></i>
           <span>Tables</span></a>
-      </li>
+      </li> -->
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">

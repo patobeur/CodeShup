@@ -141,17 +141,17 @@
                         <td>#'.$value->profil_id.'</td>';
                         // <td>$value->user_id</td>
                         $articles .= '
-                        <td><i class="fas fa-fw fa-phone-square "></i>'.$value->username.'</td>
+                        <td></i>'.$value->username.'</td>
                         <td>'.$value->firstname.'</td>
                         <td>'.$value->email.'</td>
-                        <td><i class="fas fa-fw fa-phone-square "></i>'.$value->phone.'</td>
-                        <td><i class="fas fa-fw fa-coffee"></i>'.$value->birthdate.'</td>
-                        <td>'.$value->section_id.'</td>
-                        <td>'.$value->promo_id.'</td>
-                        <td>'.$value->last_update.'</td>
-                        <td>'.$value->created.'</td>
-                        <td>'.$value->activated.'</td>
-                        <td><i class="fas fa-fw fa-remove"></i></td>
+                        <td></i>'.$value->phone.'</td>
+                        <td></i>'.$value->birthdate.'</td>';
+                        // <td><i class="fas fa-fw fa-coffee">'.$value->section_id.'</td>
+                        // <td>'.$value->promo_id.'</td>
+                        // <td>'.$value->last_update.'</td>
+                        // <td>'.$value->created.'</td>
+                        // <td>'.$value->activated.'</td>
+                        $articles .= '<td><i class="fas fa-fw fa-edit"></i></td>
                         </tr>
                         ';
                     }

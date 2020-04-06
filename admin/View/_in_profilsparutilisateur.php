@@ -17,16 +17,16 @@
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>username</th>
-                        <th>firstname</th>
+                        <th>prenom</th>
+                        <th>nom</th>
                         <th>email</th>
-                        <th>phone</th>
-                        <th>birthdate</th>
-                        <th>section_id</th>
+                        <th>mobil</th>
+                        <th>naissance</th>
+                        <!-- <th>section_id</th>
                         <th>promo_id</th>
                         <th>last_update</th>
                         <th>created</th>
-                        <th>activated</th>
+                        <th>activated</th> -->
                         <th>box</th>
                       </tr>
                     </thead>
@@ -34,16 +34,16 @@
                     <tfoot>
                       <tr>
                         <th>#</th>
-                        <th>username</th>
-                        <th>firstname</th>
+                        <th>prenom</th>
+                        <th>nom</th>
                         <th>email</th>
-                        <th>phone</th>
-                        <th>birthdate</th>
-                        <th>section_id</th>
+                        <th>mobil</th>
+                        <th>naissance</th>
+                        <!-- <th>section_id</th>
                         <th>promo_id</th>
                         <th>last_update</th>
                         <th>created</th>
-                        <th>activated</th>
+                        <th>activated</th> -->
                         <th>box</th>
                       </tr>
                     </tfoot>
