@@ -254,6 +254,38 @@
 
         }
 
+        
+        // ------------------------------------------------------------------------
+        // ------------------------------------------------------------------------
+        public function get_profils(){return $this->get_Pprofils();}
+        private function get_Pprofils()
+        {
+            $select     = "SELECT *";
+            // $select = "z_user.user_id";
+            $from       = " FROM z_profil";
+            $where      = (!empty($_SESSION['profil']['rule_id']) AND $_SESSION['profil']['rule_id'] === 1) ? " WHERE z_profil.user_id != 1" : "";
+            $order      = " ORDER BY z_profil.user_id ASC";
+            $limite     = "";//" LIMITE 1";
+            $requete    = $select.$from.$where.$order;
+            $requete    = $this->db->prepare($requete);
+
+            // if ($this->query = $this->db->prepare($requete)) {}
+
+            // $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();  
+                $reponse = $requete->fetchall();
+                // print_airB($reponse,'fetchall',1);
+                return $reponse;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage(); 
+                DISTANT ? die() : die($e->getMessage());
+                return null;
+            }
+
+        }
+
 
 
         

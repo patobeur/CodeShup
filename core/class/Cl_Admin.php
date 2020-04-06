@@ -108,8 +108,14 @@ class Admin{
 
 
     // DB    
+    public function get_articles(){
+        return $this->_DbAdmin->get_articles();
+    }
     public function get_users(){
         return $this->_DbAdmin->get_users();
+    }
+    public function get_profils(){
+        return $this->_DbAdmin->get_profils();
     }
     public function get_profilsparutilisateur(){
         return $this->_DbAdmin->get_profilsparutilisateur(1);

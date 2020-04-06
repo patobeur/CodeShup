@@ -1,0 +1,6 @@
+.masquemail {
+    display: hidden;
+}
+.masquemail:hover {
+    display: block;
+}

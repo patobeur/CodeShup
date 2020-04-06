@@ -17,6 +17,7 @@
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="css/surcharge.css" rel="stylesheet">
   <!-- Custom styles for this page -->
   <link href="../vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
@@ -73,7 +74,8 @@
             <!-- <h6 class="collapse-header">Actions:</h6> -->
             <a class="collapse-item" href="?nouvelutilisateur">Nouvel Utilisateur</a>
             <a class="collapse-item" href="?utilisateurs">Liste des Utilisateurs</a>
-            <a class="collapse-item" href="?profilsparutilisateur">Profils des Utilisateurs</a>
+            <a class="collapse-item" href="?profils">Liste des profils</a>
+            <!-- <a class="collapse-item" href="?profilsparutilisateur">Profils des Utilisateurs</a> -->
           </div>
         </div>
       </li>

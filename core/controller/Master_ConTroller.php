@@ -16,8 +16,8 @@
     
     
     // DEBUG
-    (!empty($_SESSION['user'])      AND DEBUG) ? print_airB($_SESSION['user'],  'USER SESSION') : '';
+    // (!empty($_SESSION['user'])      AND DEBUG) ? print_airB($_SESSION['user'],  'USER SESSION') : '';
     (!empty($_SESSION['profil'])    AND DEBUG) ? print_airB($_SESSION['profil'],'PROFIL SESSION') : '';
-    (!empty($_SESSION['cms'])       AND DEBUG) ? print_airB($_SESSION['cms'],   'CMS SESSION') : '';
+    // (!empty($_SESSION['cms'])       AND DEBUG) ? print_airB($_SESSION['cms'],   'CMS SESSION') : '';
     // tuto : https://codeshack.io/super-fast-php-mysql-database-class/
 ?>

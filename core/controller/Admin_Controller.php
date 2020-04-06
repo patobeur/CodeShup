@@ -7,9 +7,23 @@
     include('../'.AAINI.'bdd.php');
     include('../'.AAINI.'session.php');
     require_once('../'.'core/toolbox.php');
+
+
+
+
+
+
+
+
+
+
+
+
     $pagespossibles = [
         'tableaudebord'
         ,'utilisateurs'
+        ,'articles'
+        ,'profils'
         ,'profilsparutilisateur'
     ]; 
     $default_pagecible = 'tableaudebord';
@@ -37,6 +51,9 @@
             'test'         => 'Tableau de bord'
         ],
         'utilisateurs' => [
+            'test'          => 'Gestion des Utilisateurs'
+        ],
+        'profils' => [
             'test'          => 'Gestion des Utilisateurs'
         ],
         'profilsparutilisateur' => [
@@ -84,19 +101,119 @@
             //si on trouve une page demandée
             switch($page_cible)
             {
+                case 'articles';
+                    $laliste_items = $PageAdmin->get_articles();
+                    $items = '';
+                    foreach($laliste_items as $key => $value)
+                    {   
+                        // $rule_icone = (
+                        //     $value->rule_id === 1) 
+                        //     ? '<i class="fas fa-fw fa-star" title="Admin">' 
+                        //     :(
+                        //         ($value->rule_id === 2) 
+                        //         ? '<i class="fas fa-fw fa-coffee" title="Visitor">'
+                        //         :(
+                        //             ($value->rule_id === 3) 
+                        //             ? '<i class="fas fa-fw fa-user" title="User">' 
+                        //             : '<i class="fas fa-fw fa-unlink" title="problème ?">'
+                        //         )
+                        //     );
+                        $items .= '
+                        <tr>         
+                            <td>#'.$value->product_id.'</td>';
+                            // <td>$value->user_id</td>
+                            // .product_id,.name,.create_time,.update_time,.stock,.alerte,.cat_id,.price,.vendor_id,.content
+                        $items .= '
+                            <td>'.$value->name.'</td>
+                            <td>'.$value->create_time.'</td>
+                            <td>'.$value->update_time.'</td>
+                            <td>'.$value->stock.'</td>
+                            <td>'.$value->alerte.'</td>
+                            <td>'.$value->cat_id.'</td>
+                            <td>'.$value->price.'</td>
+                            <td>'.$value->vendor_id.'</td>
+                            <td>'.$value->content.'</td>';
+                            // 
+                            // 
+                        $items .= '                
+                        </tr>'.PHP_EOL;
+                    }
+                    if (!empty($items))
+                    {
+                        $replace_in_vue[$page_cible]['TABLE'] = $items;
+                        $donnees = [
+                            'un' => $replace_in_vue[$page_cible],
+                            'deux' => $page_cible
+                        ];
+                    }
+
+                break;
+                case 'profils';
+                    $laliste_profils = $PageAdmin->get_profils();
+                    $articles = '';
+                    foreach($laliste_profils as $key => $value)
+                    {   
+                        // $rule_icone = (
+                        //     $value->rule_id === 1) 
+                        //     ? '<i class="fas fa-fw fa-star" title="Admin">' 
+                        //     :(
+                        //         ($value->rule_id === 2) 
+                        //         ? '<i class="fas fa-fw fa-coffee" title="Visitor">'
+                        //         :(
+                        //             ($value->rule_id === 3) 
+                        //             ? '<i class="fas fa-fw fa-user" title="User">' 
+                        //             : '<i class="fas fa-fw fa-unlink" title="problème ?">'
+                        //         )
+                        //     );
+                        $articles .= '
+                        <tr>
+                            <td>
+                                <a href="?profilsparutilisateur&user='.$value->user_id.'" class="btn btn-success btn-icon-split btn-sm">
+                                <!-- <span class="icon text-white-50"> 
+                                    <i class="fas fa-edit"></i>
+                                </span> -->
+                                <span class="text">Edit</span></a>
+                            </td>            
+                            <td>#'.$value->profil_id.'</td>';
+                            // <td>$value->user_id</td>
+                        $articles .= '
+                            <td>'.$value->username.'</td>
+                            <td>'.$value->firstname.'</td>
+                            <td class="masquemail">'.md5($value->email).'</td>
+                            <td>'.$value->phone.'</td>
+                            <td>'.$value->birthdate.'</td>
+                            <td>'.$value->section_id.'</td>
+                            <td>'.$value->promo_id.'</td>
+                            <td>'.$value->last_update.'</td>
+                            <td>'.$value->created.'</td>';
+                            // 
+                            // 
+                        $articles .= '                
+                        </tr>'.PHP_EOL;
+                    }
+                    if (!empty($articles))
+                    {
+                        $replace_in_vue[$page_cible]['TABLE'] = $articles;
+                        $donnees = [
+                            'un' => $replace_in_vue[$page_cible],
+                            'deux' => $page_cible
+                        ];
+                    }
+
+                break;
                 case 'utilisateurs';
                     $laliste_utilisateur = $PageAdmin->get_users();
                     $articles = '';
                     foreach($laliste_utilisateur as $key => $value)
                     {   
                         $rule_icone = (
-                            $value->rule_id == 1) 
+                            $value->rule_id === 1) 
                             ? '<i class="fas fa-fw fa-star" title="Admin">' 
                             :(
-                                ($value->rule_id == 2) 
+                                ($value->rule_id === 2) 
                                 ? '<i class="fas fa-fw fa-coffee" title="Visitor">'
                                 :(
-                                    ($value->rule_id == 3) 
+                                    ($value->rule_id === 3) 
                                     ? '<i class="fas fa-fw fa-user" title="User">' 
                                     : '<i class="fas fa-fw fa-unlink" title="problème ?">'
                                 )
@@ -122,7 +239,7 @@
                     }
                     if (!empty($articles))
                     {
-                        $replace_in_vue['utilisateurs']['TABLE'] = $articles;
+                        $replace_in_vue[$page_cible]['TABLE'] = $articles;
                         $donnees = [
                             'un' => $replace_in_vue[$page_cible],
                             'deux' => $page_cible
