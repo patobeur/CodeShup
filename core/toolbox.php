@@ -1,16 +1,12 @@
 <?php
-
-    // Utilitaires / toolbox
-    // a remettre dans les class ou pas
     /**
      * autouploader de class / stacking class
      */
     function chargerClasse($classe) {
         //exeptions
         // print_airB($_SERVER['PHP_SELF'],$classe);
-
         switch ($_SERVER['PHP_SELF']){
-            case '/git/github/cms_poo/admin/index.php':
+            case '/codeshup/admin/index.php':
                 $rooter = '../';
             break;
 
@@ -24,12 +20,15 @@
                 $_SESSION['cms']['autoload'][] = "New Class $classe"."() chargée.";
         }
         else{
+print_r($_SERVER['PHP_SELF']);
             $_SESSION['cms']['errors'][] = "New Class $classe"."() n'est pas chargée correctement.";
             die('la classe ?');
         }
     }
     spl_autoload_register('chargerClasse');
 
+    // Utilitaires / toolbox
+    // a remettre dans les class ou pas
     /**
      * generateur md5 generator
      */
@@ -72,7 +71,7 @@
             print('<hr>'.$br.'<pre>');
             // echo "function(".__FUNCTION__.")<br>";
             ($title!='') ? print($title.': ') : print('print_r: ');
-            print_r($paquet);
+            // print_r($paquet);
             print('</pre>');
         }
     }

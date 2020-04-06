@@ -38,12 +38,12 @@ Class User
     { 
         $this->_mail    = $this->set_Mail($donnees['mail']);
         $this->_passwrd = $this->set_Passwrd($donnees['passwrd']);
-        print_airB(
-            'mail : '.      (                  !empty($this->_mail)   ? 'ok' : 'ko'                  ).
-            'passwrd : '.   (                  !empty($this->passwrd) ? 'ok' : 'ko'                  ),
-            'test login'
-            ,1
-        );
+        // print_airB(
+        //     'mail : '.      (                  !empty($this->_mail)   ? 'ok' : 'ko'                  ).
+        //     'passwrd : '.   (                  !empty($this->passwrd) ? 'ok' : 'ko'                  ),
+        //     'test login'
+        //     ,1
+        // );
     }
     // temporary tools getter PUBLIC
     public function get_UserFiche() { 

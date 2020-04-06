@@ -146,6 +146,7 @@ class Page{
         $valeurderetour = preg_replace("_LOGINATOR_",$blocLogin, $valeurderetour); 
         return $valeurderetour; 
     }
+    
     // --------------------------------------------------------------------------------
     /**
      * 
