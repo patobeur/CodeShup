@@ -110,6 +110,9 @@
                     $plus1 .= 'cat_id : ('.$cat_id.')<br/><br/>';
 
 
+                    $replace_in_vue[$page_cible]['titre1'] = 'liste des paniers (création d\'array pour les futures WHERE IN';
+                    $replace_in_vue[$page_cible]['test1'] = $items1;
+                    $replace_in_vue[$page_cible]['requete1'] = $plus1."SELECT product_id,cat_id,vendor_id FROM z_product ORDER BY product_id DESC";
 
 
 
@@ -133,7 +136,22 @@
                             <td>'.$value->situation.'</td>
                             <td>'.$value->modifie.'</td>        
                         </tr>'.PHP_EOL;
-                    }
+                    }            
+                    $replace_in_vue[$page_cible]['titre2'] = 'Profils d\'utilisateur dont le nom commence par a';   
+                    $replace_in_vue[$page_cible]['test2'] = $items2;
+                    $replace_in_vue[$page_cible]['requete2'] ="SELECT *
+,case
+    when z_profil.activated LIKE '1' then 'Ok'
+    when z_profil.activated LIKE '0' then 'Ko'
+end as situation                  
+,IF(z_profil.last_update IS NULL,'nomod','mod') as modifie
+FROM z_profil
+WHERE z_profil.username LIKE 'a%'";
+
+                    $replace_in_vue[$page_cible]['requete3'] ="SELECT *
+FROM z_panier
+LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+LEFT JOIN z_product ON z_product.product_id = z_panier.product_id";
 
 
 
@@ -159,7 +177,10 @@
                             <td>'.$value->user_id.'</td> 
                             <td>'.$value->email.'</td>  
                             <td>'.$value->name.'</td>  
-                            <td>'.$value->content.'</td> 
+                            <td>'.((strlen($value->content) > 50) 
+                            ? substr($value->content, 0, 50).'<span title="'.$value->content.'">[+]</span>' 
+                            : $value->content).'</td> 
+                            
                             <td>'.$value->price.'</td>        
                             <td>'.$value->create_time.'</td>   
                             <td>'.$value->update_time.'</td>        
@@ -167,6 +188,8 @@
                     }
 
 
+                    $replace_in_vue[$page_cible]['test3'] = $items3;
+                    $replace_in_vue[$page_cible]['titre3'] = 'liste de tous les utilisateurs avec un panier actif. Aussi les articles et prix';
 
 
 
@@ -197,7 +220,7 @@
                         </tr>'.PHP_EOL;
                     }
                     $replace_in_vue[$page_cible]['intitules4'] = $intitules ; 
-                    $replace_in_vue[$page_cible]['titre4'] =' Tous les utilisateur ayant un panier actif  (user_id=1)'; 
+                    $replace_in_vue[$page_cible]['titre4'] =' Panier de l\'utilisateur avec l\'user_id = 1'; 
                     $replace_in_vue[$page_cible]['test4'] = $items4;
                     $replace_in_vue[$page_cible]['requete4'] ="SELECT *
 FROM z_panier
@@ -237,49 +260,81 @@ WHERE z_user.user_id = :user_id";
                         </tr>'.PHP_EOL;
                     }
                     $replace_in_vue[$page_cible]['intitules5'] = $intitules ; 
-                    $replace_in_vue[$page_cible]['titre5'] =' Tous les utilisateur ayant un panier actif  (user_id=1)'; 
+                    $replace_in_vue[$page_cible]['titre5'] = 'Combien d\'utilisateur on un panier actif, une image associé au profil et un O dans leur mail.'; 
                     $replace_in_vue[$page_cible]['test5'] = $items4;
-                    $replace_in_vue[$page_cible]['requete5'] ="SELECT *
-FROM z_panier
-LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-WHERE z_user.user_id = :user_id";
+                    $replace_in_vue[$page_cible]['requete5'] ="a faire";
+
 
                     
 
 
-                    // if (!empty($items2))
-                    // {
-                        // les titres                 
-                        $replace_in_vue[$page_cible]['titre1'] =' liste des paniers (création d\'array pour les futures WHERE IN';
-                        $replace_in_vue[$page_cible]['titre2'] = 'Profils d\'utilisateur dont le nom commence par a';       
-                        $replace_in_vue[$page_cible]['titre3'] =' ';
+                    // sixième
+                    $laliste_items4 = $DbAdmin->actions5(1);
+                    $items4 = '';
+                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
+                    foreach($laliste_items4 as $key => $value)
+                    {   
+                        $tempo  = '';
+                        $intitules  = '';
+                        $tempo .= '<td>tools</td>';
+                        $intitules .= '<td>tools</td>';
+                        foreach ($current_array as $key => $value2)
+                        {
+                            $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
+                            $tempo .= '<td>'.$temppo.'</td>';
+                            $intitules .= '<td>'.$value2.'</td>';
+                        }
+                        // print_airB($value);
+                        $items4 = '
+                        <tr>
+                            '.$tempo.'        
+                        </tr>'.PHP_EOL;
+                        $intitules = '
+                        <tr>
+                            '.$intitules.'        
+                        </tr>'.PHP_EOL;
+                    }
+                    $replace_in_vue[$page_cible]['intitules6'] = $intitules ; 
+                    $replace_in_vue[$page_cible]['titre6'] = 'Combien d\'articles sont dans des paniers et lesquels'; 
+                    $replace_in_vue[$page_cible]['test6'] = $items4;
+                    $replace_in_vue[$page_cible]['requete6'] ="a faire";
+                    
+                    
+                    // sept
+                    $laliste_items4 = $DbAdmin->actions5(1);
+                    $items4 = '';
+                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
+                    foreach($laliste_items4 as $key => $value)
+                    {   
+                        $tempo  = '';
+                        $intitules  = '';
+                        $tempo .= '<td>tools</td>';
+                        $intitules .= '<td>tools</td>';
+                        foreach ($current_array as $key => $value2)
+                        {
+                            $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
+                            $tempo .= '<td>'.$temppo.'</td>';
+                            $intitules .= '<td>'.$value2.'</td>';
+                        }
+                        // print_airB($value);
+                        $items4 = '
+                        <tr>
+                            '.$tempo.'        
+                        </tr>'.PHP_EOL;
+                        $intitules = '
+                        <tr>
+                            '.$intitules.'        
+                        </tr>'.PHP_EOL;
+                    }
+                    $replace_in_vue[$page_cible]['intitules7'] = $intitules ; 
+                    $replace_in_vue[$page_cible]['titre7'] = 'Combien d\'utilisateur on un panier actif, une image associé au profil et un O dans leur mail.'; 
+                    $replace_in_vue[$page_cible]['test7'] = $items4;
+                    $replace_in_vue[$page_cible]['requete7'] ="a faire";
 
-                        // les tableaux
-                        $replace_in_vue[$page_cible]['test1'] = $items1;
-                        $replace_in_vue[$page_cible]['test2'] = $items2;
-                        $replace_in_vue[$page_cible]['test3'] = $items3;
-
-                        // les requêtes
-
-                        $replace_in_vue[$page_cible]['requete1'] = $plus1."SELECT product_id,cat_id,vendor_id FROM z_product ORDER BY product_id DESC";
-                        $replace_in_vue[$page_cible]['requete2'] ="SELECT *
-    ,case
-        when z_profil.activated LIKE '1' then 'Ok'
-        when z_profil.activated LIKE '0' then 'Ko'
-    end as situation                  
-    ,IF(z_profil.last_update IS NULL,'nomod','mod') as modifie
-FROM z_profil
-WHERE z_profil.username LIKE 'a%'";
-
-                        $replace_in_vue[$page_cible]['requete3'] =$requete="SELECT *
-FROM z_panier
-LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-LEFT JOIN z_product ON z_product.product_id = z_panier.product_id";
+                    
 
 
-                        //intitules
-                        
+
 
                         // -------------------------------------------------------
                         // ----- paquetage des données ----------
