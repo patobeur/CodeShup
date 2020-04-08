@@ -513,53 +513,5 @@
             return $reponse;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// $sql="SELECT u2.barrecode, u2.nom_article,
-        //             case
-        //                 when u2.Valide LIKE '0' then 'HS'
-        //                 when u2.Valide LIKE '1' then 'OK'
-        //                 when u2.Valide LIKE '2' then 'En réparation'
-        //                 when u2.Valide LIKE '3' then 'Spécial'
-        //             end as situation,
-
-        //             IF(u1.date IS NULL,'Absent','OK') as etat, MAX(u3.date) as lastVue
-        //         FROM BC_articles u2
-        //         LEFT JOIN `BC_locations` u1 ON u2.article_id=u1.id_article AND u1.`action`='INV'
-        //             AND DATE=(SELECT date
-        //                 FROM `BC_locations`
-        //                 WHERE action='INV'
-        //                 GROUP BY date
-        //                 ORDER BY date DESC
-        //                 LIMIT 1)
-        //         LEFT JOIN BC_locations u3 ON u3.id_article=u2.article_id AND u3.action<>'INV'
-        //         WHERE u2.barrecode=:barrecode OR u2.nom_article=:barrecode
-        //         GROUP BY u2.barrecode";
     }
 ?>
