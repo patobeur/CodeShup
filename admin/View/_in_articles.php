@@ -29,19 +29,6 @@
                         <th>Created</th>
                       </tr>
                     </thead>
-
-                    <tfoot>
-                      <tr>
-                        <th>Options</th>
-                        <th>#</th>
-                        <th>Email</th>
-                        <th>Rule_id</th>
-                        <th>created</th>
-                        <th>updated</th>
-                        <th>last_connect</th>
-                      </tr>
-                    </tfoot>
-
                     <tbody>
                         {{TABLE}}
                     </tbody>

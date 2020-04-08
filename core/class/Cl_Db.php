@@ -1,4 +1,5 @@
 <?php
+    // class Db for Bdd
     class Db {
 
         protected $db;
@@ -71,6 +72,30 @@
         // ------------------------------------------------------------------------
         public function get_articles(){return $this->get_Particles();}
         private function get_Particles()
+        {
+            $select = "SELECT *";
+            // $select = "z_product.product_id,z_product.name,z_product.create_time,z_product.update_time,z_product.stock,z_product.alerte,z_product.cat_id,z_product.price,z_product.vendor_id,z_product.content";
+            $from = " FROM z_product";
+            $where = "";//" WHERE z_product.name >0";
+            $order = "";//" ORDER BY z_product.name ASC";
+            $limite = "";//" LIMITE 1";
+            $requete  = $select.$from.$where.$order;
+            $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+                // print_airB($reponse,'fetchall',1);
+                return $reponse;
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+                return null;
+            }
+
+        }// ------------------------------------------------------------------------
+        public function get_articlesFull(){return $this->get_ParticlesFull();}
+        private function get_ParticlesFull()
         {
             $select = "SELECT *";
             // $select = "z_product.product_id,z_product.name,z_product.create_time,z_product.update_time,z_product.stock,z_product.alerte,z_product.cat_id,z_product.price,z_product.vendor_id,z_product.content";
@@ -353,5 +378,188 @@
             }
             $requete = null;
         }
+        
+        // ------------------------------------------------------------------------
+        public function actions(){return $this->Pactions();}
+        private function Pactions()
+        {
+            $requete = "SELECT product_id,cat_id,vendor_id FROM z_product ORDER BY product_id DESC";
+            $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return $reponse;
+        }
+        // ------------------------------------------------------------------------
+        public function actions2(){return $this->Pactions2();}
+        private function Pactions2()
+        {
+
+            $requete=
+                "SELECT *
+                    ,case
+                        when z_profil.activated LIKE '1' then 'Ok'
+                        when z_profil.activated LIKE '0' then 'Ko'
+                    end as situation                  
+                    ,IF(z_profil.last_update IS NULL,'nomod','mod') as modifie
+                    -- ,MAX(z_profil.birthdate) as dernvue
+                FROM z_profil
+                WHERE z_profil.username LIKE 'a%'";
+
+            $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return $reponse;
+        }
+        // ------------------------------------------------------------------------
+        public function actions3($datas){return $this->Pactions3($datas);}
+        private function Pactions3($datas)
+        {
+            $product_id = $datas['product_id'];
+            $cat_id     = $datas['cat_id'];
+            $vendor_id  = $datas['vendor_id'];
+
+            $requete="SELECT *
+                FROM z_panier
+                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id";
+
+            $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return $reponse;
+        }
+        // ------------------------------------------------------------------------
+        public function actions4($user_id){return $this->Pactions4($user_id);}
+        private function Pactions4($user_id)
+        {
+            $requete="SELECT *
+                FROM z_panier
+                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
+                WHERE z_user.user_id = :user_id";
+
+            $requete = $this->db->prepare($requete);
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return $reponse;
+        }
+        // ------------------------------------------------------------------------
+        public function actions5($user_id){return $this->Pactions5($user_id);}
+        private function Pactions5($user_id)
+        {
+            $requete="SELECT *
+                FROM z_panier
+                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
+                WHERE z_user.user_id = :user_id";
+
+            $requete = $this->db->prepare($requete);
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return $reponse;
+        }
+        // ------------------------------------------------------------------------
+        public function actions6($user_id){return $this->Pactions6($user_id);}
+        private function Pactions6($user_id)
+        {
+            $requete="SELECT *
+                FROM z_panier
+                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
+                WHERE z_user.user_id = :user_id";
+
+            $requete = $this->db->prepare($requete);
+            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return $reponse;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// $sql="SELECT u2.barrecode, u2.nom_article,
+        //             case
+        //                 when u2.Valide LIKE '0' then 'HS'
+        //                 when u2.Valide LIKE '1' then 'OK'
+        //                 when u2.Valide LIKE '2' then 'En réparation'
+        //                 when u2.Valide LIKE '3' then 'Spécial'
+        //             end as situation,
+
+        //             IF(u1.date IS NULL,'Absent','OK') as etat, MAX(u3.date) as lastVue
+        //         FROM BC_articles u2
+        //         LEFT JOIN `BC_locations` u1 ON u2.article_id=u1.id_article AND u1.`action`='INV'
+        //             AND DATE=(SELECT date
+        //                 FROM `BC_locations`
+        //                 WHERE action='INV'
+        //                 GROUP BY date
+        //                 ORDER BY date DESC
+        //                 LIMIT 1)
+        //         LEFT JOIN BC_locations u3 ON u3.id_article=u2.article_id AND u3.action<>'INV'
+        //         WHERE u2.barrecode=:barrecode OR u2.nom_article=:barrecode
+        //         GROUP BY u2.barrecode";
     }
 ?>

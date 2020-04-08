@@ -1,6 +1,6 @@
 <?php
- 
-    define('STARTT',            $_SERVER['REQUEST_TIME_FLOAT']);
+    // ini_set('display_errors',1);
+    define('STARTT',$_SERVER['REQUEST_TIME_FLOAT']);
     
     if ($_SERVER['SERVER_NAME'] == '127.0.0.1' OR $_SERVER['SERVER_NAME'] == 'localhost')
     {        
@@ -11,13 +11,17 @@
     }
     else {
         define('DISTANT', true);
-        define('DEBUG' , false);
-        define('DEBUG_B', false);
+        define('DEBUG' , true);
+        define('DEBUG_B', true);
         define('DEBUG_DIE', false);
     }
 
     // definitions
     define('AAROOT',            '');
+    define('ADDCORE',            AAROOT.'../core/');
+    define("ADDVUE",             ADDCORE.'view/'.'Vu_');
+    define('ADDINI',             ADDCORE.'ini/');
+
     define('AACORE',            AAROOT.'core/');
     define('AAINI',             AACORE.'ini/');
     // REP
@@ -25,11 +29,11 @@
     define("AALOG",             AACORE.'log/');
     // Formatage des fichiers
     define("AAFONCTION",        AACORE.'functions/'.'F_');
-    define("AACLASSE",          AACORE.'Class/'.'Cl_');
-    define("AATRAIT",           AACORE.'Trait/'.'Tr_');
-    define("AACONTROLER",       AACORE.'Controller/'.'Co_');
-    define("AACONTROLEUR",      AACORE.'Controller/'.'Co_');
-    define("AAVUE",             AACORE.'View/'.'Vu_');          // pages parsées à la volé indiqué dans le json
+    define("AACLASSE",          AACORE.'class/'.'Cl_');
+    define("AATRAIT",           AACORE.'trait/'.'Tr_');
+    define("AACONTROLER",       AACORE.'controller/'.'Co_');
+    define("AACONTROLEUR",      AACORE.'controller/'.'Co_');
+    define("AAVUE",             AACORE.'view/'.'Vu_');          // pages parsées à la volé indiqué dans le json
     define("AAINVUE",           AACORE.'inview/'.'_in_');       // pages a mettre dans view
     // FILES
     define("AAJSONCONTEN",      AAJSON.'content.json');

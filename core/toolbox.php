@@ -1,4 +1,5 @@
 <?php
+    // ini_set('display_errors',1);
     /**
      * autouploader de class / stacking class
      */
@@ -9,8 +10,8 @@
             case '/codeshup/admin/index.php':
                 $rooter = '../';
             break;
-            case '/git/github/cms_poo/admin/index.php':
-                $rooter = '../';
+            case '/codeshup/index.php':
+                $rooter = '';
             break;
 
             default:
@@ -23,7 +24,6 @@
                 $_SESSION['cms']['autoload'][] = "New Class $classe"."() chargée.";
         }
         else{
-print_r($_SERVER['PHP_SELF']);
             $_SESSION['cms']['errors'][] = "New Class $classe"."() n'est pas chargée correctement.";
             die('la classe ?');
         }

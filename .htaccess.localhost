@@ -1,13 +1,13 @@
 Options all -Indexes
 RewriteEngine On
 RewriteCond %{SERVER_PORT} 80
-RewriteRule ^(.*)$ https://apteo.org/codeshup/$1 [R,L]
+RewriteRule ^(.*)$ https://localhost/CodeShup/$1 [R,L]
 
 # onerrors
-ErrorDocument 403 https://apteo.org/codeshup/?403
-ErrorDocument 404 https://apteo.org/codeshup/?404
-ErrorDocument 500 https://apteo.org/codeshup/500.php
-#ErrorDocument 501 https://apteo.org/codeshup/500.php
+ErrorDocument 403 https://localhost/CodeShup/?403
+ErrorDocument 404 https://localhost/CodeShup/?404
+ErrorDocument 500 https://localhost/CodeShup/500.php
+#ErrorDocument 501 https://localhost/CodeShup/500.php
 
 
 #Ces règles lancent le script testing.php avec la variable GET contenant l’URL mis par l’utilisateur.

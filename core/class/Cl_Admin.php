@@ -1,4 +1,5 @@
 <?php
+// ini_set('display_errors',1);
 // Class Page
 class Admin{
     public $_flash_time;
@@ -24,7 +25,7 @@ class Admin{
 
     public function set_vuefile($vue){
         // $filevue = '../'.AAINVUE.$vue.AAEXTPHP;
-        $filevue = 'View/_in_'.$vue.AAEXTPHP;
+        $filevue = 'view/_in_'.$vue.AAEXTPHP;
         if (file_exists($filevue))
         {
             $this->_pagehtml = file_get_contents($filevue);
@@ -32,7 +33,7 @@ class Admin{
     }
     public function get_vuefile($vue){
         //$filevue = '../'.AAINVUE.$vue.AAEXTPHP;
-        $filevue = 'View/_in_'.$vue.AAEXTPHP;
+        $filevue = 'view/_in_'.$vue.AAEXTPHP;
         if (file_exists($filevue))
         {
             // print_airB($filevue,' Aexiste dans '.__FUNCTION__);
@@ -110,6 +111,36 @@ class Admin{
     // DB    
     public function get_articles(){
         return $this->_DbAdmin->get_articles();
+    }
+    public function actions(){
+        return $this->_DbAdmin->actions();
+    }
+    public function actions2(){
+        return $this->_DbAdmin->actions2();
+    }
+    public function actions3($datas){
+        return $this->_DbAdmin->actions3($datas);
+    }
+    public function actions4($user_id){
+        return $this->_DbAdmin->actions3($user_id);
+    }
+    public function actions5($user_id){
+        return $this->_DbAdmin->actions5($user_id);
+    }
+    public function actions6($user_id){
+        return $this->_DbAdmin->actions6($user_id);
+    }
+    public function actions7($user_id){
+        return $this->_DbAdmin->actions7($user_id);
+    }
+    public function actions8($user_id){
+        return $this->_DbAdmin->actions8($user_id);
+    }
+    public function actions9($user_id){
+        return $this->_DbAdmin->actions9($user_id);
+    }
+    public function actions10($user_id){
+        return $this->_DbAdmin->actions10($user_id);
     }
     public function get_users(){
         return $this->_DbAdmin->get_users();

@@ -72,7 +72,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <!-- <h6 class="collapse-header">Actions:</h6> -->
-            <a class="collapse-item" href="?nouvelutilisateur">Nouvel Utilisateur</a>
+            <a class="collapse-item" href="?actions">actions sql</a>
             <a class="collapse-item" href="?utilisateurs">Liste des Utilisateurs</a>
             <a class="collapse-item" href="?profils">Liste des profils</a>
             <!-- <a class="collapse-item" href="?profilsparutilisateur">Profils des Utilisateurs</a> -->
