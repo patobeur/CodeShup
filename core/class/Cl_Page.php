@@ -39,8 +39,13 @@ class Page{
     // --------------------------------------------------------------------------------
     private function get_Dom()
     {
-        $dom_blocs = $this->get_Header_Html(1);
+        $dom_blocs = $this->get_Header_Html(1).PHP_EOL;
+        $dom_blocs .= $this->get_Indent($this->_Originum,2,__FUNCTION__)."<!-- start body -->".PHP_EOL;
+        
         $dom_blocs .= $this->get_Contents_Html();
+        // echo $this->get_Contents_Html();
+        // die();
+
 
         // dernière minute
         $github = DISTANT ? '<span class="credit"><a class="github-button" href="https://github.com/patobeur" data-color-scheme="no-preference: dark; light: dark; dark: dark;" aria-label="Follow @patobeur on GitHub">Follow @patobeur</a><script async defer src="https://buttons.github.io/buttons.js"></script></span>' : '';
@@ -58,7 +63,7 @@ class Page{
         $fichier_importe = $this->get_File_to_use('get_contents',AANAVBAR,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__));
         // ------------------------------------------------------------------------------
         $arr_pc = $this->_ObjJson->$kelfamille;                            // arr_pc = pages courantes (arr_ pour array)
-        $coment_blocs = $this->get_Indent(0,4,'Navigat')."<!-- Auto in menu -->".$n;
+        $coment_blocs = $n.$this->get_Indent(0,4,'Navigat')."<!-- Auto in menu -->".$n;
         for ($oo=0; $oo < count($arr_pc); $oo++){
             // ici le lien active
             $famille = $arr_pc[$oo];                                       // $ARRRAIEE[$kelfamille][$oo]
@@ -100,33 +105,33 @@ class Page{
             else
             {
                 $blocLogin = '
-                    <!-- Auto out menu -->
-                    <li class="nav-item dropdown">
-                        <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            id="gestionprofil"
-                            role="button"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false">
-                            Profil
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="gestionprofil">
-                            <!-- Profil -->
-                                <a class="dropdown-item" href="?profil" title="Profil">☉ Profil</a>
-                                <a class="dropdown-item" href="?panier" title="Panier">☉ Panier</a>
-                            <!-- Fin Profil -->
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" title="Deco" href="deco.php">☉ Deco</a>
-                        </div>
-                    </li>
-                    <!-- Fin Auto out menu -->'.PHP_EOL;
+                                <!-- Auto out menu -->
+                                <li class="nav-item dropdown">
+                                    <a
+                                        class="nav-link dropdown-toggle"
+                                        href="#"
+                                        id="gestionprofil"
+                                        role="button"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                        Profil
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="gestionprofil">
+                                        <!-- Profil -->
+                                            <a class="dropdown-item" href="?profil" title="Profil">☉ Profil</a>
+                                            <a class="dropdown-item" href="?panier" title="Panier">☉ Panier</a>
+                                        <!-- Fin Profil -->
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" title="Deco" href="deco.php">☉ Deco</a>
+                                    </div>
+                                </li>
+                                <!-- Fin Auto out menu -->'.PHP_EOL;
                     if (!empty($_SESSION['profil']['ruleset']) && $_SESSION['profil']['ruleset'] == 'admin'){  
                         $blocLogin .= '
-                        <li class="nav-item">
-                            <a class="nav-link" href="admin/" title="Admin">☉ Admin</a>
-                        </li>'.PHP_EOL;
+                                <li class="nav-item">
+                                    <a class="nav-link" href="admin/" title="Admin">☉ Admin</a>
+                                </li>'.PHP_EOL;
                     }
             }
         }
@@ -200,37 +205,58 @@ MENUACTOBEUR
     }
     // --------------------------------------------------------------------------------
 	private function get_Header_Html($nb_space=0){
-        $n=PHP_EOL;$jusquaHead="";
-        $jusquaHead .= $this->get_all_metas('head',"meta","head",0);                // get all meta from json
+        $n=PHP_EOL;
+        $jusquaHead="";
+        $jusquaHead .= $this->get_all_metas('head',"meta","head",1);                // get all meta from json
         $jusquaHead .= $this->get_head_meta_html('atouslescoups','css',1);          // get meta from json 
         $jusquaHead .= $this->get_head_meta_html($this->_current_page,'css',1);     // get css from the wanted page
-        $jusquaHead .= $this->get_head_meta_html($this->_current_page,'title',1);     // get css from the wanted page
+        $jusquaHead .= $this->get_head_meta_html($this->_current_page,'title',1);    // get css from the wanted page
 
         // head html
         $jusquaHead = $this->get_Indent($this->_Originum,1,'Gen_Head1')
-            .'<head>'.$jusquaHead.$n.$this->get_Indent($this->_Originum,1,'Gen_Head2').'</head>';
+            .'<head>'.$jusquaHead.$this->get_Indent($this->_Originum,2,'Gen_Head2').'</head>';
 
-        $jusquaHead = $this->get_Indent($this->_Originum,1,'Gen_Head3').
-            "<!-- ". $this->_current_page ." -->".$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head4').
-            $jusquaHead.$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head5')."<!-- End's  ".
-            $this->_current_page ." -->".$n;
+        // $jusquaHead = $this->get_Indent($this->_Originum,0,'Gen_Head3').
+        //     "<!-- ". $this->_current_page ." -->".$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head4').
+        //     $jusquaHead.$n.$this->get_Indent($this->_Originum,$nb_space,'Gen_Head5')."<!-- End's Head ".$this->_current_page ." -->";
 
         if (isset($this->_ObjJson->structure->meta->lang)){    $jusquaHead =  $this->_ObjJson->structure->meta->lang.$n.$jusquaHead;}
         if (isset($this->_ObjJson->structure->meta->doctype)){ $jusquaHead =  $this->_ObjJson->structure->meta->doctype.$n.$jusquaHead;}
-        // eco($jusquaHead);
+        // echo $jusquaHead;
+
+
+
         return $jusquaHead;
     }
     // GETTER
+
+
+
+    private function get_Navbar_Html(){                                           // ici on construit la navigation
+        $navbar = $this->get_RemplacePar('_URLROOT_', AAROOT, $this->get_List_Menu('pages'));
+        $navbar = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $navbar);
+        return $navbar.PHP_EOL;
+    }
+
     private function get_Contents_Html(){                                           // ici on construit le body
         $n=PHP_EOL;
-        $body_blocs="\n";
-        $body_blocs .= $this->get_Indent($this->_Originum,1,'get_Contents_Html').'<body id="top">'.$n;
-        $body_blocs .= $this->get_Indent($this->_Originum,2,'get_Contents_Html').'<div class="fullpage">'.$n;
+        // $body_blocs=$n;
+        $body_blocs = $this->get_Indent($this->_Originum,1,__FUNCTION__).'<body id="top">'.$n;
 
+
+
+
+        $body_blocs .=  $this->get_Navbar_Html();
+
+
+
+
+        $body_blocs .= $this->get_Indent($this->_Originum,3,__FUNCTION__).'<div class="fullpage">'.$n;
+
+        // echo $body_blocs;
+        // die();
 
         //
-        $header = $this->get_RemplacePar('_URLROOT_', AAROOT, $this->get_List_Menu('pages'));
-        $header = $this->get_RemplacePar('_LOGOSRC_', $this->_ObjJson->CHARTE->NAV->IMGROOT . $this->_ObjJson->CHARTE->NAV->LOGOSRC, $header);
 
 
         // generation des pages a integrer dans le body en dessous de navigation mais en dessus du footer
@@ -259,15 +285,31 @@ MENUACTOBEUR
         }
         // --------------------------------------------------------------------------------------------
         // ----------------------------------- GET CURRENT require ----------------------------------
+        // if (!empty($this->_ObjJson->$cp->require)){                                 // si il y'a des pages dans require
+        //     $tempovalue = count($this->_ObjJson->$cp->require);                     // je prend la liste des Controller a intégrer
+        //     $requires = $this->_ObjJson->$cp->require;                              // cp = current bloc/require
+
+        //     for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
+        //         $req_file = AAFONCTION.$requires[$numFichier].AAEXTPHP;             // fichier a require
+        //         $this->get_File_to_use('require',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
+        //     }
+        // }
+
         if (!empty($this->_ObjJson->$cp->require)){                                 // si il y'a des pages dans require
-            $tempovalue = count($this->_ObjJson->$cp->require);                     // je prend la liste des Controller a intégrer
             $requires = $this->_ObjJson->$cp->require;                              // cp = current bloc/require
 
-            for ($numFichier = 0; $numFichier < $tempovalue; $numFichier++){        // on boucle sur les require trouvés 
+            for ($numFichier = 0; $numFichier < count($this->_ObjJson->$cp->require); $numFichier++){        // on boucle sur les require trouvés 
                 $req_file = AAFONCTION.$requires[$numFichier].AAEXTPHP;             // fichier a require
                 $this->get_File_to_use('require',$req_file,"include",$this->get_errorphrase('',__FUNCTION__,__LINE__));
             }
         }
+
+
+
+
+
+
+
         // --------------------------------------------------------------------------------------------
         // ----------------------------------- GET CURRENT PAGES BLOCS --------------------------------
         if ($this->_ObjJson->$cp->blocs){                                           // si il y'a des pages dans blocs dans le json
@@ -295,10 +337,17 @@ MENUACTOBEUR
                 // ------------------------------------------ 
             }
         }
-        // $body_blocs .= $header;
+
+
+
+
+
+
+
+
         // --------------------------------------------------------------------------------------------
         // --------------------------------------------------------------------------------------------
-        $body_blocs = $header.$this->get_Pageaouvriratouslescoups('files').$n.$body_blocs;
+        $body_blocs .= $this->get_Pageaouvriratouslescoups('files').$n;//.$body_blocs;
         // --------------------------------------------------------------------------------------------
 
         // FOOTER
@@ -306,7 +355,7 @@ MENUACTOBEUR
             ? $this->get_File_to_use('get_contents',AAFOOTER,"file_get_contents",$this->get_errorphrase('',__FUNCTION__,__LINE__))
             : false; 
         // --------------------------------------------------------------------------------------------
-        $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);       // bloc js header de la page appelée
+        $body_blocs .= $this->get_end_js_html($this->_current_page,'js',2);          // bloc js header de la page appelée
         $body_blocs .= $this->get_Indent($this->_Originum,2,'rien').'</div>'.$n;     // on ferme le div du début <div class="fullpage">
         $body_blocs .= $this->get_end_js_html($this->_current_page,'js',1);          // bloc js a mettre en fin de page
         $body_blocs .= $this->get_end_js_html('atouslescoups','js',1);               // bloc js a mettre en fin de page
@@ -379,7 +428,7 @@ MENUACTOBEUR
         {
         // fonction pour la création des metas : title, script, stylesheet
         $n=PHP_EOL;
-        $phrase = $n.$this->get_Indent($Origine,2,'rien')."<!-- json-b-". $koi ."/" . $choix . " -->".$n; // html comment 
+        $phrase = $n.$this->get_Indent($Origine,1,'rien')."<!-- json-b-". $koi ."/" . $choix . " -->".$n; // html comment 
 		for ($i=0;$i<count($this->_ObjJson->$koi->$choix);$i++){
             $html = "\n";
             $tag = "";$type="";$contentype="";$item="";$contentitem="";
@@ -432,20 +481,20 @@ MENUACTOBEUR
                     $ValidationMeta = true;
                 break;
             }
-            if ($ValidationMeta) $phrase .= $this->get_Indent($Origine,2,'rien')."<".$html.">".$n;
+            if ($ValidationMeta) $phrase .= $this->get_Indent($Origine,1,'rien')."<".$html.">".$n;
         } 
-        $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-b- End\'s '. $koi .'/' . $choix . ' -->'.$n;     // end html comment 
+        $phrase .= $this->get_Indent($Origine,1,'rien').'<!-- json-b- End\'s '. $koi .'/' . $choix . ' -->'.$n;     // end html comment 
 
         // GENERATION des CSS TROUVés DANS LE JSON
         $cp = $this->_current_page;
         if ($koi=="head" && count($this->_ObjJson->$cp->css)>0) {
-            $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-'. $koi .'/' . $choix . ' -->'.$n;         // html comment            
+            $phrase .= $this->get_Indent($Origine,1,'rien').'<!-- json-a-'. $koi .'/' . $choix . ' -->'.$n;         // html comment            
             for ($j=0;$j<count($this->_ObjJson->$cp->css);$j++){
                 if ($this->_ObjJson->$cp->css[$j]!="") {
-                    $phrase .= $this->get_Indent($Origine,2,'rien').'<link rel="stylesheet" href="'.AACSS.$this->_ObjJson->$cp->css[$j].'">'.$n;
+                    $phrase .= $this->get_Indent($Origine,1,'rien').'<link rel="stylesheet" href="'.AACSS.$this->_ObjJson->$cp->css[$j].'">'.$n;
                 }
             }
-            $phrase .= $this->get_Indent($Origine,2,'rien').'<!-- json-a-End\'s '. $koi .'/' . $choix . ' -->'.$n;  // end html comment 
+            $phrase .= $this->get_Indent($Origine,1,'rien').'<!-- json-a-End\'s '. $koi .'/' . $choix . ' -->'.$n;  // end html comment 
         }
         // fin css
         // encapsulage dans un tag head ($balise) // desactivé

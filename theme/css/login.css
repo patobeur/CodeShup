@@ -42,6 +42,7 @@ body{
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
+    font-size:1.3rem;
 }
 .connect #consub{
     margin-top:5px;

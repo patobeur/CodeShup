@@ -23,7 +23,7 @@ class Admin{
         // $this->set_replace_vue($this->_replace_in_vue[$vue],$vue);
     }
 
-    public function set_vuefile($vue){
+    public function set_vuefile($vue,$rep=null){
         // $filevue = '../'.AAINVUE.$vue.AAEXTPHP;
         $filevue = 'view/_in_'.$vue.AAEXTPHP;
         if (file_exists($filevue))
@@ -31,7 +31,7 @@ class Admin{
             $this->_pagehtml = file_get_contents($filevue);
         }
     }
-    public function get_vuefile($vue){
+    public function get_vuefile($vue,$rep=null){
         //$filevue = '../'.AAINVUE.$vue.AAEXTPHP;
         $filevue = 'view/_in_'.$vue.AAEXTPHP;
         if (file_exists($filevue))
@@ -121,38 +121,25 @@ class Admin{
     public function actions3($datas){
         return $this->_DbAdmin->actions3($datas);
     }
-    public function actions4($user_id){
-        return $this->_DbAdmin->actions3($user_id);
+    public function actionsFinal($user_id,$req){
+        return $this->_DbAdmin->actionsFinal($user_id,$req);
     }
-    public function actions5($user_id){
-        return $this->_DbAdmin->actions5($user_id);
+    public function actions5($user_id,$req){
+        return $this->_DbAdmin->actionsFinal($user_id,$req);
     }
-    public function actions6($user_id){
-        return $this->_DbAdmin->actions6($user_id);
+    public function insert_actions($id,$req){
+        return $this->_DbAdmin->insert_actions($id,$req);
     }
-    public function actions7($user_id){
-        return $this->_DbAdmin->actions7($user_id);
-    }
-    public function actions8($user_id){
-        return $this->_DbAdmin->actions8($user_id);
-    }
-    public function actions9($user_id){
-        return $this->_DbAdmin->actions9($user_id);
-    }
-    public function actions10($user_id){
-        return $this->_DbAdmin->actions10($user_id);
+
+    public function get_profils(){
+        return $this->_DbAdmin->get_profils();
     }
     public function get_users(){
         return $this->_DbAdmin->get_users();
     }
-    public function get_profils(){
-        return $this->_DbAdmin->get_profils();
-    }
-    public function get_profilsparutilisateur(){
-        return $this->_DbAdmin->get_profilsparutilisateur(1);
-    }
-    public function md5UserMailByIdExcept($user_id){
-        return $this->_DbAdmin->md5UserMailByIdExcept($user_id);
-    }
+
+
+
+
 }
 ?>

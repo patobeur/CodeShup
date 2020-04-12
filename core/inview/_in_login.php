@@ -21,18 +21,22 @@
 
 
                                 <form class="user" action="#" method="post">
+
                                 <div class="form-group">
                                     <input id="login" name="login"      type="login"       class="form-control form-control-user" aria-describedby="emailHelp" placeholder="Entrez votre email..."
                                         onfocus="this.placeholder = ''"
                                         onblur="this.placeholder = 'Entrez votre email...'">
                                         {{login}}
                                 </div>
+
                                 <div class="form-group">
                                     <input id="password" name="password"    type="password"    class="form-control form-control-user"                              placeholder="mot de passe"
                                         onfocus="this.placeholder = ''"
                                         onblur="this.placeholder = 'mot de passe'">
                                         {{password}}
                                 </div>
+
+
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox small">
                                     <input type="checkbox" class="custom-control-input" id="souvenir">
@@ -46,12 +50,12 @@
 
 
                                 <hr>
-                                <div class="text-center">
+                                <!-- <div class="text-center">
                                 <a class="small" href="forgot-password.html">Forgot Password?</a>
                                 </div>
                                 <div class="text-center">
                                 <a class="small" href="register.html">Create an Account!</a>
-                                </div>
+                                </div> -->
                             </div>
                             </div>
                         </div>

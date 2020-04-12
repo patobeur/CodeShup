@@ -8,7 +8,6 @@
     ];
 
 
-
     if (class_exists('Db')) {
         $Boutique  = new Boutique();
         $lescategories = $Boutique->get_categories();
@@ -55,12 +54,18 @@
 
     if (!empty($lesarticles)) 
     {
+        
+        // on prend la vue article
+        $vue_article = $this->get_File_to_use('vue',AAINVUE."article".AAEXTPHP,"file_get_contents",$this->get_errorphrase('article',__FUNCTION__,__LINE__));
+        
         $retour_articles = '';
+
         foreach($lesarticles as $key => $value){
-            $retour_articles .= make_fiche($value);
-        }
-        //           debut                      fin    breakline
-        $capsule_article = ['<section class="articles">','</section>',PHP_EOL];
+            $retour_articles .= make_fiche($value,$vue_article);
+        }    
+        //                      debut                        fin         breakline
+        // $capsule_article = ['<section class="articles">','</section>',PHP_EOL];
+        $capsule_article = ['','',PHP_EOL];
 
     }
 
@@ -103,44 +108,19 @@
 
 
 
-    function make_fiche($tablo){
-        // $retour = '<article class="article">';
-        // $retour .= '<figure><img src="genimage.php?img=200x200" alt="" width="200" height="50"></figure>';
-        // $retour .= $tablo->name;
-        // $retour .= ' / '.$tablo->name;
-        // $retour .= ' / stock: '.$tablo->stock;
-        // $retour .= ' / price: '.$tablo->price."€";
-        // $retour .= ' / vendor_id: '.$tablo->vendor_id;
-        // $retour .= ' / content: '.$tablo->content;
-        // $retour .= '<span class="badge badge-success ml-auto small badge-pill">Free</span>';
+    function make_fiche($tablo,$vue){
         
-        // $retour .= '</article>';
-        // $retour .= PHP_EOL;
-        $retour = '<div class="card">
-                            <a href="#">
-                            <figure>
-                                <img class="card-img-top" src="genimage.php?img=500x300&ol&auto=format&fit=crop" alt="'.$tablo->name.'" title="'.$tablo->name.'">
-                            </figure>
-                            </a>
-                                <div class="card-body">
-                                    <h5 class="card-title">Lorem ipsum dolor sit amet.</h5>
-                                    <p class="card-text">
-                                    '.$tablo->content.'
-                                    </p>
-                                    <p class="card-text">
-                                        <small class="text-muted">
-                                            <i class="fas fa-eye"></i>Vendor : '.$tablo->price.'€
-                                            <i class="fas fa-eye"></i>Vendor : '.$tablo->vendor_id.' |
-                                            <i class="far fa-user"></i>Stock : '.$tablo->stock.'
-                                            </small>
-                                        <small class="text-muted">
-                                            <i class="fas fa-calendar-alt"></i>'.date('H-m-d').' avant 12:00
-                                            <a href="" class="class"><span class="badge badge-success ml-auto small badge-pill">Free</span></a> 
-                                        </small>
-                                    </p>
-                                </div>
-                        </div>'.PHP_EOL;
-        return $retour;
+        $vue = str_replace("{{articleImage}}" , 'genimage.php?img=600x300',$vue);
+        $vue = str_replace("{{articleName}}" , $tablo->name,$vue);
+        $vue = str_replace("{{articlePrix}}" , $tablo->price,$vue);
+        $vue = str_replace("{{articleContent}}" , $tablo->content,$vue);
+        $vue = str_replace("{{articleVendor}}" , $tablo->vendor_id,$vue);
+        $vue = str_replace("{{articleStock}}" , $tablo->stock,$vue);
+        $vue = str_replace("{{altImage}}" , $tablo->name,$vue);
+        $vue = PHP_EOL.$vue.PHP_EOL;
+        return $vue;
+
+
     }
     function make_href($tablo){
         $retour = '<li class="cat_item">';

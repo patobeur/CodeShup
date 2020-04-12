@@ -1,9 +1,10 @@
 <?php
 $default_timezone = date_default_timezone_get();
 date_default_timezone_set('Europe/Amsterdam');
-if (!isset($_SESSION['token'])){
-    $_SESSION['token'] = md5(rand(1, 10) . microtime());
-}
+// if (!isset($_SESSION['token'])){
+//     $_SESSION['token'] = md5(rand(1, 10) . microtime());
+
+// }
 
 
     if (!isset($_SESSION['user']))

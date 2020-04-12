@@ -76,165 +76,110 @@
             switch($page_cible)
             {
                 case 'actions';
-                    // premier
-                    $laliste_items = $DbAdmin->actions();
-                    $product_id = "";
-                    $cat_id = "";
-                    $vendor_id = "";
-                    $num = 0;
-                    $items1 = '';
+                    // 1
+                    $lettre = "";
+                    $idd = null;
+                    $limite = '';//" LIMIT 10";
+                    $req = "SELECT
+product_id,cat_id,vendor_id
+FROM z_product
+ORDER BY product_id DESC".$limite;
+                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $intitules_array = ['product_id','vendor_id','cat_id'];
+                    
+                    $product_id = ""; $cat_id = ""; $vendor_id = "";  $num = 0;
                     foreach($laliste_items as $key => $value)
                     {
                         $virg = ($num==0) ? '' : ",";
-                        if (!empty($laliste_items[$key]->product_id)) {
-                            $product_id .= $virg.''.$laliste_items[$key]->product_id;
-                            $cat_id     .= $virg.''.$laliste_items[$key]->cat_id;
-                            $vendor_id  .= $virg.''.$laliste_items[$key]->vendor_id;
-
-                            
-                        $items1 .= '
-                        <tr>         
-                            <td>---</td>
-                            <td>'.$laliste_items[$key]->product_id.'</td>
-                            <td>'.$laliste_items[$key]->cat_id.'</td>
-                            <td>'.$laliste_items[$key]->vendor_id.'</td>        
-                        </tr>'.PHP_EOL;
-
-
+                        if ( !empty($value->product_id) && !empty($value->product_id) && !empty($value->vendor_id)) {
+                            $product_id .= $virg.''.$value->product_id;
+                            $cat_id     .= $virg.''.$value->cat_id;
+                            $vendor_id  .= $virg.''.$value->vendor_id;
                         $num++;
                         } 
-                        // ];
                     }
-                    $plus1 = 'product_id : ('.$product_id.')<br/>';
+                    $plus1 = PHP_EOL.'<br>product_id : ('.$product_id.')<br/>';
                     $plus1 .= 'vendor_id : ('.$vendor_id.')<br/>';
                     $plus1 .= 'cat_id : ('.$cat_id.')<br/><br/>';
 
+                    $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
 
-                    $replace_in_vue[$page_cible]['titre1'] = 'liste des paniers (création d\'array pour les futures WHERE IN';
-                    $replace_in_vue[$page_cible]['test1'] = $items1;
-                    $replace_in_vue[$page_cible]['requete1'] = $plus1."SELECT product_id,cat_id,vendor_id FROM z_product ORDER BY product_id DESC";
-
-
-
-
+                    $replace_in_vue[$page_cible]['intitules1'] = $data_recuphtml['intitules'];
+                    $replace_in_vue[$page_cible]['titre1'] = 'liste des paniers (création d\'array pour les futures WHERE IN';   
+                    $replace_in_vue[$page_cible]['test1'] =  (!empty($data_recuphtml['items']) ? $data_recuphtml['items'] : null);
+                    $replace_in_vue[$page_cible]['requete1'] = (!empty($req) ? $req.$plus1 : 'votre demande est vide !');
 
 
-                    // deuxieme
-                    $laliste_items2 = $DbAdmin->actions2();
-                    // print_airB($laliste_items2);
-
-                    $items2 = '';
-                    foreach($laliste_items2 as $key => $value)
-                    {   
-                        $items2 .= '
-                        <tr>         
-                            <td>---</td>
-                            <td>#'.$value->profil_id.'</td>
-                            <td>'.$value->username.'</td>
-                            <td>'.$value->email.'</td>
-                            <td>'.$value->promo_id.'</td>
-                            <td>'.$value->situation.'</td>
-                            <td>'.$value->modifie.'</td>        
-                        </tr>'.PHP_EOL;
-                    }            
-                    $replace_in_vue[$page_cible]['titre2'] = 'Profils d\'utilisateur dont le nom commence par a';   
-                    $replace_in_vue[$page_cible]['test2'] = $items2;
-                    $replace_in_vue[$page_cible]['requete2'] ="SELECT *
+                    // 2
+                    $lettre = "p";
+                    $idd = null;
+                    $limite = " LIMIT 10";
+                    $req = "SELECT *
 ,case
     when z_profil.activated LIKE '1' then 'Ok'
     when z_profil.activated LIKE '0' then 'Ko'
-end as situation                  
+    end as situation
 ,IF(z_profil.last_update IS NULL,'nomod','mod') as modifie
 FROM z_profil
-WHERE z_profil.username LIKE 'a%'";
+WHERE z_profil.username
+LIKE '".$lettre."%'".$limite;
+                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $intitules_array = ['profil_id','username','email','promo_id','situation','modifie'];
+                    $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
 
-                    $replace_in_vue[$page_cible]['requete3'] ="SELECT *
+                    $replace_in_vue[$page_cible]['intitules2'] = $data_recuphtml['intitules'];
+                    $replace_in_vue[$page_cible]['titre2'] = 'Profils d\'utilisateur dont le nom commence par '.$lettre;   
+                    $replace_in_vue[$page_cible]['test2'] =  $data_recuphtml['items'];
+                    $replace_in_vue[$page_cible]['requete2'] = $req;
+
+
+
+
+                    // 3
+                    $lettre = "p";
+                    $idd = null;
+                    $limite = "";
+                    $req = "SELECT *
 FROM z_panier
 LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-LEFT JOIN z_product ON z_product.product_id = z_panier.product_id";
-
-
-
-
-
-
-
-
-
-                    // troisième
-                    $laliste_items3 = $DbAdmin->actions3(['product_id' => $product_id,'cat_id' => $cat_id,'vendor_id' => $vendor_id]);
-                    // print_airB($laliste_items2);
-
-                    $items3= '';
-                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
-                    foreach($laliste_items3 as $key => $value)
-                    {   
-                        // print_airB($value);
-                        $items3 .= '
-                        <tr>         
-                            <td>---</td>
-                            <td>'.$value->panier_id.'</td>
-                            <td>'.$value->user_id.'</td> 
-                            <td>'.$value->email.'</td>  
-                            <td>'.$value->name.'</td>  
-                            <td>'.((strlen($value->content) > 50) 
-                            ? substr($value->content, 0, 50).'<span title="'.$value->content.'">[+]</span>' 
-                            : $value->content).'</td> 
-                            
-                            <td>'.$value->price.'</td>        
-                            <td>'.$value->create_time.'</td>   
-                            <td>'.$value->update_time.'</td>        
-                        </tr>'.PHP_EOL;
-                    }
-
-
-                    $replace_in_vue[$page_cible]['test3'] = $items3;
+LEFT JOIN z_product ON z_product.product_id = z_panier.product_id".$limite;
+                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $intitules_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time'];
+                    $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
+                    //
+                    $replace_in_vue[$page_cible]['intitules3'] = $data_recuphtml['intitules'];
+                    $replace_in_vue[$page_cible]['requete3'] = $req;                    
                     $replace_in_vue[$page_cible]['titre3'] = 'liste de tous les utilisateurs avec un panier actif. Aussi les articles et prix';
+                    $replace_in_vue[$page_cible]['test3'] =  $data_recuphtml['items'];
 
 
-
-                    // quatrième
-                    $laliste_items4 = $DbAdmin->actions4(1);
-                    $items4 = '';
-                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
-                    foreach($laliste_items4 as $key => $value)
-                    {   
-                        $tempo  = '';
-                        $intitules  = '';
-                        $tempo .= '<td>tools</td>';
-                        $intitules .= '<td>tools</td>';
-                        foreach ($current_array as $key => $value2)
-                        {
-                            $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
-                            $tempo .= '<td>'.$temppo.'</td>';
-                            $intitules .= '<td>'.$value2.'</td>';
-                        }
-                        // print_airB($value);
-                        $items4 = '
-                        <tr>
-                            '.$tempo.'        
-                        </tr>'.PHP_EOL;
-                        $intitules = '
-                        <tr>
-                            '.$intitules.'        
-                        </tr>'.PHP_EOL;
-                    }
-                    $replace_in_vue[$page_cible]['intitules4'] = $intitules ; 
-                    $replace_in_vue[$page_cible]['titre4'] =' Panier de l\'utilisateur avec l\'user_id = 1'; 
-                    $replace_in_vue[$page_cible]['test4'] = $items4;
-                    $replace_in_vue[$page_cible]['requete4'] ="SELECT *
+                    // 4 --------------------------------------------------------------------------------------------------------------------------------
+                    $lettre = "p";
+                    $idd = 1;
+                    $limite = "";
+                    $req = "SELECT *
 FROM z_panier
 LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
 LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-WHERE z_user.user_id = :user_id";
-
-
-
+WHERE z_panier.user_id = :user_id".$limite;
+                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $intitules_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
+                    $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
+                    //
+                    $replace_in_vue[$page_cible]['intitules4'] = $data_recuphtml['intitules'];
+                    $replace_in_vue[$page_cible]['requete4'] = $req;                    
+                    $replace_in_vue[$page_cible]['titre4'] = ' Panier de l\'utilisateur avec l\'user_id = '.$idd; 
+                    $replace_in_vue[$page_cible]['test4'] =  $data_recuphtml['items'];
 
 
 
                     // cinquième
-                    $laliste_items4 = $DbAdmin->actions5(1);
+                    $req="SELECT *
+FROM z_panier
+LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
+WHERE z_user.user_id = :user_id";
+                    $laliste_items4 = $DbAdmin->actionsFinal(1,$req);
                     $items4 = '';
                     $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
                     foreach($laliste_items4 as $key => $value)
@@ -260,48 +205,89 @@ WHERE z_user.user_id = :user_id";
                         </tr>'.PHP_EOL;
                     }
                     $replace_in_vue[$page_cible]['intitules5'] = $intitules ; 
-                    $replace_in_vue[$page_cible]['titre5'] = 'Combien d\'utilisateur on un panier actif, une image associé au profil et un O dans leur mail.'; 
+                    $replace_in_vue[$page_cible]['titre5'] = ' )Combien d\'utilisateur on un panier actif, une image associé au profil et un O dans leur mail.'; 
                     $replace_in_vue[$page_cible]['test5'] = $items4;
                     $replace_in_vue[$page_cible]['requete5'] ="a faire";
 
 
-                    
+
 
 
                     // sixième
-                    $laliste_items4 = $DbAdmin->actions5(1);
-                    $items4 = '';
-                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
-                    foreach($laliste_items4 as $key => $value)
+                    $req1="INSERT INTO z_user
+(user_id, email, passwrd, rule_id, created, updated, last_connect)
+VALUES (NULL, 'patobeur@gmail.com', MD5('toto'), '3', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+";
+$req2  ="INSERT INTO z_profil 
+(profil_id, user_id, username,firstname, email, phone, birthdate, section_id, promo_id, last_update, created, activated) 
+VALUES 
+(NULL, :user_id, 'patobeur', 'etlardons', 'patobeur2@gmail.com', '0609080808', '2019-04-16', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
+";
+
+$req3="SELECT * FROM z_profil LIMIT 1";
+
+$vide='';
+                    $lastid = $DbAdmin->insert_actions(null,$req1);
+                    $profil = $DbAdmin->insert_actions($lastid ,$req2);
+                    // $profil = $DbAdmin->insert_actions(["col" => "user_id", "val" => '$lastid'] ,$req2);
+
+
+                    $laliste_items6 = $DbAdmin->actionsFinal(1,$req3);
+
+                    // print_airB($laliste_items6,'jj');
+
+                    $items6 = '';
+                    $current_array = ['profil_id','user_id','username','firstname','email','phone','birthdate','section_id','promo_id','last_update','created','activated'];
+
+                    // intitulés
+                    $intitules  = '
+                    <tr>
+                        <td>tools</td>';
+                    foreach ($current_array as $key => $value2)
+                    {
+                        $intitules .= '<td>'.$value2.'</td>';
+                    }
+                    $intitules = $intitules.'        
+                    </tr>'.PHP_EOL;
+
+
+                    foreach($laliste_items6 as $key => $value)
                     {   
+                        // print_airB($laliste_items6[$key],'value');
                         $tempo  = '';
-                        $intitules  = '';
                         $tempo .= '<td>tools</td>';
-                        $intitules .= '<td>tools</td>';
-                        foreach ($current_array as $key => $value2)
+                        $data = $laliste_items6[$key];
+
+                        foreach ($current_array as $key2 => $value2)
                         {
-                            $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
-                            $tempo .= '<td>'.$temppo.'</td>';
-                            $intitules .= '<td>'.$value2.'</td>';
+                            // $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
+                            $tempname = $current_array[$key2];
+                            // print_airB( $data->$tempname,'tempname') ;
+                            $tempo .= '<td>-'.$data->$tempname.'-</td>';
+                            // $intitules .= '<td>'.$value2.'</td>';
                         }
-                        // print_airB($value);
-                        $items4 = '
+
+                        $items6 .= '
                         <tr>
                             '.$tempo.'        
                         </tr>'.PHP_EOL;
-                        $intitules = '
-                        <tr>
-                            '.$intitules.'        
-                        </tr>'.PHP_EOL;
+
+
                     }
+
                     $replace_in_vue[$page_cible]['intitules6'] = $intitules ; 
-                    $replace_in_vue[$page_cible]['titre6'] = 'Combien d\'articles sont dans des paniers et lesquels'; 
-                    $replace_in_vue[$page_cible]['test6'] = $items4;
-                    $replace_in_vue[$page_cible]['requete6'] ="a faire";
+                    $replace_in_vue[$page_cible]['titre6'] = 'Ajout d\'un compte user et de son profil -'.$lastid ; 
+                    $replace_in_vue[$page_cible]['test6'] = $items6;
+                    $replace_in_vue[$page_cible]['requete6'] = 'nouveau user_id : '.$lastid."<br>".'nouveau profil_id : '.$profil."<br>".$req1."<br>".$req2."<br>".$req3;
                     
                     
                     // sept
-                    $laliste_items4 = $DbAdmin->actions5(1);
+                    $req="SELECT *
+                    FROM z_panier
+                    LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
+                    LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
+                    WHERE z_user.user_id = :user_id";
+                    $laliste_items4 = $DbAdmin->actionsFinal(1,$req);
                     $items4 = '';
                     $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
                     foreach($laliste_items4 as $key => $value)
@@ -584,5 +570,58 @@ WHERE z_user.user_id = :user_id";
             ? '<a href="#" class="btn btn-success btn-icon-split btn-sm"><span class="text">Page demandée : '.$page_cible.'</span></a></li>' 
             : '<a href="#" class="btn btn-info btn-icon-split btn-sm"><span class="text">'.$page_cible.'Pas de page demandée -> on ouvre le tableau de bord....</span></a></li>'
             ; 
+    }
+
+
+    function ResponseToHtml($intitules_array,$laliste_items){
+                    // intitulés
+                    $intitules  = '
+                    <tr>
+                        <td>tools</td>';
+                    foreach ($intitules_array as $key => $value)
+                    {
+                        $intitules .= '<td>'.$value.'</td>';
+                    }
+                    $intitules = $intitules.'        
+                    </tr>'.PHP_EOL;
+
+
+                    $items ='';
+                    foreach($laliste_items as $key => $value)
+                    {   
+                        // print_airB($laliste_items6[$key],'value');
+                        $tempo  = '';
+                        $tempo .= '<td>tools</td>';
+                        $data = $laliste_items[$key];
+
+                        foreach ($intitules_array as $key2 => $value2)
+                        {
+                            $tempname = $intitules_array[$key2];
+                            // $tempname = (strlen($tempname) > 32) ? substr($tempname, 0, 30).'<pan title="'.$tempname.'">[+]</pan>' : $tempname;   
+                            $tempo .= '<td>'.$data->$tempname.'</td>';
+                        }
+
+                        $items .= '
+                        <tr>
+                            '.$tempo.'        
+                        </tr>'.PHP_EOL;
+
+                    }
+
+
+
+
+
+
+
+
+                    return [
+                        'intitules' => $intitules,
+                        'items' => $items
+                    ];
+                    // $replace_in_vue[$page_cible]['intitules2'] = $intitules;   
+                    // $replace_in_vue[$page_cible]['titre2'] = 'Profils d\'utilisateur dont le nom commence par a';   
+                    // $replace_in_vue[$page_cible]['test2'] = $items;
+                    // $replace_in_vue[$page_cible]['requete2'] = $req2;
     }
 ?>

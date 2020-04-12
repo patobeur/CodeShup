@@ -33,36 +33,30 @@
 
 
 
-            <!-- Test2 -->
-            <p class="mb-4">Action2</p>  
-            <div class="card shadow mb-4">
-              <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">{{titre2}}</h6>
-              </div>
-              <div class="card-body">
-                <pre class="font-weight-bold">{{requete2}}</pre>
-                <div class="table-responsive">
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
 
-                    <thead>
-                      <tr>
-                        <td>Options</td>
-                        <td>#profil_id.</td>
-                        <td>username.</td>
-                        <td>email.</td>
-                        <td>promo_id.</td>
-                        <td>situation.</td>
-                        <td>modifie.</td>     
-                      </tr>
-                    </thead>
-                    <tbody>
-                        {{test2}}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+<!-- Test2 -->
+<p class="mb-4">Action2</p>   
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">{{titre2}}</h6>
+  </div>
+  <div class="card-body">
+    <pre class="font-weight-bold">{{requete2}}</pre>
+    <div class="table-responsive">
+      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
 
+        <thead>
+          <tr>
+             {{intitules2}}
+          </tr>
+        </thead>
+        <tbody>
+            {{test2}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 
 

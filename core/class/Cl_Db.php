@@ -18,6 +18,8 @@
                 DISTANT ? die() : die($e->getMessage());
             }            
         }
+        
+
         // ------------------------------------------------------------------------
         public function get_articlesByCategorieId($categorie){
             return $this->get_ParticlesByCategorieId($categorie);
@@ -164,6 +166,8 @@
             $requete->bindParam(':passwrd', $datas['passwrd'], PDO::PARAM_STR, 32);
             $requete->bindParam(':email',   $datas['email'],   PDO::PARAM_STR, 64);
             // $requete->bindParam(':rule_id', $datas, PDO::PARAM_INT);
+
+
             try {
                 $requete->execute();
                 // $requete->debugDumpParams();   // debug affichage        
@@ -178,8 +182,15 @@
             }
             if (!empty($reponse))
             {
-                $this->set_last_connect($reponse->user_id);
+                // session token
+                $token = md5(rand(1, 10) . microtime());
+                // session token
+
+                $donnees['passwrd'] = md5(get_clean($_POST['password']));
+                $this->set_last_connect($reponse->user_id, $token);
+
                 $_SESSION['user']['statut'] = 'logged';
+                $_SESSION['profil']['token'] = $token;
                 $_SESSION['profil']['ruleset'] = $reponse->ruleset;
                 $_SESSION['profil']['rule_id'] = $reponse->rule_id;
                 $_SESSION['profil']['username'] = ucfirst($reponse->username);
@@ -199,10 +210,14 @@
             }
         }
         /* ------------------      SET LAST CONNECT        ---------------------------*/
-        private function set_last_connect($user_id)
+        private function set_last_connect($user_id,$token)
         {
-
-            $requete = $this->db->prepare("UPDATE z_user SET last_connect = '".date('Y-m-d H:i:s')."' WHERE z_user.user_id = :user_id");
+            // fef5bd54ce09603aec6192840bc118ba
+            $requete = $this->db->prepare("UPDATE
+            z_user
+            SET last_connect = '".date('Y-m-d H:i:s')."',
+            token = '".$token."',
+            WHERE z_user.user_id = :user_id");
             $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
             try {
                 $requete->execute();      
@@ -216,36 +231,6 @@
             }
             $requete = null;
         }
-
-
-        // public function get_fetchall_from($datas)
-        // {
-        //         $table = $datas;
-            
-        //         $requete = $this->db->prepare("SELECT email,created,updated FROM ".$table); //" WHERE email = :email AND passwrd = :passwrd");
-        //         // $requete->bindParam(':email', $email, PDO::PARAM_STR, 50);
-        //         // $requete->bindParam(':passwrd', $passwrd, PDO::PARAM_STR, 50);
-        //         // $requete->debugDumpParams(); 
-        //         $requete->execute();
-        //         $reponse = $requete->fetchall();
-        //         // fermeture
-        //         $requete = null;
-        //         return $reponse;                
-        // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         
@@ -350,35 +335,64 @@
 
 
 
-        private function md5UserMailById($user_id){
-            $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
-            $requete = $this->db->prepare("UPDATE z_user SET email = md5(email) WHERE z_user.user_id != :user_id");
-            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
-            try {
-                $requete->execute();   
-                $requete->debugDumpParams();   // debug affichage     
-            }
-            catch (PDOException $e){
-                $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage     
-                DISTANT ? die() : die($e->getMessage());
-            }
-            $requete = null;
-        }
-        public function md5UserMailByIdExcept($user_id){
-            $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
-            $requete = $this->db->prepare("UPDATE z_user SET email = 'toto@mail.eu' WHERE z_user.user_id != :user_id");
-            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
-            try {
-                $requete->execute();   
-                $requete->debugDumpParams();   // debug affichage     
-            }
-            catch (PDOException $e){
-                $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage     
-                DISTANT ? die() : die($e->getMessage());
-            }
-            $requete = null;
-        }
+        // private function md5UserMailById($user_id){
+        //     $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
+        //     $requete = $this->db->prepare("UPDATE z_user SET email = md5(email) WHERE z_user.user_id != :user_id");
+        //     $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+        //     try {
+        //         $requete->execute();   
+        //         $requete->debugDumpParams();   // debug affichage     
+        //     }
+        //     catch (PDOException $e){
+        //         $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage     
+        //         DISTANT ? die() : die($e->getMessage());
+        //     }
+        //     $requete = null;
+        // }
+        // public function md5UserMailByIdExcept($user_id){
+        //     $_SESSION['cms']['check'][] = 'wtf:'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;
+        //     $requete = $this->db->prepare("UPDATE z_user SET email = 'toto@mail.eu' WHERE z_user.user_id != :user_id");
+        //     $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+        //     try {
+        //         $requete->execute();   
+        //         $requete->debugDumpParams();   // debug affichage     
+        //     }
+        //     catch (PDOException $e){
+        //         $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage     
+        //         DISTANT ? die() : die($e->getMessage());
+        //     }
+        //     $requete = null;
+        // }
         
+
+        // Les REQUETES sequel pour actions
+        // ------------------------------------------------------------------------
+        public function insert_actions($id,$req){
+            return $this->Pinsert_actions($id,$req);
+        }
+        private function Pinsert_actions($id,$req)
+        {
+            $requete = $this->db->prepare($req);
+            if (!empty($id))
+            {
+                $requete->bindParam(':user_id', $id, PDO::PARAM_INT, 32);
+            }
+
+            try {
+                $requete->execute();
+                $last_id = $this->db->lastInsertId();
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+            return !empty($last_id) ? $last_id : false;
+        }
+
+
+
+
+
         // ------------------------------------------------------------------------
         public function actions(){return $this->Pactions();}
         private function Pactions()
@@ -447,19 +461,18 @@
             return $reponse;
         }
         // ------------------------------------------------------------------------
-        public function actions4($user_id){return $this->Pactions4($user_id);}
-        private function Pactions4($user_id)
+        public function actionsFinal($user_id,$req){return $this->PactionsFinal($user_id,$req);}
+        private function PactionsFinal($user_id,$req)
         {
-            $requete="SELECT *
-                FROM z_panier
-                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-                WHERE z_user.user_id = :user_id";
-
-            $requete = $this->db->prepare($requete);
-            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
+            // print_airB($req,'req');
+            $requete = $this->db->prepare($req);
+            if (!empty($user_id))
+            {
+                $requete->bindParam(':user_id', $user_id, PDO::PARAM_INT, 32);
+            }
             try {
                 $requete->execute();
+
                 $reponse = $requete->fetchall();
             }
             catch (PDOException $e) {
@@ -468,50 +481,7 @@
             }
             return $reponse;
         }
-        // ------------------------------------------------------------------------
-        public function actions5($user_id){return $this->Pactions5($user_id);}
-        private function Pactions5($user_id)
-        {
-            $requete="SELECT *
-                FROM z_panier
-                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-                WHERE z_user.user_id = :user_id";
-
-            $requete = $this->db->prepare($requete);
-            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
-            try {
-                $requete->execute();
-                $reponse = $requete->fetchall();
-            }
-            catch (PDOException $e) {
-                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
-                DISTANT ? die() : die($e->getMessage());
-            }
-            return $reponse;
-        }
-        // ------------------------------------------------------------------------
-        public function actions6($user_id){return $this->Pactions6($user_id);}
-        private function Pactions6($user_id)
-        {
-            $requete="SELECT *
-                FROM z_panier
-                LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-                LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-                WHERE z_user.user_id = :user_id";
-
-            $requete = $this->db->prepare($requete);
-            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
-            try {
-                $requete->execute();
-                $reponse = $requete->fetchall();
-            }
-            catch (PDOException $e) {
-                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
-                DISTANT ? die() : die($e->getMessage());
-            }
-            return $reponse;
-        }
+        
 
     }
 ?>
