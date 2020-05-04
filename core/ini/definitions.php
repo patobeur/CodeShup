@@ -11,16 +11,17 @@
     }
     else {
         define('DISTANT', true);
-        define('DEBUG' , true);
-        define('DEBUG_B', true);
+        define('DEBUG' , false);
+        define('DEBUG_B', false);
         define('DEBUG_DIE', false);
     }
 
     // definitions
     define('AAROOT',            '');
-    define('ADDCORE',            AAROOT.'../core/');
-    define("ADDVUE",             ADDCORE.'view/'.'Vu_');
-    define('ADDINI',             ADDCORE.'ini/');
+    define('ADDCORE',           AAROOT.'../core/');
+    define("ADDVUE",            ADDCORE.'view/'.'Vu_');
+    define('ADDINI',            ADDCORE.'ini/');
+    define("ADCONTROLER",       ADDCORE.'controller/{{REP}}/'.'Co_');
 
     define('AACORE',            AAROOT.'core/');
     define('AAINI',             AACORE.'ini/');

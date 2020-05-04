@@ -23,14 +23,26 @@
                                 <form class="user" action="#" method="post">
 
                                 <div class="form-group">
-                                    <input id="login" name="login"      type="login"       class="form-control form-control-user" aria-describedby="emailHelp" placeholder="Entrez votre email..."
+                                    <input
+                                        id="login"
+                                        name="login"
+                                        type="login"
+                                        value="{{email}}"
+                                        class="form-control form-control-user"
+                                        aria-describedby="emailHelp"
+                                        placeholder="Entrez votre email..."
                                         onfocus="this.placeholder = ''"
                                         onblur="this.placeholder = 'Entrez votre email...'">
                                         {{login}}
                                 </div>
 
                                 <div class="form-group">
-                                    <input id="password" name="password"    type="password"    class="form-control form-control-user"                              placeholder="mot de passe"
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        class="form-control form-control-user"
+                                        placeholder="mot de passe"
                                         onfocus="this.placeholder = ''"
                                         onblur="this.placeholder = 'mot de passe'">
                                         {{password}}

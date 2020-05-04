@@ -3,6 +3,7 @@
 // ConTroller principal > Controller
     // if(empty($_SESSION['profil']['username'])) {die();}
     $timer = microtime(true);
+    echo ('wtf user------------------------------------------------------------');
     if (isset($_GET['kill'])) header("Location:../deco.php" );
     // include('../'.'core/ini/definitions.php'); // MonkeyBusiness
     require_once(ADDINI.'bdd.php');
@@ -12,6 +13,7 @@
     $default_pagecible = 'tableaudebord';
     $pagespossibles = [
         'tableaudebord'
+        ,'myprofil'
         ,'actions'
         ,'utilisateurs'
         ,'articles'
@@ -22,6 +24,10 @@
     $DbAdmin = new Admin($timer,'admin');
 
     $replace_in_vue = [
+        'myprofil' => [
+            'TITRE'         => 'Mon profil Utilisateur'
+            ,'USERNAME'      => $_SESSION['profil']['username']
+        ],
         'admin' => [
             'TITRE'         => 'Page Admin'
             ,'USERNAME'      => $_SESSION['profil']['username']
@@ -68,62 +74,70 @@
 
     $DbAdmin->set_replace_vue($replace_in_vue['admin'],'admin');
 
-    // if (!empty($_GET))
-    // {
+
+
+
+
+
+
         if (!empty($page_cible))
         {
+
+
+            $req_file = str_replace("{{REP}}" ,'admin', ADCONTROLER).ucfirst($page_cible).AAEXTPHP;  // fichier a require
             //si on trouve une page demandée
             switch($page_cible)
             {
+                case 'myprofil';
+                // print_airB(Page::get_PCurrent_Page(),'wazaaaa');
+                // // // print_airB($req_file,'req_file');
+        
+
+                include($req_file);
+                $articles = 'toto';
+                if (!empty($articles))
+                {
+                    $replace_in_vue[$page_cible]['TABLE'] = $articles;
+                    $donnees = [
+                        'un' => $replace_in_vue[$page_cible],
+                        'deux' => $page_cible
+                    ];
+                }
+
+                
+            
+
+
+                break;
                 case 'actions';
-                    // 1
-                    $lettre = "";
-                    $idd = null;
-                    $limite = '';//" LIMIT 10";
-                    $req = "SELECT
-product_id,cat_id,vendor_id
-FROM z_product
-ORDER BY product_id DESC".$limite;
-                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
-                    $intitules_array = ['product_id','vendor_id','cat_id'];
-                    
-                    $product_id = ""; $cat_id = ""; $vendor_id = "";  $num = 0;
-                    foreach($laliste_items as $key => $value)
-                    {
-                        $virg = ($num==0) ? '' : ",";
-                        if ( !empty($value->product_id) && !empty($value->product_id) && !empty($value->vendor_id)) {
-                            $product_id .= $virg.''.$value->product_id;
-                            $cat_id     .= $virg.''.$value->cat_id;
-                            $vendor_id  .= $virg.''.$value->vendor_id;
-                        $num++;
-                        } 
-                    }
-                    $plus1 = PHP_EOL.'<br>product_id : ('.$product_id.')<br/>';
-                    $plus1 .= 'vendor_id : ('.$vendor_id.')<br/>';
-                    $plus1 .= 'cat_id : ('.$cat_id.')<br/><br/>';
+                    // $req_file = str_replace("{{REP}}" ,$page_cible, ADCONTROLER).ucfirst($page_cible).AAEXTPHP;  // fichier a require
+                    // // // // print_airB($req_file,'req_file');
+                    // Page::get_File_to_use(
+                    //     'controller',
+                    //     $req_file,
+                    //     "include",
+                    //     Page::get_errorphrase(__FILE__,__FUNCTION__,__LINE__)
+                    // );
 
-                    $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
-
-                    $replace_in_vue[$page_cible]['intitules1'] = $data_recuphtml['intitules'];
-                    $replace_in_vue[$page_cible]['titre1'] = 'liste des paniers (création d\'array pour les futures WHERE IN';   
-                    $replace_in_vue[$page_cible]['test1'] =  (!empty($data_recuphtml['items']) ? $data_recuphtml['items'] : null);
-                    $replace_in_vue[$page_cible]['requete1'] = (!empty($req) ? $req.$plus1 : 'votre demande est vide !');
+                    // include($req_file);
+                    // print_airB($replace_in_vue,'replace_in_vue');
 
 
                     // 2
                     $lettre = "p";
                     $idd = null;
                     $limite = " LIMIT 10";
-                    $req = "SELECT *
-,case
-    when z_profil.activated LIKE '1' then 'Ok'
-    when z_profil.activated LIKE '0' then 'Ko'
-    end as situation
-,IF(z_profil.last_update IS NULL,'nomod','mod') as modifie
-FROM z_profil
-WHERE z_profil.username
-LIKE '".$lettre."%'".$limite;
-                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $req = "SELECT * ".PHP_EOL;
+                    $req .= "   ,case ".PHP_EOL;
+                    $req .= "       when z_profil.activated LIKE '1' then 'Ok' ".PHP_EOL;
+                    $req .= "       when z_profil.activated LIKE '0' then 'Ko' ".PHP_EOL;
+                    $req .= "   end as situation ".PHP_EOL;
+                    $req .= "   ,IF(z_profil.last_update IS NULL,'nomod','mod') as modifie ".PHP_EOL;
+                    $req .= "FROM z_profil ".PHP_EOL;
+                    $req .= "WHERE z_profil.username LIKE '".$lettre."%'".$limite;
+
+
+                    $laliste_items = $DbAdmin->GetDbActions($idd,$req);
                     $intitules_array = ['profil_id','username','email','promo_id','situation','modifie'];
                     $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
 
@@ -132,18 +146,16 @@ LIKE '".$lettre."%'".$limite;
                     $replace_in_vue[$page_cible]['test2'] =  $data_recuphtml['items'];
                     $replace_in_vue[$page_cible]['requete2'] = $req;
 
-
-
-
                     // 3
                     $lettre = "p";
                     $idd = null;
                     $limite = "";
-                    $req = "SELECT *
-FROM z_panier
-LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-LEFT JOIN z_product ON z_product.product_id = z_panier.product_id".$limite;
-                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $req = "SELECT * ".PHP_EOL;
+                    $req .= "FROM z_panier ".PHP_EOL;
+                    $req .= "LEFT JOIN z_user ON z_user.user_id = z_panier.user_id ".PHP_EOL;
+                    $req .= "LEFT JOIN z_product ON z_product.product_id = z_panier.product_id".$limite;
+
+                    $laliste_items = $DbAdmin->GetDbActions($idd,$req);
                     $intitules_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time'];
                     $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
                     //
@@ -152,17 +164,17 @@ LEFT JOIN z_product ON z_product.product_id = z_panier.product_id".$limite;
                     $replace_in_vue[$page_cible]['titre3'] = 'liste de tous les utilisateurs avec un panier actif. Aussi les articles et prix';
                     $replace_in_vue[$page_cible]['test3'] =  $data_recuphtml['items'];
 
-
                     // 4 --------------------------------------------------------------------------------------------------------------------------------
                     $lettre = "p";
                     $idd = 1;
                     $limite = "";
-                    $req = "SELECT *
-FROM z_panier
-LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-WHERE z_panier.user_id = :user_id".$limite;
-                    $laliste_items = $DbAdmin->actionsFinal($idd,$req);
+                    $req = "SELECT * ".PHP_EOL;
+                    $req .= "FROM z_panier ".PHP_EOL;
+                    $req .= "LEFT JOIN z_user ON z_user.user_id = z_panier.user_id ".PHP_EOL;
+                    $req .= "LEFT JOIN z_product ON z_product.product_id = z_panier.product_id ".PHP_EOL;
+                    $req .= "WHERE z_panier.user_id = :user_id".$limite.PHP_EOL;
+
+                    $laliste_items = $DbAdmin->GetDbActions($idd,$req);
                     $intitules_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
                     $data_recuphtml = ResponseToHtml($intitules_array,$laliste_items);
                     //
@@ -171,31 +183,31 @@ WHERE z_panier.user_id = :user_id".$limite;
                     $replace_in_vue[$page_cible]['titre4'] = ' Panier de l\'utilisateur avec l\'user_id = '.$idd; 
                     $replace_in_vue[$page_cible]['test4'] =  $data_recuphtml['items'];
 
+                    // 5 --------------------------------------------------------------------------------------------------------------------------------
+                    $req =PHP_EOL."SELECT * ".PHP_EOL;
+                    $req .="FROM z_panier ".PHP_EOL;
+                    $req .="LEFT JOIN z_user ON z_user.user_id = z_panier.user_id ".PHP_EOL;
+                    $req .="LEFT JOIN z_product ON z_product.product_id = z_panier.product_id ".PHP_EOL;
+                    $req .="WHERE z_user.user_id = :user_id".PHP_EOL;
 
+                    $four = $DbAdmin->GetDbActions(1,$req);
 
-                    // cinquième
-                    $req="SELECT *
-FROM z_panier
-LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
-LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
-WHERE z_user.user_id = :user_id";
-                    $laliste_items4 = $DbAdmin->actionsFinal(1,$req);
-                    $items4 = '';
-                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
-                    foreach($laliste_items4 as $key => $value)
+                    $items_four = '';
+                    $liste_intitules = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
+                    foreach($four as $key => $value)
                     {   
                         $tempo  = '';
                         $intitules  = '';
                         $tempo .= '<td>tools</td>';
                         $intitules .= '<td>tools</td>';
-                        foreach ($current_array as $key => $value2)
+                        foreach ($liste_intitules as $key => $value2)
                         {
                             $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
                             $tempo .= '<td>'.$temppo.'</td>';
                             $intitules .= '<td>'.$value2.'</td>';
                         }
                         // print_airB($value);
-                        $items4 = '
+                        $items_four = '
                         <tr>
                             '.$tempo.'        
                         </tr>'.PHP_EOL;
@@ -206,44 +218,38 @@ WHERE z_user.user_id = :user_id";
                     }
                     $replace_in_vue[$page_cible]['intitules5'] = $intitules ; 
                     $replace_in_vue[$page_cible]['titre5'] = ' )Combien d\'utilisateur on un panier actif, une image associé au profil et un O dans leur mail.'; 
-                    $replace_in_vue[$page_cible]['test5'] = $items4;
-                    $replace_in_vue[$page_cible]['requete5'] ="a faire";
+                    $replace_in_vue[$page_cible]['test5'] = $items_four;
+                    $replace_in_vue[$page_cible]['requete5'] = $req;
 
 
 
 
+                    // 6 --------------------------------------------------------------------------------------------------------------------------------
+                    $req1 ="INSERT INTO z_user ".PHP_EOL;
+                    $req1 .="(user_id, email, passwrd, rule_id, created, updated, last_connect) ".PHP_EOL;
+                    $req1 .= "VALUES (NULL, 'patobeur666@gmail.com', MD5('toto'), '3', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP); ".PHP_EOL;
+                    
+                    $req2  ="INSERT INTO z_profil  ".PHP_EOL;
+                    $req2 .= "(profil_id, user_id, username,firstname, email, phone, birthdate, section_id, promo_id, last_update, created, activated)  ".PHP_EOL;
+                    $req2 .= "VALUES  ".PHP_EOL;
+                    $req2 .= "(NULL, :user_id, 'patobeur', 'etlardons', 'patobeur666@gmail.com', '0609080808', '2019-04-16', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1'); ".PHP_EOL;
+                    
+                    $req3 ="SELECT * FROM z_profil WHERE email = 'patobeur666@gmail.com' LIMIT 1".PHP_EOL;
 
-                    // sixième
-                    $req1="INSERT INTO z_user
-(user_id, email, passwrd, rule_id, created, updated, last_connect)
-VALUES (NULL, 'patobeur@gmail.com', MD5('toto'), '3', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-";
-$req2  ="INSERT INTO z_profil 
-(profil_id, user_id, username,firstname, email, phone, birthdate, section_id, promo_id, last_update, created, activated) 
-VALUES 
-(NULL, :user_id, 'patobeur', 'etlardons', 'patobeur2@gmail.com', '0609080808', '2019-04-16', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
-";
-
-$req3="SELECT * FROM z_profil LIMIT 1";
-
-$vide='';
-                    $lastid = $DbAdmin->insert_actions(null,$req1);
-                    $profil = $DbAdmin->insert_actions($lastid ,$req2);
+                    $lastid = $DbAdmin->InsertDbActions(null,$req1);
+                    $profil = $DbAdmin->InsertDbActions($lastid ,$req2);
                     // $profil = $DbAdmin->insert_actions(["col" => "user_id", "val" => '$lastid'] ,$req2);
 
-
-                    $laliste_items6 = $DbAdmin->actionsFinal(1,$req3);
-
-                    // print_airB($laliste_items6,'jj');
+                    $six = $DbAdmin->GetDbActions(1,$req3);
 
                     $items6 = '';
-                    $current_array = ['profil_id','user_id','username','firstname','email','phone','birthdate','section_id','promo_id','last_update','created','activated'];
+                    $liste_intitules = ['profil_id','user_id','username','firstname','email','phone','birthdate','section_id','promo_id','last_update','created','activated'];
 
                     // intitulés
                     $intitules  = '
                     <tr>
                         <td>tools</td>';
-                    foreach ($current_array as $key => $value2)
+                    foreach ($liste_intitules as $key => $value2)
                     {
                         $intitules .= '<td>'.$value2.'</td>';
                     }
@@ -251,17 +257,17 @@ $vide='';
                     </tr>'.PHP_EOL;
 
 
-                    foreach($laliste_items6 as $key => $value)
+                    foreach($six as $key => $value)
                     {   
-                        // print_airB($laliste_items6[$key],'value');
+                        // print_airB($six[$key],'value');
                         $tempo  = '';
                         $tempo .= '<td>tools</td>';
-                        $data = $laliste_items6[$key];
+                        $data = $six[$key];
 
-                        foreach ($current_array as $key2 => $value2)
+                        foreach ($liste_intitules as $key2 => $value2)
                         {
                             // $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
-                            $tempname = $current_array[$key2];
+                            $tempname = $liste_intitules[$key2];
                             // print_airB( $data->$tempname,'tempname') ;
                             $tempo .= '<td>-'.$data->$tempname.'-</td>';
                             // $intitules .= '<td>'.$value2.'</td>';
@@ -279,31 +285,46 @@ $vide='';
                     $replace_in_vue[$page_cible]['titre6'] = 'Ajout d\'un compte user et de son profil -'.$lastid ; 
                     $replace_in_vue[$page_cible]['test6'] = $items6;
                     $replace_in_vue[$page_cible]['requete6'] = 'nouveau user_id : '.$lastid."<br>".'nouveau profil_id : '.$profil."<br>".$req1."<br>".$req2."<br>".$req3;
-                    
-                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     // sept
                     $req="SELECT *
                     FROM z_panier
                     LEFT JOIN z_user ON z_user.user_id = z_panier.user_id
                     LEFT JOIN z_product ON z_product.product_id = z_panier.product_id
                     WHERE z_user.user_id = :user_id";
-                    $laliste_items4 = $DbAdmin->actionsFinal(1,$req);
-                    $items4 = '';
-                    $current_array = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
-                    foreach($laliste_items4 as $key => $value)
+                    $four = $DbAdmin->GetDbActions(1,$req);
+                    $items_four = '';
+                    $liste_intitules = ['panier_id','user_id','email','name','content','price','panier_id','create_time','update_time',];
+                    foreach($four as $key => $value)
                     {   
                         $tempo  = '';
                         $intitules  = '';
                         $tempo .= '<td>tools</td>';
                         $intitules .= '<td>tools</td>';
-                        foreach ($current_array as $key => $value2)
+                        foreach ($liste_intitules as $key => $value2)
                         {
                             $temppo = (strlen($value->$value2) > 32) ? substr($value->$value2, 0, 30).'<pan title="'.$value->$value2.'">[+]</pan>' : $value->$value2;   
                             $tempo .= '<td>'.$temppo.'</td>';
                             $intitules .= '<td>'.$value2.'</td>';
                         }
                         // print_airB($value);
-                        $items4 = '
+                        $items_four = '
                         <tr>
                             '.$tempo.'        
                         </tr>'.PHP_EOL;
@@ -314,32 +335,30 @@ $vide='';
                     }
                     $replace_in_vue[$page_cible]['intitules7'] = $intitules ; 
                     $replace_in_vue[$page_cible]['titre7'] = 'Combien d\'utilisateur on un panier actif, une image associé au profil et un O dans leur mail.'; 
-                    $replace_in_vue[$page_cible]['test7'] = $items4;
+                    $replace_in_vue[$page_cible]['test7'] = $items_four;
                     $replace_in_vue[$page_cible]['requete7'] ="a faire";
 
-                    
 
+                    // -------------------------------------------------------
+                    // ----- paquetage des données ----------
+                    // -------------------------------------------------------
 
-
-
-                        // -------------------------------------------------------
-                        // ----- paquetage des données ----------
-                        // -------------------------------------------------------
-                        $donnees = [
-                            'un' => $replace_in_vue[$page_cible],
-                            'deux' => $page_cible
-                        ];
+                    $donnees = [
+                        'un' => $replace_in_vue[$page_cible],
+                        'deux' => $page_cible
+                    ];
                     // }
 
 
 
-
-
-
-
-
-
-
+                    // -------------------------------------------------------
+                    // ----- nettoyage des créations de profil ----------
+                    // -------------------------------------------------------
+                    $req="DELETE FROM z_profil WHERE email = 'patobeur666@gmail.com' AND username = 'patobeur'";
+                    $DbAdmin->LocalNettoyage('',$req);
+                    $req="DELETE FROM z_user WHERE email = 'patobeur666@gmail.com' AND passwrd = MD5('toto')";
+                    $DbAdmin->LocalNettoyage('',$req);
+                    
 
 
 
@@ -492,7 +511,7 @@ $vide='';
                 break;
                 case 'profilsparutilisateur';
                     // profil_id	user_id	username	firstname	email	phone	birthdate	section_id	promo_id	last_update	created	activated
-                    $laliste_utilisateur = $DbAdmin->get_profilsparutilisateur();
+                    $laliste_utilisateur = $DbAdmin->LocalProfilsParUtilisateur(1);
                     $articles = '';
                     foreach($laliste_utilisateur as $key => $value)
                     {
@@ -554,14 +573,18 @@ $vide='';
             ];
         }
     // }
-
-    $DbAdmin->set_replace_in_vue($donnees['un'],$donnees['deux']);
+    if (!empty($donnees)){
+        $DbAdmin->set_replace_in_vue($donnees['un'],$donnees['deux']);
+    }
     $DbAdmin->do_affichelapagehtml();
-    // IF DEBUG
-    // ici on peut forcer l'affichage du debug si DISTANT est false (en local donc !)
-    // (!empty($_SESSION['profil'])   AND DEBUG) ? print_airB($_SESSION['profil'],  'PROFIL SESSION') : '';
-    // (!empty($_SESSION['user'])     AND DEBUG) ? print_airB($_SESSION['user'],    'USER SESSION') : '';
-    // (!empty($_SESSION['cms'])      AND DEBUG) ? print_airB($_SESSION['cms'],     'CMS SESSION') : '';
+
+
+
+
+
+
+
+
 
 
     function debug_quellepage($page_cible)
@@ -574,54 +597,64 @@ $vide='';
 
 
     function ResponseToHtml($intitules_array,$laliste_items){
-                    // intitulés
-                    $intitules  = '
-                    <tr>
-                        <td>tools</td>';
-                    foreach ($intitules_array as $key => $value)
-                    {
-                        $intitules .= '<td>'.$value.'</td>';
-                    }
-                    $intitules = $intitules.'        
-                    </tr>'.PHP_EOL;
+        // intitulés
+        $intitules  = '
+        <tr>
+            <td>tools</td>';
+        foreach ($intitules_array as $key => $value)
+        {
+            $intitules .= '<td>'.$value.'</td>';
+        }
+        $intitules = $intitules.'        
+        </tr>'.PHP_EOL;
 
 
-                    $items ='';
-                    foreach($laliste_items as $key => $value)
-                    {   
-                        // print_airB($laliste_items6[$key],'value');
-                        $tempo  = '';
-                        $tempo .= '<td>tools</td>';
-                        $data = $laliste_items[$key];
+        $items ='';
+        foreach($laliste_items as $key => $value)
+        {   
+            // print_airB($laliste_items6[$key],'value');
+            $tempo  = '';
+            $tempo .= '<td>tools</td>';
+            $data = $laliste_items[$key];
 
-                        foreach ($intitules_array as $key2 => $value2)
-                        {
-                            $tempname = $intitules_array[$key2];
-                            // $tempname = (strlen($tempname) > 32) ? substr($tempname, 0, 30).'<pan title="'.$tempname.'">[+]</pan>' : $tempname;   
-                            $tempo .= '<td>'.$data->$tempname.'</td>';
-                        }
+            foreach ($intitules_array as $key2 => $value2)
+            {
+                $tempname = $intitules_array[$key2];
+                // $tempname = (strlen($tempname) > 32) ? substr($tempname, 0, 30).'<pan title="'.$tempname.'">[+]</pan>' : $tempname;   
+                $tempo .= '<td>'.$data->$tempname.'</td>';
+            }
 
-                        $items .= '
-                        <tr>
-                            '.$tempo.'        
-                        </tr>'.PHP_EOL;
+            $items .= '
+            <tr>
+                '.$tempo.'        
+            </tr>'.PHP_EOL;
 
-                    }
-
-
-
-
-
-
-
-
-                    return [
-                        'intitules' => $intitules,
-                        'items' => $items
-                    ];
-                    // $replace_in_vue[$page_cible]['intitules2'] = $intitules;   
-                    // $replace_in_vue[$page_cible]['titre2'] = 'Profils d\'utilisateur dont le nom commence par a';   
-                    // $replace_in_vue[$page_cible]['test2'] = $items;
-                    // $replace_in_vue[$page_cible]['requete2'] = $req2;
+        }
+        return [
+            'intitules' => $intitules,
+            'items' => $items
+        ];
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    // IF DEBUG
+    // ici on peut forcer l'affichage du debug si DISTANT est false (en local donc !)
+    (!empty($_SESSION['profil'])   AND DEBUG) ? print_airB($_SESSION['profil'],  'PROFIL SESSION') : '';
+    (!empty($_SESSION['user'])     AND DEBUG) ? print_airB($_SESSION['user'],    'USER SESSION') : '';
+    (!empty($_SESSION['cms'])      AND DEBUG) ? print_airB($_SESSION['cms'],     'CMS SESSION') : '';
+
 ?>

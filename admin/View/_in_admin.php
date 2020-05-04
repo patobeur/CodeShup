@@ -328,7 +328,7 @@
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="?myprofil">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Profile
                 </a>
@@ -363,7 +363,7 @@
 
       <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Charts</h1>
+        <h1 class="h3 mb-2 text-gray-800">Infos Admin</h1>
         <p class="mb-4">{{ICI}}</a>.</p>
       </div>
 
@@ -403,10 +403,10 @@
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Souhaitez vous vraiment vous deconnectez ?</div>
+        <div class="modal-body">Souhaitez vous vraiment vous deconnectez ?<br> Vraiment ?</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="../deco.php">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+          <a class="btn btn-primary" href="../deco.php">Déconnection</a>
         </div>
       </div>
     </div>

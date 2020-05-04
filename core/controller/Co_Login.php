@@ -3,6 +3,7 @@
 
     $replace_in_vue = [
         'password' => '',
+        'email'    => '',
         'login'    => '',
         'Ilogin'    => ''
     ];
@@ -28,7 +29,8 @@
                 // $donnees['email'] = md5(get_clean($_POST['login']));
                 $donnees['email'] = get_clean($_POST['login']);
                 $replace_in_vue['login'] = '';
-                $replace_in_vue['Ilogin'] = get_clean($_POST['login']);
+                $replace_in_vue['email'] = get_clean($_POST['login']);
+                // $replace_in_vue['Ilogin'] = get_clean($_POST['login']);
             }
             else{
                 $replace_in_vue['login'] = 'Email incorrect !';

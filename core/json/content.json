@@ -10,7 +10,7 @@
 		}
 	},
 	"defaultpage": [
-		"boutique"
+		"index"
 	],
 	"pagesext":  {
 		"nommenu": "Services",
@@ -65,8 +65,8 @@
 			}
 		],
 		"js": [],
-		"css": ["index.css","cover.css"],
-		"blocs": ["cover","index","informations"]
+		"css": ["carousel.css","index.css","cover.css"],
+		"blocs": ["carousel","cover","index","informations"]
 	},
 	"login": {
 		"title": "Login",

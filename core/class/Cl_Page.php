@@ -7,7 +7,7 @@ class Page{
     private $_User;
     private $_Db;
 
-    private $_current_page='';
+    public $_current_page='';
     private $_default_page='';
     private $_Originum=0;
 
@@ -715,8 +715,10 @@ MENUACTOBEUR
      * @param string $message texte a afficher
      * @param string $from source de l'appel
      */
-    public function set_error($from,$message,$action='errors'){
-        $_SESSION['cms'][$action][++$this->_Nlog] = "[N° $this->_Nlog] $from.$message";
+    private function set_error($from,$message,$action='errors'){
+        $numm = $this->_Nlog;
+        ++$numm;
+        $_SESSION['cms'][$action][$numm] = "[N° $this->_Nlog] $from.$message";
     }
     // --------------------------------------------------------------------------------
     /**
@@ -726,12 +728,13 @@ MENUACTOBEUR
      * @param string $from source call
      * @return mixed content|true if succes|false if fail
      */
-    private function get_File_to_use($action,$file,$type,$from=null){
+    public function get_File_to_use($action,$file,$type,$from=null){
         if (file_exists($file))
         {
             switch($type)
             {
                 case "include":
+                    // print_airB('ok','ok');
                     include($file);
                     $this->set_error($from,$type."($file)",$action);
                     return true;
@@ -762,7 +765,7 @@ MENUACTOBEUR
         }
         else
         {   
-            $this->set_error($from,' le fichier '.$file." n'existe pas. la methode ".$type." (".$file.") n'a pas fonctionnée");
+            self::set_error($from,' le fichier '.$file." n'existe pas. la methode ".$type." (".$file.") n'a pas fonctionnée");
             return false;
         }
     }
@@ -776,7 +779,7 @@ MENUACTOBEUR
      * @param string $arguments use to be array arguments from function
      * @param string $coment use string
      */
-    private function get_errorphrase($file,$function,$line,$arguments=null,$coment=null)
+    public function get_errorphrase($file,$function,$line,$arguments=null,$coment=null)
     {
         if ('array' == gettype($arguments)) 
         {

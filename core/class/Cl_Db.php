@@ -163,16 +163,15 @@
                     AND z_user.email = :email AND z_user.passwrd = :passwrd
                 "
             );
-            $requete->bindParam(':passwrd', $datas['passwrd'], PDO::PARAM_STR, 32);
-            $requete->bindParam(':email',   $datas['email'],   PDO::PARAM_STR, 64);
             // $requete->bindParam(':rule_id', $datas, PDO::PARAM_INT);
 
 
             try {
+                $requete->bindParam(':passwrd', $datas['passwrd'], PDO::PARAM_STR, 32);
+                $requete->bindParam(':email',   $datas['email'],   PDO::PARAM_STR, 64);
                 $requete->execute();
                 // $requete->debugDumpParams();   // debug affichage        
-                $reponse = $requete->fetch();
-                //$requete->debugDumpParams();   // debug affichage           
+                $reponse = $requete->fetch();       
                 $requete = null;
             }
             catch (PDOException $e){
@@ -182,26 +181,28 @@
             }
             if (!empty($reponse))
             {
+                print_airB(__FUNCTION__,"kkkkkkkkkkkkkkkkkkkkk");
                 // session token
-                $token = md5(rand(1, 10) . microtime());
+                $token = md5(rand(1, 100) . microtime());
                 // session token
 
                 $donnees['passwrd'] = md5(get_clean($_POST['password']));
                 $this->set_last_connect($reponse->user_id, $token);
 
-                $_SESSION['user']['statut'] = 'logged';
-                $_SESSION['profil']['token'] = $token;
-                $_SESSION['profil']['ruleset'] = $reponse->ruleset;
-                $_SESSION['profil']['rule_id'] = $reponse->rule_id;
-                $_SESSION['profil']['username'] = ucfirst($reponse->username);
-                $_SESSION['profil']['firstname'] = $reponse->firstname;
-                $_SESSION['profil']['email'] = $reponse->email;
-                $_SESSION['profil']['section_id'] = $reponse->section_id;
-                $_SESSION['profil']['promo_id'] = $reponse->promo_id;
-                $_SESSION['profil']['last_update'] = $reponse->last_update;
-                $_SESSION['profil']['created'] = $reponse->created;
-                $_SESSION['profil']['activated'] = $reponse->activated;
-                $_SESSION['profil']['connected'] = date('Y-m-d H:i:s');
+                $_SESSION['user']['statut'] =           'logged';
+                $_SESSION['profil']['token'] =          $token.'dsfgdfgdfgdfg';
+                $_SESSION['profil']['ruleset'] =        $reponse->ruleset;
+                $_SESSION['profil']['user_id'] =        $reponse->user_id;
+                $_SESSION['profil']['rule_id'] =        $reponse->rule_id;
+                $_SESSION['profil']['username'] =       ucfirst($reponse->username);
+                $_SESSION['profil']['firstname'] =      $reponse->firstname;
+                $_SESSION['profil']['email'] =          $reponse->email;
+                $_SESSION['profil']['section_id'] =     $reponse->section_id;
+                $_SESSION['profil']['promo_id'] =       $reponse->promo_id;
+                $_SESSION['profil']['last_update'] =    $reponse->last_update;
+                $_SESSION['profil']['created'] =        $reponse->created;
+                $_SESSION['profil']['activated'] =      $reponse->activated;
+                $_SESSION['profil']['connected'] =      date('Y-m-d H:i:s');
                 return true;
             }
             else{
@@ -212,14 +213,15 @@
         /* ------------------      SET LAST CONNECT        ---------------------------*/
         private function set_last_connect($user_id,$token)
         {
+            print_r($token);
             // fef5bd54ce09603aec6192840bc118ba
             $requete = $this->db->prepare("UPDATE
             z_user
-            SET last_connect = '".date('Y-m-d H:i:s')."',
-            token = '".$token."',
+            SET z_user.last_connect = '".date('Y-m-d H:i:s')."',
+                z_user.token = '".$token."',
             WHERE z_user.user_id = :user_id");
-            $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
             try {
+                $requete->bindParam(':user_id', $user_id, PDO::PARAM_STR, 32);
                 $requete->execute();      
                 //$reponse = $requete->fetch();
                 $_SESSION['cms']['requete'][] = 'oo'.__FILE__.'/'.__FUNCTION__.'/'.__LINE__;   // debug affichage           
@@ -235,7 +237,7 @@
 
         
         // ------------------------------------------------------------------------
-        public function get_users($datas = null){return $this->get_Pusers();}
+        public function get_users(){return $this->get_Pusers();}
         private function get_Pusers()
         {
             $select     = "SELECT *";
@@ -300,8 +302,10 @@
 
         
         // ------------------------------------------------------------------------
-        public function get_profilsparutilisateur($user_id){return $this->get_Pprofilsparutilisateur($user_id);}
-        private function get_Pprofilsparutilisateur($user_id)
+        public function PubProfilsParUtilisateur($user_id){
+            return $this->get_ProfilsParUtilisateur($user_id);
+        }
+        private function get_ProfilsParUtilisateur($user_id)
         {
             $select     = "SELECT *";
             // $select = "z_user.user_id";
@@ -461,7 +465,12 @@
             return $reponse;
         }
         // ------------------------------------------------------------------------
-        public function actionsFinal($user_id,$req){return $this->PactionsFinal($user_id,$req);}
+        public function actionsFinal($user_id,$req){
+            return $this->PactionsFinal($user_id,$req);}
+
+        public function actionsAdminFinal($user_id,$req){
+            return Db::PactionsFinal($user_id,$req);}
+
         private function PactionsFinal($user_id,$req)
         {
             // print_airB($req,'req');
@@ -482,6 +491,35 @@
             return $reponse;
         }
         
+        // ------------------------------------------------------------------------
+        public function PubNettoyage($index,$req){
+            $this->Nettoyage($index,$req);
+        }
+        private function Nettoyage($index,$req)
+        {
+            // print_airB($index,'index');
+            // print_airB($req,'req');
+            $requete = $this->db->prepare($req);
+
+            if (!empty($index))
+            {
+                foreach($index as $key => $value){
+                    $requete->bindParam(':'.$key, $value, PDO::PARAM_INT, 32);
+                }
+            }
+            try {
+                $requete->execute();
+
+                //$reponse = $requete->fetchall();
+                return true;
+            }
+            catch (PDOException $e) {
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+                // return false;
+            }
+
+        }
 
     }
 ?>
