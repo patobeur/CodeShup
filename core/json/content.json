@@ -38,11 +38,6 @@
 				"href": "?panier",
 				"target": "_self",
 				"title": "Mon Panier"
-			},
-			{
-				"href": "#",
-				"target": "_out",
-				"title": "test page ext"
 			}
 		]
 	},
@@ -81,12 +76,13 @@
 	"boutique": {
 		"title": "Code-Shop",
 		"menuactif": true,
-		"js": [],
-		"css": ["boutique.css"],
+		"js": ["boutique.js"],
+		"css": ["boutique.css","fontawesome.css"],
 		"blocs": ["boutique"],
 		"class": ["boutique"],
 		"controller": ["boutique"],
-		"require": []
+		"require": [],
+		"vendor": ["fontawesome.css"]
 	},
 	"panier": {
 		"title": "Panier",

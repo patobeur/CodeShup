@@ -3,7 +3,6 @@
 // ConTroller principal > Controller
     // if(empty($_SESSION['profil']['username'])) {die();}
     $timer = microtime(true);
-    echo ('wtf user------------------------------------------------------------');
     if (isset($_GET['kill'])) header("Location:../deco.php" );
     // include('../'.'core/ini/definitions.php'); // MonkeyBusiness
     require_once(ADDINI.'bdd.php');

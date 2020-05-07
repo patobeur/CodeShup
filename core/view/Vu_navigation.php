@@ -29,7 +29,8 @@
                                 <li class="nav-item ACTIVITE">
                                     <a class="nav-link" href="?index" title="Accueil">Accueil<span class="sr-only">(current)</span></a>
                                 </li>
-                                LOGINATOR
+LOGINATOR
+SHOPMENU
                                 <li class="nav-item dropdown">
                                     <a
                                         class="nav-link dropdown-toggle"
@@ -43,11 +44,15 @@
                                         NAVIGATATOR
                                     </div>
                                 </li>
-ACTOBEUR
-ACTOBEURTWO
                                 <li class="nav-item">
-                                    <a class="nav-link" href="?index">Contact<span class="sr-only">(current)</span></a>
+                                    <h3 class="font-weight-bold"><a class="nav-link text-alert" href="?boutique">Boutique<span class="sr-only">(current)</span></a></h3>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="?panier">Panier<span class="sr-only">(current)</span></a>
+                                </li>
+                                <!-- <li class="nav-item">
+                                    <a class="nav-link" href="?index">Contact<span class="sr-only">(current)</span></a>
+                                </li> -->
                             </ul>
                         </div>
                     </div>

@@ -1,11 +1,29 @@
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card h-100">
-                            <a href="#"><img class="card-img-top" src="{{articleImage}}" alt="{{altImage}}"></a>
-                            <div class="card-body">
-                                <h4 class="card-title"><a href="#">{{articleName}}</a></h4>
-                                <h5>{{articlePrix}}</h5>
-                                <p class="card-text">{{articleContent}} | {{articleVendor}} | {{articleStock}}</p>
-                            </div>
-                            <div class="card-footer"><small class="text-muted">★ ★ ★ ★ ☆</small></div>
-                        </div>
-                    </div>
+									<!-- article -->
+									<div class="col-xl-3 col-lg-4 col-md-4 mb-8">
+										<div class="mobilbar_zone">
+											<div class="card-header">
+												{{articleCategorie}}
+											</div>
+
+											<div class="mobilbar_img set-bg card-img-top" src="{{articleImage}}" alt="{{altImage}}">
+												<ul class="mobilbar">
+													{{addPanier}}
+													{{supPanier}}
+													{{urlPanier}}
+												</ul>
+												<div class="card-body">
+													<h4 class="card-title"><a href="#">nom : {{articleName}}</a></h4>
+													<!-- <p class="card-text">{{articleContent}}</p> -->
+												</div>
+											</div>
+											<div class="card-footer text-center">
+												<span>{{articlePrix}} €</span>
+												<span>reste {{articleStock}} articles</span>
+											</div>
+											<div class="card-footer text-center">
+												<smallsmall class="text-muted">★ ★ ★ ★ ☆{{articleEvaluation}}</smallsmall>
+												<button>Vendu par: {{nameVendor}}</button>
+											</div>
+										</div>
+									</div>
+									<!-- /article -->

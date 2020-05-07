@@ -19,22 +19,111 @@
             }            
         }
         
+        public function get_panier_session($wherein)
+        {
+            
+            $select = "SELECT z_vendor.name as vendorname, z_prodcat.label,
+            z_product.product_id, z_product.name, z_product.create_time, z_product.update_time,
+            z_product.stock, z_product.alerte, z_product.cat_id, z_product.price,
+            z_product.vendor_id, z_product.content, z_product.evaluation
+            FROM z_product
+            LEFT JOIN z_vendor ON z_vendor.vendor_id = z_product.vendor_id
+            LEFT JOIN z_prodcat ON z_prodcat.cat_id = z_product.cat_id
+            WHERE z_product.product_id in ".$wherein;
+            $requete  = $select;
+            $requete = $this->db->prepare($requete);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+                if ($reponse)
+                {
+                    return $reponse;
+                }
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
 
+        }
+        public function set_panier($action,$item_id){
+
+            $select = "SELECT *
+            FROM z_product
+            WHERE z_product.product_id = :product_id";
+            $requete  = $select;
+            $requete = $this->db->prepare($requete);
+            $requete->bindParam(':product_id', $item_id);
+            try {
+                $requete->execute();
+                $reponse = $requete->fetchall();
+                if ($reponse)
+                {   
+                    if ($_SESSION['panier'])
+                    {
+                        if (!array_key_exists($reponse[0]->product_id, $_SESSION['panier']))
+                        {
+                            $_SESSION['panier'][$reponse[0]->product_id] = [
+                                "article" => $reponse[0]->product_id,
+                                "price" => $reponse[0]->price,
+                                "nb" => 1
+                            ];
+                        }
+                        else
+                        {
+                            if ($action == 'add')
+                            {
+                                $_SESSION['panier'][$reponse[0]->product_id]['nb']++;
+                            }
+                            elseif ($action == 'sup')
+                            {
+                                if ($_SESSION['panier'][$reponse[0]->product_id]['nb'] >= 2)
+                                {
+                                    $_SESSION['panier'][$reponse[0]->product_id]['nb']--;
+                                }
+                                elseif ($_SESSION['panier'][$reponse[0]->product_id]['nb'] == 1)
+                                {
+                                    unset($_SESSION['panier'][$reponse[0]->product_id]);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $_SESSION['panier'][$reponse[0]->product_id] = [
+                            "article" => $reponse[0]->product_id,
+                            "nb" => 1
+                        ];
+                    }
+                }
+            }
+            catch (PDOException $e){
+                $_SESSION['cms']['errors'][] = __FILE__." ".__FUNCTION__.":".$e->getMessage();
+                DISTANT ? die() : die($e->getMessage());
+            }
+        }
         // ------------------------------------------------------------------------
         public function get_articlesByCategorieId($categorie){
             return $this->get_ParticlesByCategorieId($categorie);
         }
         private function get_ParticlesByCategorieId($categorie)
         {
-            // print_airB($categorie->cat_id,'categorie',1);
-            $select     = "SELECT *";
-            $from       = " FROM z_product";
+            $select = "
+            SELECT z_vendor.name as vendorname, z_prodcat.label,
+            z_product.product_id, z_product.name, z_product.create_time, z_product.update_time,
+            z_product.stock, z_product.alerte, z_product.cat_id, z_product.price,
+            z_product.vendor_id, z_product.content, z_product.evaluation
+            FROM z_product
+            LEFT JOIN z_prodcat ON z_prodcat.cat_id = :catid
+            LEFT JOIN z_vendor ON z_vendor.vendor_id = z_product.vendor_id
+            ";
             $where      = " WHERE z_product.cat_id = :catid";
             // $where      .= " AND ";
             $order      = " ORDER BY z_product.name ASC";
             $limite     = "";//" LIMITE 1";
-            
-            $requete_categories = $this->db->prepare($select.$from.$where.$order.$limite);
+            $requete = $select.$where.$order.$limite;
+            // print_airB($requete,'categorie',10);
+            $requete_categories = $this->db->prepare($requete);
             $requete_categories->bindParam(':catid', $categorie->cat_id, PDO::PARAM_INT, 32);
             try {
                 $requete_categories->execute();  
@@ -72,16 +161,19 @@
 
         }
         // ------------------------------------------------------------------------
-        public function get_articles(){return $this->get_Particles();}
+        public function get_articles(){
+            return $this->get_Particles();
+        }
         private function get_Particles()
         {
-            $select = "SELECT *";
-            // $select = "z_product.product_id,z_product.name,z_product.create_time,z_product.update_time,z_product.stock,z_product.alerte,z_product.cat_id,z_product.price,z_product.vendor_id,z_product.content";
+            $select = "SELECT z_vendor.name as vendorname, z_prodcat.label, z_product.product_id, z_product.name, z_product.create_time, z_product.update_time, z_product.stock, z_product.alerte, z_product.cat_id, z_product.price, z_product.vendor_id, z_product.content, z_product.evaluation";
             $from = " FROM z_product";
+            $join = " LEFT JOIN z_prodcat ON z_prodcat.cat_id = z_product.cat_id ";
+            $join .= " LEFT JOIN z_vendor ON z_vendor.vendor_id = z_product.vendor_id ";
             $where = "";//" WHERE z_product.name >0";
             $order = "";//" ORDER BY z_product.name ASC";
             $limite = "";//" LIMITE 1";
-            $requete  = $select.$from.$where.$order;
+            $requete  = $select.$from.$join.$where.$order;
             $requete = $this->db->prepare($requete);
             try {
                 $requete->execute();

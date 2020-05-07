@@ -87,11 +87,11 @@ class Page{
                     <!-- login menu -->
                     <li class="nav-item">
                         <a class="nav-link" href="?login" title="Accueil">☉ Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
                     </li>'.PHP_EOL;
 
+                    // <li class="nav-item">
+                    //     <a class="nav-link" href="deco.php" title="Deco">☉ Deco</a>
+                    // </li>
                     if (!empty($_SESSION['profil']['ruleset']) && $_SESSION['profil']['ruleset'] == 'admin' AND DEBUG){  
                         $blocLogin .= '
                         <li class="nav-item">
@@ -144,8 +144,8 @@ class Page{
         $valeurderetour = preg_replace("_NAVIGATATOR_",$coment_blocs, $fichier_importe); 
         $valeurderetour = preg_replace("_ACTIVITE_",$is_activ, $valeurderetour);
         // ------------------------------------------------------------------------------
-        $valeurderetour = preg_replace('_ACTOBEURTWO_',$this->get_Navigation_Menu('pagesgestion','files'), $valeurderetour);
-        $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
+        $valeurderetour = preg_replace('_SHOPMENU_',$this->get_Navigation_Menu('pagesgestion','files'), $valeurderetour);
+        // $valeurderetour = preg_replace('_ACTOBEUR_',$this->get_Navigation_Menu('pagesext','files'), $valeurderetour);
         // ------------------------------------------------------------------------------
 
         $valeurderetour = preg_replace("_LOGINATOR_",$blocLogin, $valeurderetour); 

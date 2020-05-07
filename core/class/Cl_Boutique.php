@@ -1,12 +1,10 @@
 <?php 
 Class Boutique
 {
-    // use hydratationAndCream;
-    private $_categories;
-    private $_panier;
-    private $_identified;
+    private $_categorie;
+    // private $_panier;
+    // private $_identified;
     private $_DbBoutique;
-    //         
 
     public function __construct()
     {
@@ -21,6 +19,12 @@ Class Boutique
             die();
         }
     }
+    public function set_categorie($categorie){
+        $this->_categorie = $categorie;
+    }
+    public function get_categorie(){
+        return $this->_categorie;
+    }
     public function get_categories(){
         return $this->_DbBoutique->get_categories();
     }
@@ -29,6 +33,12 @@ Class Boutique
     }
     public function get_articles(){
         return $this->_DbBoutique->get_articles();
+    }
+    public function set_panier($action, $item_id){
+        return $this->_DbBoutique->set_panier($action, $item_id);
+    }
+    public function get_panier_session($wherein){
+        return $this->_DbBoutique->get_panier_session($wherein);
     }
 }
 ?>
