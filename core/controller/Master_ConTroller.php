@@ -23,5 +23,4 @@
     (!empty($_SESSION['profil'])    AND DEBUG) ? print_airB($_SESSION['profil'],    'PROFIL SESSION') : '';
     (!empty($_SESSION['token'])              ) ? print_airB($_SESSION['token'],     'TOKEN SESSION') : '';
     
-    // tuto : https://codeshack.io/super-fast-php-mysql-database-class/
 ?>

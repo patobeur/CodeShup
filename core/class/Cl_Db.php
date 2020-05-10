@@ -59,7 +59,7 @@
                 $reponse = $requete->fetchall();
                 if ($reponse)
                 {   
-                    if ($_SESSION['panier'])
+                    if (!($_SESSION['panier']))
                     {
                         if (!array_key_exists($reponse[0]->product_id, $_SESSION['panier']))
                         {
@@ -244,14 +244,15 @@
             $requete = $this->db->prepare(
                 "SELECT
                     z_user.user_id,z_user.rule_id,
+                    z_media.filename,
                     z_rule.ruleset,
-                    z_profil.username,z_profil.firstname,z_profil.email,z_profil.section_id,
-                    z_profil.promo_id,z_profil.last_update,z_profil.created,z_profil.activated
+                    z_profil.profil_id,z_profil.username,z_profil.firstname,z_profil.email,z_profil.section_id,z_profil.promo_id,z_profil.last_update,z_profil.created,z_profil.activated
                 FROM 
-                    z_user,z_profil,z_rule
+                    z_user,z_profil,z_rule,z_media
                 WHERE 
-                    z_user.user_id = z_profil.user_id AND activated = 1
+                    z_user.user_id = z_profil.user_id AND z_profil.activated = 1
                     AND z_user.rule_id = z_rule.rule_id
+                    AND z_media.profil_id = z_profil.profil_id
                     AND z_user.email = :email AND z_user.passwrd = :passwrd
                 "
             );
